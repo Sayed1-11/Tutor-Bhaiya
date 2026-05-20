@@ -1,0 +1,70 @@
+/* Custom CSS that goes beyond Tailwind's utilities */
+
+/* Subject Tags in Elite Batches */
+.subject-tag {
+    @apply inline-block px-3 py-1 bg-gray-800/50 text-gray-300 text-xs font-medium rounded-md border border-gray-700/50 hover:border-gray-500 hover:text-white transition-colors cursor-default;
+}
+
+/* Swiper Custom Pagination */
+.swiper-pagination-custom .swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    background: #4B5563; /* gray-600 */
+    opacity: 1;
+    transition: all 0.3s ease;
+}
+
+.swiper-pagination-custom .swiper-pagination-bullet-active {
+    background: #8B5CF6; /* primary */
+    width: 24px;
+    border-radius: 5px;
+}
+
+/* Navbar blur effect when scrolled (handled in JS, just defining base class here) */
+.navbar-scrolled {
+    background-color: rgba(9, 13, 22, 0.9) !important; /* dark color with opacity */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Smooth expanding for FAQ */
+.faq-content {
+    /* controlled by max-height in JS, but transition is defined here or in tailwind */
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 0;
+}
+.faq-item.active .faq-content {
+    opacity: 1;
+}
+
+/* Animated gradient background for hero text */
+.text-gradient-animate {
+    background: linear-gradient(to right, #8B5CF6, #38BDF8, #10B981, #8B5CF6);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-shift 5s ease infinite;
+}
+
+@keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Premium Dropdown hover animations */
+.group:hover .group-hover\:block {
+    display: block !important;
+    animation: slideUpFade 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - TutorBhaiya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#090d16',
+                        light: '#F9FAFB',
+                        primary: '#8B5CF6',
+                        secondary: '#10B981',
+                        accent1: '#F59E0B',
+                        accent2: '#38BDF8'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="font-sans antialiased text-gray-800 bg-light selection:bg-primary selection:text-white">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/50 shadow-sm text-slate-700 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <a href="index.html" class="flex-shrink-0 flex items-center gap-2 cursor-pointer">
+                    <img src="assets/logo.png" alt="TutorBhaiya" class="h-10 w-auto object-contain" id="navbar-logo">
+                    <span class="font-bold text-xl text-slate-900 tracking-tight transition-colors duration-300" id="logo-text">TutorBhaiya</span>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-6 text-sm font-semibold">
+                    <a href="index.html" class="nav-link hover:text-primary transition-colors duration-300">Home</a>
+                    
+                    <!-- Dropdown: English Version -->
+                    <div class="relative group cursor-pointer py-6">
+                        <span class="nav-link flex items-center gap-1 hover:text-primary transition-colors duration-300">
+                            English Version <i class="ph ph-caret-down text-xs"></i>
+                        </span>
+                        <div class="absolute left-0 top-[75px] w-56 rounded-2xl bg-white text-slate-800 shadow-2xl border border-slate-100 py-3 hidden group-hover:block z-50 transform origin-top transition-all duration-200">
+                            <a href="courses.html?filter=class-5" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class 5</a>
+                            <a href="courses.html?filter=class-6" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class 6</a>
+                            <a href="courses.html?filter=class-7" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class 7</a>
+                            <a href="courses.html?filter=class-8" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class 8</a>
+                            <a href="courses.html?filter=class-9" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class 9</a>
+                            <a href="courses.html?filter=ssc-hsc" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">SSC Batch</a>
+                            <a href="courses.html?filter=ssc-hsc" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">HSC Batch</a>
+                        </div>
+                    </div>
+
+                    <a href="courses.html" class="nav-link hover:text-primary transition-colors duration-300">Courses</a>
+                    
+                    <!-- Dropdown: English Medium -->
+                    <div class="relative group cursor-pointer py-6">
+                        <span class="nav-link flex items-center gap-1 hover:text-primary transition-colors duration-300">
+                            English Medium <i class="ph ph-caret-down text-xs"></i>
+                        </span>
+                        <div class="absolute left-0 top-[75px] w-56 rounded-2xl bg-white text-slate-800 shadow-2xl border border-slate-100 py-3 hidden group-hover:block z-50 transform origin-top transition-all duration-200">
+                            <a href="courses.html?filter=standard-5" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Standard 5</a>
+                            <a href="courses.html?filter=standard-6" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Standard 6</a>
+                            <a href="courses.html?filter=standard-7" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Standard 7</a>
+                            <a href="courses.html?filter=standard-8" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Standard 8</a>
+                            <a href="courses.html?filter=o-a-level" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">O Level</a>
+                            <a href="courses.html?filter=o-a-level" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">A Level</a>
+                        </div>
+                    </div>
+
+                    <!-- Dropdown: More -->
+                    <div class="relative group cursor-pointer py-6">
+                        <span class="nav-link flex items-center gap-1 hover:text-primary transition-colors duration-300">
+                            More <i class="ph ph-caret-down text-xs"></i>
+                        </span>
+                        <div class="absolute left-0 top-[75px] w-56 rounded-2xl bg-white text-slate-800 shadow-2xl border border-slate-100 py-3 hidden group-hover:block z-50 transform origin-top transition-all duration-200">
+                            <a href="books.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Books</a>
+                            <a href="spoken-english.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Spoken English</a>
+                            <a href="english-foundation.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">English Foundation</a>
+                            <a href="careers.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Career</a>
+                            <a href="join-teacher.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Join as Teacher</a>
+                            <a href="certificate.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Certificate</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <button class="flex items-center gap-2 text-sm font-semibold hover:text-primary transition-colors duration-300 nav-link" id="lang-btn">
+                        <i class="ph ph-globe text-lg"></i> বাংলা
+                    </button>
+                    <a href="dashboard.html" class="text-sm font-semibold hover:text-primary transition-colors duration-300 nav-link">Dashboard</a>
+                    <a href="login.html" class="bg-secondary hover:bg-emerald-600 text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg shadow-secondary/30 hover:shadow-secondary/50">
+                        Login
+                    </a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button class="text-slate-700 hover:text-slate-900" id="mobile-menu-btn">
+                        <i class="ph ph-list text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Container -->
+        <div class="hidden md:hidden bg-white border-b border-slate-200 px-4 py-4 space-y-4 shadow-xl" id="mobile-menu">
+            <a href="index.html" class="block text-slate-700 hover:text-primary py-1 font-semibold">Home</a>
+            <div class="py-1">
+                <span class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">English Version</span>
+                <div class="grid grid-cols-2 gap-2 pl-2">
+                    <a href="courses.html?filter=class-5" class="text-slate-600 hover:text-primary text-sm">Class 5</a>
+                    <a href="courses.html?filter=class-6" class="text-slate-600 hover:text-primary text-sm">Class 6</a>
+                    <a href="courses.html?filter=class-7" class="text-slate-600 hover:text-primary text-sm">Class 7</a>
+                    <a href="courses.html?filter=class-8" class="text-slate-600 hover:text-primary text-sm">Class 8</a>
+                    <a href="courses.html?filter=class-9" class="text-slate-600 hover:text-primary text-sm">Class 9</a>
+                    <a href="courses.html?filter=ssc-hsc" class="text-slate-600 hover:text-primary text-sm">SSC Batch</a>
+                    <a href="courses.html?filter=ssc-hsc" class="text-slate-600 hover:text-primary text-sm">HSC Batch</a>
+                </div>
+            </div>
+            <a href="courses.html" class="block text-slate-700 hover:text-primary py-1 font-semibold">Courses</a>
+            <div class="py-1">
+                <span class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">English Medium</span>
+                <div class="grid grid-cols-2 gap-2 pl-2">
+                    <a href="courses.html?filter=standard-5" class="text-slate-600 hover:text-primary text-sm">Standard 5</a>
+                    <a href="courses.html?filter=standard-6" class="text-slate-600 hover:text-primary text-sm">Standard 6</a>
+                    <a href="courses.html?filter=standard-7" class="text-slate-600 hover:text-primary text-sm">Standard 7</a>
+                    <a href="courses.html?filter=standard-8" class="text-slate-600 hover:text-primary text-sm">Standard 8</a>
+                    <a href="courses.html?filter=o-a-level" class="text-slate-600 hover:text-primary text-sm">O Level</a>
+                    <a href="courses.html?filter=o-a-level" class="text-slate-600 hover:text-primary text-sm">A Level</a>
+                </div>
+            </div>
+            <div class="py-1">
+                <span class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">More</span>
+                <div class="grid grid-cols-2 gap-2 pl-2">
+                    <a href="books.html" class="text-slate-600 hover:text-primary text-sm">Books</a>
+                    <a href="spoken-english.html" class="text-slate-600 hover:text-primary text-sm">Spoken English</a>
+                    <a href="english-foundation.html" class="text-slate-600 hover:text-primary text-sm">English Foundation</a>
+                    <a href="careers.html" class="text-slate-600 hover:text-primary text-sm">Career</a>
+                    <a href="join-teacher.html" class="text-slate-600 hover:text-primary text-sm">Join as Teacher</a>
+                    <a href="certificate.html" class="text-slate-600 hover:text-primary text-sm">Certificate</a>
+                </div>
+            </div>
+            <div class="pt-3 border-t border-slate-200 flex justify-between items-center">
+                <a href="dashboard.html" class="text-slate-600 hover:text-primary text-sm font-semibold">Dashboard</a>
+                <a href="login.html" class="bg-secondary hover:bg-emerald-600 text-white px-5 py-2 rounded-full text-xs font-bold text-center">Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="pt-32 pb-20 bg-dark relative overflow-hidden text-center">
+        <div class="absolute inset-0 bg-[url('assets/bento1.jpg')] opacity-20 bg-cover bg-center"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent"></div>
+        <div class="max-w-4xl mx-auto px-4 relative z-10">
+            <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">Empowering the Future of Education in Bangladesh</h1>
+            <p class="text-xl text-gray-300">We are TutorBhaiya, a team of passionate educators and technologists dedicated to making quality education accessible to everyone.</p>
+        </div>
+    </div>
+
+    <section class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
+                    <p class="text-gray-600 mb-4 leading-relaxed">
+                        To break down geographical and financial barriers to education by providing a world-class online learning platform tailored for the national and international curriculum.
+                    </p>
+                    <p class="text-gray-600 leading-relaxed">
+                        We believe that every student deserves access to the best teachers, interactive learning tools, and a supportive community, regardless of where they live.
+                    </p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <img src="assets/course1.jpg" class="rounded-2xl shadow-lg w-full h-48 object-cover" alt="Students">
+                    <img src="assets/student1.jpg" class="rounded-2xl shadow-lg w-full h-48 object-cover mt-8" alt="Learning">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses - TutorBhaiya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#090d16',
+                        light: '#F9FAFB',
+                        primary: '#8B5CF6',
+                        secondary: '#10B981',
+                        accent1: '#F59E0B',
+                        accent2: '#38BDF8'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="font-sans antialiased text-gray-800 bg-light selection:bg-primary selection:text-white">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/50 shadow-sm text-slate-700 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <a href="index.html" class="flex-shrink-0 flex items-center gap-2 cursor-pointer">
+                    <img src="assets/logo.png" alt="TutorBhaiya" class="h-10 w-auto object-contain" id="navbar-logo">
+                    <span class="font-bold text-xl text-slate-900 tracking-tight transition-colors duration-300" id="logo-text">TutorBhaiya</span>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-6 text-sm font-semibold">
+                    <a href="index.html" class="nav-link hover:text-primary transition-colors duration-300">Home</a>
+                    
+                    <!-- Dropdown: English Version -->
+                    <div class="relative group cursor-pointer py-6">
+                        <span class="nav-link flex items-center gap-1 hover:text-primary transition-colors duration-300">
+                            English Version <i class="ph ph-caret-down text-xs"></i>
+                        </span>
+                        <div class="absolute left-0 top-[75px] w-56 rounded-2xl bg-white text-slate-800 shadow-2xl border border-slate-100 py-3 hidden group-hover:block z-50 transform origin-top transition-all duration-200">
+                            <a href="courses.html?filter=class-5" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class 5</a>
+                            <a href="courses.html?filter=class-6" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class 6</a>
+                            <a href="courses.html?filter=class-7" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class 7</a>
+                            <a href="courses.html?filter=class-8" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class 8</a>
+                            <a href="courses.html?filter=class-9" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class 9</a>
+                            <a href="courses.html?filter=ssc-hsc" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">SSC Batch</a>
+                            <a href="courses.html?filter=ssc-hsc" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">HSC Batch</a>
+                        </div>
+                    </div>
+
+                    <a href="courses.html" class="nav-link text-primary border-b-2 border-primary py-7">Courses</a>
+                    
+                    <!-- Dropdown: English Medium -->
+                    <div class="relative group cursor-pointer py-6">
+                        <span class="nav-link flex items-center gap-1 hover:text-primary transition-colors duration-300">
+                            English Medium <i class="ph ph-caret-down text-xs"></i>
+                        </span>
+                        <div class="absolute left-0 top-[75px] w-56 rounded-2xl bg-white text-slate-800 shadow-2xl border border-slate-100 py-3 hidden group-hover:block z-50 transform origin-top transition-all duration-200">
+                            <a href="courses.html?filter=standard-5" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Standard 5</a>
+                            <a href="courses.html?filter=standard-6" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Standard 6</a>
+                            <a href="courses.html?filter=standard-7" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Standard 7</a>
+                            <a href="courses.html?filter=standard-8" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Standard 8</a>
+                            <a href="courses.html?filter=o-a-level" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">O Level</a>
+                            <a href="courses.html?filter=o-a-level" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">A Level</a>
+                        </div>
+                    </div>
+
+                    <!-- Dropdown: More -->
+                    <div class="relative group cursor-pointer py-6">
+                        <span class="nav-link flex items-center gap-1 hover:text-primary transition-colors duration-300">
+                            More <i class="ph ph-caret-down text-xs"></i>
+                        </span>
+                        <div class="absolute left-0 top-[75px] w-56 rounded-2xl bg-white text-slate-800 shadow-2xl border border-slate-100 py-3 hidden group-hover:block z-50 transform origin-top transition-all duration-200">
+                            <a href="books.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Books</a>
+                            <a href="spoken-english.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Spoken English</a>
+                            <a href="english-foundation.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">English Foundation</a>
+                            <a href="careers.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Career</a>
+                            <a href="join-teacher.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Join as Teacher</a>
+                            <a href="certificate.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Certificate</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <button class="flex items-center gap-2 text-sm font-semibold hover:text-primary transition-colors duration-300 nav-link" id="lang-btn">
+                        <i class="ph ph-globe text-lg"></i> বাংলা
+                    </button>
+                    <a href="dashboard.html" class="text-sm font-semibold hover:text-primary transition-colors duration-300 nav-link">Dashboard</a>
+                    <a href="login.html" class="bg-secondary hover:bg-emerald-600 text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg shadow-secondary/30 hover:shadow-secondary/50">
+                        Login
+                    </a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button class="text-slate-700 hover:text-slate-900" id="mobile-menu-btn">
+                        <i class="ph ph-list text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Container -->
+        <div class="hidden md:hidden bg-white border-b border-slate-200 px-4 py-4 space-y-4 shadow-xl" id="mobile-menu">
+            <a href="index.html" class="block text-slate-700 hover:text-primary py-1 font-semibold">Home</a>
+            <div class="py-1">
+                <span class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">English Version</span>
+                <div class="grid grid-cols-2 gap-2 pl-2">
+                    <a href="courses.html?filter=class-5" class="text-slate-600 hover:text-primary text-sm">Class 5</a>
+                    <a href="courses.html?filter=class-6" class="text-slate-600 hover:text-primary text-sm">Class 6</a>
+                    <a href="courses.html?filter=class-7" class="text-slate-600 hover:text-primary text-sm">Class 7</a>
+                    <a href="courses.html?filter=class-8" class="text-slate-600 hover:text-primary text-sm">Class 8</a>
+                    <a href="courses.html?filter=class-9" class="text-slate-600 hover:text-primary text-sm">Class 9</a>
+                    <a href="courses.html?filter=ssc-hsc" class="text-slate-600 hover:text-primary text-sm">SSC Batch</a>
+                    <a href="courses.html?filter=ssc-hsc" class="text-slate-600 hover:text-primary text-sm">HSC Batch</a>
+                </div>
+            </div>
+            <a href="courses.html" class="block text-slate-700 hover:text-primary py-1 font-semibold">Courses</a>
+            <div class="py-1">
+                <span class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">English Medium</span>
+                <div class="grid grid-cols-2 gap-2 pl-2">
+                    <a href="courses.html?filter=standard-5" class="text-slate-600 hover:text-primary text-sm">Standard 5</a>
+                    <a href="courses.html?filter=standard-6" class="text-slate-600 hover:text-primary text-sm">Standard 6</a>
+                    <a href="courses.html?filter=standard-7" class="text-slate-600 hover:text-primary text-sm">Standard 7</a>
+                    <a href="courses.html?filter=standard-8" class="text-slate-600 hover:text-primary text-sm">Standard 8</a>
+                    <a href="courses.html?filter=o-a-level" class="text-slate-600 hover:text-primary text-sm">O Level</a>
+                    <a href="courses.html?filter=o-a-level" class="text-slate-600 hover:text-primary text-sm">A Level</a>
+                </div>
+            </div>
+            <div class="py-1">
+                <span class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">More</span>
+                <div class="grid grid-cols-2 gap-2 pl-2">
+                    <a href="books.html" class="text-slate-600 hover:text-primary text-sm">Books</a>
+                    <a href="spoken-english.html" class="text-slate-600 hover:text-primary text-sm">Spoken English</a>
+                    <a href="english-foundation.html" class="text-slate-600 hover:text-primary text-sm">English Foundation</a>
+                    <a href="careers.html" class="text-slate-600 hover:text-primary text-sm">Career</a>
+                    <a href="join-teacher.html" class="text-slate-600 hover:text-primary text-sm">Join as Teacher</a>
+                    <a href="certificate.html" class="text-slate-600 hover:text-primary text-sm">Certificate</a>
+                </div>
+            </div>
+            <div class="pt-3 border-t border-slate-200 flex justify-between items-center">
+                <a href="dashboard.html" class="text-slate-600 hover:text-primary text-sm font-semibold">Dashboard</a>
+                <a href="login.html" class="bg-secondary hover:bg-emerald-600 text-white px-5 py-2 rounded-full text-xs font-bold text-center">Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="pt-32 pb-12 bg-dark relative overflow-hidden border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Explore All Courses</h1>
+            <p class="text-gray-400 max-w-2xl mx-auto">Find the right path for your career. We have top experts teaching the most in-demand skills.</p>
+        </div>
+    </div>
+
+    <!-- Courses Content -->
+    <section class="py-16 bg-slate-50 min-h-[60vh]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Filters -->
+            <div class="flex flex-wrap gap-4 mb-12 justify-center" id="filter-buttons">
+                <button class="px-6 py-2 rounded-full bg-primary text-white font-medium filter-btn transition-all duration-300" data-target="all">All Courses</button>
+                <button class="px-6 py-2 rounded-full bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium transition-colors filter-btn" data-target="ssc-hsc">SSC & HSC</button>
+                <button class="px-6 py-2 rounded-full bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium transition-colors filter-btn" data-target="o-a-level">O & A Level</button>
+                <button class="px-6 py-2 rounded-full bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium transition-colors filter-btn" data-target="skills">Skills & More</button>
+            </div>
+
+            <!-- Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="course-grid">
+                <!-- Card 1 -->
+                <div class="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group course-card" data-category="ssc-hsc">
+                    <div class="h-48 relative overflow-hidden">
+                        <img src="assets/course1.jpg" alt="Course" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-500">
+                        <div class="absolute top-4 left-4 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">SSC BATCH</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">Higher Math Masterclass</h3>
+                        <div class="flex items-center gap-3 text-gray-500 text-sm mb-6">
+                            <div class="flex items-center gap-1"><i class="ph ph-user"></i> Faria Rahman</div>
+                            <div class="flex items-center gap-1"><i class="ph ph-clock"></i> 40 Hrs</div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-gray-100 pt-4">
+                            <span class="text-lg font-bold text-gray-900">৳2000</span>
+                            <a href="login.html" class="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary transition-colors">Enroll Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group course-card" data-category="ssc-hsc">
+                    <div class="h-48 relative overflow-hidden">
+                        <img src="assets/course2.jpg" alt="Course" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-500">
+                        <div class="absolute top-4 left-4 bg-accent1 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">HSC BATCH</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">Physics 1st Paper</h3>
+                        <div class="flex items-center gap-3 text-gray-500 text-sm mb-6">
+                            <div class="flex items-center gap-1"><i class="ph ph-user"></i> Kamrul Hasan</div>
+                            <div class="flex items-center gap-1"><i class="ph ph-clock"></i> 35 Hrs</div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-gray-100 pt-4">
+                            <span class="text-lg font-bold text-gray-900">৳2500</span>
+                            <a href="login.html" class="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary transition-colors">Enroll Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group course-card" data-category="skills">
+                    <div class="h-48 relative overflow-hidden">
+                        <img src="assets/course3.jpg" alt="Course" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-500">
+                        <div class="absolute top-4 left-4 bg-accent2 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">SKILLS</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">Fullstack Web Development</h3>
+                        <div class="flex items-center gap-3 text-gray-500 text-sm mb-6">
+                            <div class="flex items-center gap-1"><i class="ph ph-user"></i> Anika Rahman</div>
+                            <div class="flex items-center gap-1"><i class="ph ph-clock"></i> 60 Hrs</div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-gray-100 pt-4">
+                            <span class="text-lg font-bold text-gray-900">৳5000</span>
+                            <a href="login.html" class="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary transition-colors">Enroll Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: O Level Chemistry -->
+                <div class="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group course-card" data-category="o-a-level">
+                    <div class="h-48 relative overflow-hidden">
+                        <img src="assets/course1.jpg" alt="Course" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-500 filter hue-rotate-60">
+                        <div class="absolute top-4 left-4 bg-violet-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">O LEVEL</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">Chemistry Intensive</h3>
+                        <div class="flex items-center gap-3 text-gray-500 text-sm mb-6">
+                            <div class="flex items-center gap-1"><i class="ph ph-user"></i> Dr. Zafar Iqbal</div>
+                            <div class="flex items-center gap-1"><i class="ph ph-clock"></i> 48 Hrs</div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-gray-100 pt-4">
+                            <span class="text-lg font-bold text-gray-900">৳4000</span>
+                            <a href="login.html" class="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary transition-colors">Enroll Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5: A Level Mathematics -->
+                <div class="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group course-card" data-category="o-a-level">
+                    <div class="h-48 relative overflow-hidden">
+                        <img src="assets/course2.jpg" alt="Course" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-500 filter hue-rotate-180">
+                        <div class="absolute top-4 left-4 bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">A LEVEL</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">Pure Mathematics (P1-P4)</h3>
+                        <div class="flex items-center gap-3 text-gray-500 text-sm mb-6">
+                            <div class="flex items-center gap-1"><i class="ph ph-user"></i> Tahmid Ahmed</div>
+                            <div class="flex items-center gap-1"><i class="ph ph-clock"></i> 72 Hrs</div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-gray-100 pt-4">
+                            <span class="text-lg font-bold text-gray-900">৳6000</span>
+                            <a href="login.html" class="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary transition-colors">Enroll Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6: Spoken English -->
+                <div class="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group course-card" data-category="skills">
+                    <div class="h-48 relative overflow-hidden">
+                        <img src="assets/student1.jpg" alt="Course" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity group-hover:scale-105 duration-500">
+                        <div class="absolute top-4 left-4 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">SPOKEN</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">Spoken English Pro</h3>
+                        <div class="flex items-center gap-3 text-gray-500 text-sm mb-6">
+                            <div class="flex items-center gap-1"><i class="ph ph-user"></i> Sabrina Khan</div>
+                            <div class="flex items-center gap-1"><i class="ph ph-clock"></i> 30 Hrs</div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-gray-100 pt-4">
+                            <span class="text-lg font-bold text-gray-900">৳1500</span>
+                            <a href="login.html" class="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary transition-colors">Enroll Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white border-t border-gray-800 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-400 text-sm">
+            <div class="flex justify-center items-center gap-2 mb-4">
+                <img src="assets/logo.png" alt="TutorBhaiya" class="h-8 w-auto">
+                <span class="font-bold text-lg text-white tracking-tight">TutorBhaiya</span>
+            </div>
+            <p class="mb-4">&copy; 2026 TutorBhaiya. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Filter JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile menu logic
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    mobileMenu.classList.toggle('hidden');
+                });
+                document.addEventListener('click', () => {
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+                mobileMenu.addEventListener('click', (e) => e.stopPropagation());
+            }
+
+            // Filtering logic
+            const buttons = document.querySelectorAll('.filter-btn');
+            const cards = document.querySelectorAll('.course-card');
+
+            function filterCourses(category) {
+                // Update active button state
+                buttons.forEach(btn => {
+                    if (btn.getAttribute('data-target') === category) {
+                        btn.classList.add('bg-primary', 'text-white');
+                        btn.classList.remove('bg-white', 'text-gray-600');
+                    } else {
+                        btn.classList.remove('bg-primary', 'text-white');
+                        btn.classList.add('bg-white', 'text-gray-600');
+                    }
+                });
+
+                // Show/hide cards
+                cards.forEach(card => {
+                    const cardCat = card.getAttribute('data-category');
+                    if (category === 'all' || cardCat === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const target = btn.getAttribute('data-target');
+                    // Update URL search param without reloading
+                    const url = new URL(window.location);
+                    url.searchParams.set('filter', target);
+                    window.history.pushState({}, '', url);
+                    filterCourses(target);
+                });
+            });
+
+            // Read query param on load
+            const urlParams = new URLSearchParams(window.location.search);
+            const filterParam = urlParams.get('filter') || 'all';
+            
+            // Map sub-filters to major filters
+            let activeFilter = 'all';
+            if (['class-5', 'class-6', 'class-7', 'class-8', 'class-9', 'ssc-hsc'].includes(filterParam)) {
+                activeFilter = 'ssc-hsc';
+            } else if (['standard-5', 'standard-6', 'standard-7', 'standard-8', 'o-a-level'].includes(filterParam)) {
+                activeFilter = 'o-a-level';
+            } else if (['skills', 'spoken-english', 'english-foundation', 'books'].includes(filterParam)) {
+                activeFilter = 'skills';
+            } else {
+                activeFilter = filterParam;
+            }
+            filterCourses(activeFilter);
+        });
+    </script>
+</body>
+</html>
