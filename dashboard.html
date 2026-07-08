@@ -52,9 +52,9 @@
             </a>
         </div>
         <div class="p-4 border-t border-gray-800">
-            <a href="index.html" class="flex items-center gap-3 px-4 py-3 hover:bg-red-500/10 rounded-xl text-gray-400 hover:text-red-400 transition-colors">
+            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-500/10 rounded-xl text-gray-400 hover:text-red-400 transition-colors text-left font-medium">
                 <i class="ph ph-sign-out text-xl"></i> Logout
-            </a>
+            </button>
         </div>
     </aside>
 
@@ -65,13 +65,13 @@
         <header class="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8 shrink-0">
             <div class="flex items-center gap-4">
                 <button class="md:hidden text-gray-500 hover:text-gray-900"><i class="ph ph-list text-2xl"></i></button>
-                <h2 class="text-xl font-bold text-gray-900">Welcome back, Student!</h2>
+                <h2 id="welcome-msg" class="text-xl font-bold text-gray-900">Welcome back, Student!</h2>
             </div>
             <div class="flex items-center gap-4">
                 <button class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200">
                     <i class="ph ph-bell text-xl"></i>
                 </button>
-                <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold cursor-pointer shadow-md">
+                <div id="avatar-placeholder" class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold cursor-pointer shadow-md">
                     S
                 </div>
             </div>
@@ -88,7 +88,7 @@
                     </div>
                     <div>
                         <p class="text-sm text-gray-500 font-medium">Active Courses</p>
-                        <h3 class="text-2xl font-bold text-gray-900">3</h3>
+                        <h3 id="stat-active" class="text-2xl font-bold text-gray-900">—</h3>
                     </div>
                 </div>
                 <!-- Stat Card 2 -->
@@ -97,8 +97,8 @@
                         <i class="ph-fill ph-check-circle"></i>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-500 font-medium">Completed Classes</p>
-                        <h3 class="text-2xl font-bold text-gray-900">24</h3>
+                        <p class="text-sm text-gray-500 font-medium">Completed Courses</p>
+                        <h3 id="stat-completed" class="text-2xl font-bold text-gray-900">—</h3>
                     </div>
                 </div>
                 <!-- Stat Card 3 -->
@@ -107,26 +107,18 @@
                         <i class="ph-fill ph-trophy"></i>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-500 font-medium">Average Score</p>
-                        <h3 class="text-2xl font-bold text-gray-900">88%</h3>
+                        <p class="text-sm text-gray-500 font-medium">Average Progress</p>
+                        <h3 id="stat-progress" class="text-2xl font-bold text-gray-900">—</h3>
                     </div>
                 </div>
             </div>
 
             <h3 class="text-lg font-bold text-gray-900 mb-4">Continue Learning</h3>
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col md:flex-row items-center gap-6">
-                <img src="assets/course1.jpg" class="w-full md:w-48 h-32 object-cover rounded-xl" alt="Course">
-                <div class="flex-1">
-                    <span class="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-md mb-2 inline-block">SSC BATCH</span>
-                    <h4 class="text-xl font-bold text-gray-900 mb-2">Higher Math Masterclass</h4>
-                    <div class="w-full bg-gray-100 rounded-full h-2.5 mb-2">
-                        <div class="bg-primary h-2.5 rounded-full" style="width: 45%"></div>
-                    </div>
-                    <p class="text-sm text-gray-500">45% Completed • Next: Chapter 4</p>
+            <div id="continue-learning-section">
+                <!-- Loaded dynamically -->
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center text-gray-500">
+                    Loading course data...
                 </div>
-                <button class="bg-gray-900 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary transition-colors whitespace-nowrap">
-                    Resume Class
-                </button>
             </div>
 
         </div>
@@ -134,5 +126,105 @@
     </main>
 
     <script src="script.js"></script>
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000/api';
+
+        async function loadDashboard() {
+            try {
+                const res = await fetch(`${API_BASE}/dashboard/`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'include'
+                });
+
+                if (res.status === 401) {
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const data = await res.json();
+                
+                // Update header details
+                document.getElementById('welcome-msg').textContent = `Welcome back, ${data.user.full_name}!`;
+                document.getElementById('avatar-placeholder').textContent = data.user.avatar_initial;
+                if (data.user.profile_picture) {
+                    document.getElementById('avatar-placeholder').innerHTML = `<img src="${data.user.profile_picture}" class="w-full h-full rounded-full object-cover">`;
+                }
+
+                // Update Stats
+                document.getElementById('stat-active').textContent = data.stats.active_courses;
+                document.getElementById('stat-completed').textContent = data.stats.completed_courses;
+                document.getElementById('stat-progress').textContent = `${data.stats.average_progress}%`;
+
+                // Update Continue Learning
+                const continueSection = document.getElementById('continue-learning-section');
+                if (data.continue_learning) {
+                    const c = data.continue_learning;
+                    const course = c.course;
+                    continueSection.innerHTML = `
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col md:flex-row items-center gap-6">
+                            <img src="${course.thumbnail_url || 'assets/course1.jpg'}" class="w-full md:w-48 h-32 object-cover rounded-xl" alt="${course.title}">
+                            <div class="flex-1 w-full">
+                                <span class="text-xs font-bold text-white ${course.badge_color || 'bg-primary'} px-2 py-1 rounded-md mb-2 inline-block">${course.badge_label || 'COURSE'}</span>
+                                <h4 class="text-xl font-bold text-gray-900 mb-2">${course.title}</h4>
+                                <div class="w-full bg-gray-100 rounded-full h-2.5 mb-2">
+                                    <div class="bg-primary h-2.5 rounded-full" style="width: ${c.progress}%"></div>
+                                </div>
+                                <p class="text-sm text-gray-500">${c.progress}% Completed • Next: Chapter/Lecture</p>
+                            </div>
+                            <button class="bg-gray-900 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary transition-colors whitespace-nowrap">
+                                Resume Class
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    continueSection.innerHTML = `
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center">
+                            <p class="text-gray-500 mb-4">You are not currently enrolled in any active courses.</p>
+                            <a href="courses.html" class="inline-block bg-primary hover:bg-violet-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
+                                Browse All Courses
+                            </a>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error(err);
+                const cachedUser = localStorage.getItem('user');
+                if (cachedUser) {
+                    const user = JSON.parse(cachedUser);
+                    document.getElementById('welcome-msg').textContent = `Welcome back, ${user.full_name}!`;
+                    document.getElementById('avatar-placeholder').textContent = user.avatar_initial || user.full_name[0];
+                } else {
+                    window.location.href = 'login.html';
+                }
+            }
+        }
+
+        // Handle Logout
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            try {
+                const csrfRes = await fetch(`${API_BASE}/csrf/`);
+                const { csrfToken } = await csrfRes.json();
+
+                await fetch(`${API_BASE}/auth/logout/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    },
+                    credentials: 'include'
+                });
+            } catch (err) {
+                console.error('Logout error:', err);
+            }
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
 </body>
 </html>

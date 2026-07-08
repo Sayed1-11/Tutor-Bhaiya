@@ -48,14 +48,16 @@
             <p class="text-gray-400 text-sm">Join over 50,000+ active learners today!</p>
         </div>
 
-        <form class="space-y-5" action="dashboard.html">
+        <div id="error-message" class="hidden mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-xl text-red-200 text-sm text-center"></div>
+
+        <form id="signup-form" class="space-y-5">
             <div>
                 <label class="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                         <i class="ph ph-user"></i>
                     </div>
-                    <input type="text" class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder-gray-500 outline-none transition-all" placeholder="John Doe" required>
+                    <input type="text" id="fullname" class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder-gray-500 outline-none transition-all" placeholder="John Doe" required>
                 </div>
             </div>
 
@@ -65,7 +67,7 @@
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                         <i class="ph ph-envelope"></i>
                     </div>
-                    <input type="email" class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder-gray-500 outline-none transition-all" placeholder="you@example.com" required>
+                    <input type="email" id="email" class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder-gray-500 outline-none transition-all" placeholder="you@example.com" required>
                 </div>
             </div>
 
@@ -75,7 +77,7 @@
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                         <i class="ph ph-lock"></i>
                     </div>
-                    <input type="password" class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder-gray-500 outline-none transition-all" placeholder="••••••••" required>
+                    <input type="password" id="password" class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder-gray-500 outline-none transition-all" placeholder="••••••••" required>
                 </div>
             </div>
 
@@ -97,5 +99,56 @@
     </div>
 
     <script src="script.js"></script>
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000/api';
+
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fullName = document.getElementById('fullname').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.classList.add('hidden');
+
+            try {
+                // Get CSRF Token
+                const csrfRes = await fetch(`${API_BASE}/csrf/`);
+                const { csrfToken } = await csrfRes.json();
+
+                // Register request
+                const res = await fetch(`${API_BASE}/auth/register/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({ full_name: fullName, email, password }),
+                    credentials: 'include'
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    window.location.href = 'dashboard.html';
+                } else {
+                    // Check for validation errors on password or email
+                    let errors = [];
+                    for (const field in data) {
+                        if (Array.isArray(data[field])) {
+                            errors.push(`${field}: ${data[field].join(' ')}`);
+                        } else {
+                            errors.push(data[field]);
+                        }
+                    }
+                    errorDiv.innerHTML = errors.join('<br>') || 'Registration failed. Please check inputs.';
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error(err);
+                errorDiv.textContent = 'Server connection error. Please try again.';
+                errorDiv.classList.remove('hidden');
+            }
+        });
+    </script>
 </body>
 </html>
