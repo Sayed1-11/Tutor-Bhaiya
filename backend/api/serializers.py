@@ -4,7 +4,10 @@ TutorBhaiya — DRF Serializers
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
-from .models import Category, Course, Enrollment, ContactMessage
+from .models import (
+    Category, Course, Enrollment, ContactMessage,
+    Module, Video, Resource, Assignment, StudentAssignment, Payment
+)
 
 User = get_user_model()
 
@@ -63,9 +66,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'full_name', 'email', 'phone',
             'profile_picture', 'bio', 'date_joined',
-            'avatar_initial',
+            'avatar_initial', 'role',
         )
-        read_only_fields = ('email', 'date_joined')
+        read_only_fields = ('email', 'date_joined', 'role')
 
     def get_full_name(self, obj):
         return obj.get_full_name() or obj.username
@@ -101,6 +104,7 @@ class CourseListSerializer(serializers.ModelSerializer):
     """Lightweight serializer for course listing cards."""
     category_name = serializers.CharField(source='category.name', read_only=True)
     category_slug = serializers.CharField(source='category.slug', read_only=True)
+    instructor_name = serializers.CharField(source='instructor.get_full_name', read_only=True)
     thumbnail_url = serializers.SerializerMethodField()
     enrollment_count = serializers.IntegerField(read_only=True)
 
@@ -109,7 +113,7 @@ class CourseListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = (
-            'id', 'title', 'slug', 'instructor', 'price',
+            'id', 'title', 'slug', 'instructor_name', 'price', 'discount_percentage',
             'duration_hours', 'thumbnail_url', 'badge_label', 'badge_color',
             'category_name', 'category_slug', 'is_featured', 'enrollment_count',
             'is_enrolled',
@@ -166,3 +170,54 @@ class ContactMessageSerializer(serializers.ModelSerializer):
         model = ContactMessage
         fields = ('id', 'name', 'email', 'phone', 'subject', 'message', 'submitted_at')
         read_only_fields = ('submitted_at',)
+
+
+# ─── Course Contents ─────────────────────────────────────────────────────────
+
+class VideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Video
+        fields = '__all__'
+
+
+class ResourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Resource
+        fields = '__all__'
+
+
+class ModuleSerializer(serializers.ModelSerializer):
+    videos = VideoSerializer(many=True, read_only=True)
+    resources = ResourceSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Module
+        fields = '__all__'
+
+
+class AssignmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Assignment
+        fields = '__all__'
+
+
+class StudentAssignmentSerializer(serializers.ModelSerializer):
+    assignment_title = serializers.CharField(source='assignment.title', read_only=True)
+    student_name = serializers.CharField(source='student.get_full_name', read_only=True)
+
+    class Meta:
+        model = StudentAssignment
+        fields = '__all__'
+        read_only_fields = ('submitted_at', 'marks_obtained', 'feedback')
+
+
+# ─── Accounting ──────────────────────────────────────────────────────────────
+
+class PaymentSerializer(serializers.ModelSerializer):
+    course_title = serializers.CharField(source='course.title', read_only=True)
+    user_name = serializers.CharField(source='user.get_full_name', read_only=True)
+
+    class Meta:
+        model = Payment
+        fields = '__all__'
+        read_only_fields = ('created_at', 'status')

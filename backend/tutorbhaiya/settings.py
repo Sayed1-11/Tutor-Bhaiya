@@ -10,7 +10,7 @@ SECRET_KEY = 'django-insecure-tutor-bhaiya-secret-key-change-in-production-2026'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0','https://tutor-bhaiya.onrender.com']
 
 # Application definition
 INSTALLED_APPS = [
@@ -116,6 +116,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5500',
     'http://127.0.0.1:5501',
     'http://localhost:5501',
+    'https://tutor-bhaiya.onrender.com',
 ]
 
 SESSION_COOKIE_SAMESITE = 'Lax'

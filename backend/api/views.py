@@ -12,7 +12,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 
-from .models import Category, Course, Enrollment, ContactMessage
+from .models import (
+    Category, Course, Enrollment, ContactMessage,
+    Module, Video, Resource, Assignment, StudentAssignment, Payment
+)
+from .permissions import IsAdmin, IsTeacher, IsStudent
 from .serializers import (
     UserRegistrationSerializer,
     UserProfileSerializer,
@@ -22,6 +26,12 @@ from .serializers import (
     CourseDetailSerializer,
     EnrollmentSerializer,
     ContactMessageSerializer,
+    ModuleSerializer,
+    VideoSerializer,
+    ResourceSerializer,
+    AssignmentSerializer,
+    StudentAssignmentSerializer,
+    PaymentSerializer,
 )
 
 User = get_user_model()
@@ -37,10 +47,14 @@ def get_csrf_token(request):
     return Response({'csrfToken': token})
 
 
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
+
 # ─── Auth ─────────────────────────────────────────────────────────────────────
 
+@method_decorator(csrf_exempt, name='dispatch')
 class RegisterView(APIView):
     """POST /api/auth/register/ — Create a new user account."""
+    authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
@@ -57,8 +71,10 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class LoginView(APIView):
     """POST /api/auth/login/ — Log in with email + password."""
+    authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
@@ -271,8 +287,10 @@ class DashboardView(APIView):
 
 # ─── Contact ──────────────────────────────────────────────────────────────────
 
+@method_decorator(csrf_exempt, name='dispatch')
 class ContactView(APIView):
     """POST /api/contact/ — Submit a contact form message."""
+    authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
@@ -284,3 +302,57 @@ class ContactView(APIView):
                 status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# ─── Teacher Dashboard & Endpoints ──────────────────────────────────────────
+
+class TeacherCourseListView(generics.ListAPIView):
+    """GET /api/teacher/courses/ — List courses taught by the teacher."""
+    serializer_class = CourseListSerializer
+    permission_classes = [permissions.IsAuthenticated, IsTeacher]
+
+    def get_queryset(self):
+        return Course.objects.filter(instructor=self.request.user)
+
+
+class TeacherStudentListView(APIView):
+    """GET /api/teacher/students/ — View students enrolled in teacher's courses."""
+    permission_classes = [permissions.IsAuthenticated, IsTeacher]
+
+    def get(self, request):
+        courses = Course.objects.filter(instructor=request.user)
+        enrollments = Enrollment.objects.filter(course__in=courses).select_related('user', 'course')
+        
+        data = []
+        for e in enrollments:
+            data.append({
+                'enrollment_id': e.id,
+                'student_name': e.user.get_full_name(),
+                'student_email': e.user.email,
+                'course_title': e.course.title,
+                'progress': e.progress,
+                'enrolled_at': e.enrolled_at,
+            })
+        return Response(data)
+
+
+# ─── Admin Endpoints ─────────────────────────────────────────────────────────
+
+class AdminDashboardView(APIView):
+    """GET /api/admin/dashboard/ — Financial & generic overview."""
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        total_courses = Course.objects.count()
+        total_students = User.objects.filter(role='student').count()
+        total_teachers = User.objects.filter(role='teacher').count()
+        
+        from django.db.models import Sum
+        total_revenue = Payment.objects.aggregate(Sum('amount'))['amount__sum'] or 0
+
+        return Response({
+            'total_courses': total_courses,
+            'total_students': total_students,
+            'total_teachers': total_teachers,
+            'total_revenue': total_revenue,
+        })

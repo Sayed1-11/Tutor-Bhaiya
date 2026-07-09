@@ -27,7 +27,11 @@ urlpatterns = [
 
     # ── Dashboard ─────────────────────────────────────────────────────────────
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
+    path('teacher/courses/', views.TeacherCourseListView.as_view(), name='teacher-courses'),
+    path('teacher/students/', views.TeacherStudentListView.as_view(), name='teacher-students'),
+    path('admin/dashboard/', views.AdminDashboardView.as_view(), name='admin-dashboard'),
 
     # ── Contact ───────────────────────────────────────────────────────────────
     path('contact/', views.ContactView.as_view(), name='contact'),
 ]
+
