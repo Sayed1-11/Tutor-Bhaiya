@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - TutorBhaiya</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -24,6 +26,7 @@
         }
     </script>
 </head>
+
 <body class="font-sans antialiased text-gray-800 bg-gray-50 flex h-screen overflow-hidden">
 
     <!-- Sidebar -->
@@ -38,21 +41,26 @@
             <a href="#" class="flex items-center gap-3 px-4 py-3 bg-white/10 rounded-xl text-primary font-medium">
                 <i class="ph ph-squares-four text-xl"></i> Dashboard
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors">
+            <a href="#"
+                class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors">
                 <i class="ph ph-play-circle text-xl"></i> My Courses
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors">
+            <a href="#"
+                class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors">
                 <i class="ph ph-exam text-xl"></i> Exams & Quizzes
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors">
+            <a href="#"
+                class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors">
                 <i class="ph ph-certificate text-xl"></i> Certificates
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors">
+            <a href="#"
+                class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors">
                 <i class="ph ph-gear text-xl"></i> Settings
             </a>
         </div>
         <div class="p-4 border-t border-gray-800">
-            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-500/10 rounded-xl text-gray-400 hover:text-red-400 transition-colors text-left font-medium">
+            <button id="logout-btn"
+                class="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-500/10 rounded-xl text-gray-400 hover:text-red-400 transition-colors text-left font-medium">
                 <i class="ph ph-sign-out text-xl"></i> Logout
             </button>
         </div>
@@ -60,7 +68,7 @@
 
     <!-- Main Content -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden">
-        
+
         <!-- Top Header -->
         <header class="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8 shrink-0">
             <div class="flex items-center gap-4">
@@ -68,10 +76,12 @@
                 <h2 id="welcome-msg" class="text-xl font-bold text-gray-900">Welcome back, Student!</h2>
             </div>
             <div class="flex items-center gap-4">
-                <button class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200">
+                <button
+                    class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200">
                     <i class="ph ph-bell text-xl"></i>
                 </button>
-                <div id="avatar-placeholder" class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold cursor-pointer shadow-md">
+                <div id="avatar-placeholder"
+                    class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold cursor-pointer shadow-md">
                     S
                 </div>
             </div>
@@ -79,11 +89,12 @@
 
         <!-- Dashboard Content -->
         <div class="flex-1 overflow-y-auto p-8">
-            
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <!-- Stat Card 1 -->
                 <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                    <div class="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 text-2xl">
+                    <div
+                        class="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 text-2xl">
                         <i class="ph-fill ph-book-open"></i>
                     </div>
                     <div>
@@ -93,7 +104,8 @@
                 </div>
                 <!-- Stat Card 2 -->
                 <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                    <div class="w-14 h-14 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500 text-2xl">
+                    <div
+                        class="w-14 h-14 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500 text-2xl">
                         <i class="ph-fill ph-check-circle"></i>
                     </div>
                     <div>
@@ -103,7 +115,8 @@
                 </div>
                 <!-- Stat Card 3 -->
                 <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                    <div class="w-14 h-14 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500 text-2xl">
+                    <div
+                        class="w-14 h-14 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500 text-2xl">
                         <i class="ph-fill ph-trophy"></i>
                     </div>
                     <div>
@@ -127,7 +140,7 @@
 
     <script src="script.js"></script>
     <script>
-        const API_BASE = 'http://127.0.0.1:8000/api';
+        const API_BASE = 'https://tutor-bhaiya.onrender.com/api';
 
         async function loadDashboard() {
             try {
@@ -146,7 +159,7 @@
                 }
 
                 const data = await res.json();
-                
+
                 // Update header details
                 document.getElementById('welcome-msg').textContent = `Welcome back, ${data.user.full_name}!`;
                 document.getElementById('avatar-placeholder').textContent = data.user.avatar_initial;
@@ -227,4 +240,5 @@
         document.addEventListener('DOMContentLoaded', loadDashboard);
     </script>
 </body>
+
 </html>

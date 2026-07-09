@@ -55,7 +55,9 @@
             <p class="text-gray-400 text-sm">Please sign in to continue your learning journey.</p>
         </div>
 
-        <div id="error-message" class="hidden mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-xl text-red-200 text-sm text-center"></div>
+        <div id="error-message"
+            class="hidden mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-xl text-red-200 text-sm text-center">
+        </div>
 
         <form id="login-form" class="space-y-6">
             <div>
@@ -99,7 +101,7 @@
     </div>
 
     <script>
-        const API_BASE = 'http://127.0.0.1:8000/api';
+        const API_BASE = 'https://tutor-bhaiya.onrender.com/api';
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
