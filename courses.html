@@ -809,12 +809,16 @@
                     const csrfRes = await fetch(`${API_BASE}/csrf/`, { credentials: 'include' });
                     const { csrfToken } = await csrfRes.json();
 
+                    const token = localStorage.getItem('token');
+                    const headers = {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    };
+                    if (token) headers['Authorization'] = `Token ${token}`;
+
                     const res = await fetch(`${API_BASE}/enrollments/`, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': csrfToken
-                        },
+                        headers: headers,
                         body: JSON.stringify({ course_id: currentEnrollCourseId }),
                         credentials: 'include'
                     });

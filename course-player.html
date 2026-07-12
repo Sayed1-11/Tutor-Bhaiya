@@ -216,7 +216,14 @@
             }
 
             try {
-                const res = await fetch(`${API_BASE}/courses/${currentCourseId}/player/`, { credentials: 'include' });
+                const token = localStorage.getItem('token');
+                const headers = {};
+                if (token) headers['Authorization'] = `Token ${token}`;
+
+                const res = await fetch(`${API_BASE}/courses/${currentCourseId}/player/`, { 
+                    headers: headers,
+                    credentials: 'include' 
+                });
                 if (res.status === 401 || res.status === 403) {
                     document.getElementById('modules-list').innerHTML = '<div class="p-5 text-red-400 text-sm">Not enrolled or not logged in.</div>';
                     return;
@@ -372,9 +379,13 @@
             document.getElementById('mark-btn-text').textContent = 'Saving...';
 
             try {
+                const token = localStorage.getItem('token');
+                const headers = { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' };
+                if (token) headers['Authorization'] = `Token ${token}`;
+
                 const res = await fetch(`${API_BASE}/enrollments/complete-video/`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
+                    headers: headers,
                     credentials: 'include',
                     body: JSON.stringify({ course_id: parseInt(currentCourseId), video_id: currentVideoId })
                 });
@@ -425,7 +436,14 @@
             document.getElementById('assignment-modal').classList.add('open');
 
             try {
-                const res = await fetch(`${API_BASE}/assignments/${id}/submit/`, { credentials: 'include' });
+                const token = localStorage.getItem('token');
+                const headers = {};
+                if (token) headers['Authorization'] = `Token ${token}`;
+
+                const res = await fetch(`${API_BASE}/assignments/${id}/submit/`, { 
+                    headers: headers,
+                    credentials: 'include' 
+                });
                 const data = await res.json();
 
                 // Fill in assignment info from video map or cache
@@ -508,9 +526,13 @@
                     formData.append('submission_file', file);
                 }
 
+                const token = localStorage.getItem('token');
+                const headers = { 'X-CSRFToken': getCookie('csrftoken') || '' };
+                if (token) headers['Authorization'] = `Token ${token}`;
+
                 const res = await fetch(`${API_BASE}/assignments/${currentAssignmentId}/submit/`, {
                     method: 'POST',
-                    headers: { 'X-CSRFToken': getCookie('csrftoken') || '' },
+                    headers: headers,
                     credentials: 'include',
                     body: formData
                 });

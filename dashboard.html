@@ -183,11 +183,13 @@
 
         async function loadDashboard() {
             try {
+                const token = localStorage.getItem('token');
+                const headers = { 'Accept': 'application/json' };
+                if (token) headers['Authorization'] = `Token ${token}`;
+
                 const res = await fetch(`${API_BASE}/dashboard/`, {
                     method: 'GET',
-                    headers: {
-                        'Accept': 'application/json'
-                    },
+                    headers: headers,
                     credentials: 'include'
                 });
 
@@ -261,11 +263,13 @@
                 const csrfRes = await fetch(`${API_BASE}/csrf/`);
                 const { csrfToken } = await csrfRes.json();
 
+                const token = localStorage.getItem('token');
+                const headers = { 'X-CSRFToken': csrfToken };
+                if (token) headers['Authorization'] = `Token ${token}`;
+
                 await fetch(`${API_BASE}/auth/logout/`, {
                     method: 'POST',
-                    headers: {
-                        'X-CSRFToken': csrfToken
-                    },
+                    headers: headers,
                     credentials: 'include'
                 });
             } catch (err) {
@@ -306,9 +310,13 @@
 
         async function loadMyCourses() {
             try {
+                const token = localStorage.getItem('token');
+                const headers = { 'Accept': 'application/json' };
+                if (token) headers['Authorization'] = `Token ${token}`;
+
                 const res = await fetch(`${API_BASE}/enrollments/`, {
                     method: 'GET',
-                    headers: { 'Accept': 'application/json' },
+                    headers: headers,
                     credentials: 'include'
                 });
                 const data = await res.json();

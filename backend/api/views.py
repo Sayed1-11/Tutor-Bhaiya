@@ -11,6 +11,7 @@ from rest_framework import status, generics, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.authtoken.models import Token
 
 from .models import (
     Category, Course, Enrollment, ContactMessage,
@@ -64,10 +65,12 @@ class RegisterView(APIView):
             user = serializer.save()
             # Auto-login after registration
             login(request, user)
+            token, _ = Token.objects.get_or_create(user=user)
             profile = UserProfileSerializer(user, context={'request': request})
             return Response({
                 'message': 'Account created successfully!',
                 'user': profile.data,
+                'token': token.key,
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -107,10 +110,12 @@ class LoginView(APIView):
             )
 
         login(request, user)
+        token, _ = Token.objects.get_or_create(user=user)
         profile = UserProfileSerializer(user, context={'request': request})
         return Response({
-            'message': 'Logged in successfully!',
+            'message': 'Login successful',
             'user': profile.data,
+            'token': token.key,
         })
 
 
