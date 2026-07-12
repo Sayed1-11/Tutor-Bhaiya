@@ -38,23 +38,29 @@
             </a>
         </div>
         <div class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
-            <a href="#" class="sidebar-link active flex items-center gap-3 px-4 py-3 bg-white/10 rounded-xl text-primary font-medium" data-target="dashboard">
+            <a href="#"
+                class="sidebar-link active flex items-center gap-3 px-4 py-3 bg-white/10 rounded-xl text-primary font-medium"
+                data-target="dashboard">
                 <i class="ph ph-squares-four text-xl"></i> Dashboard
             </a>
             <a href="#"
-                class="sidebar-link flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors" data-target="my-courses">
+                class="sidebar-link flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors"
+                data-target="my-courses">
                 <i class="ph ph-play-circle text-xl"></i> My Courses
             </a>
             <a href="#"
-                class="sidebar-link flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors" data-target="exams">
+                class="sidebar-link flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors"
+                data-target="exams">
                 <i class="ph ph-exam text-xl"></i> Exams & Quizzes
             </a>
             <a href="#"
-                class="sidebar-link flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors" data-target="certificates">
+                class="sidebar-link flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors"
+                data-target="certificates">
                 <i class="ph ph-certificate text-xl"></i> Certificates
             </a>
             <a href="#"
-                class="sidebar-link flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors" data-target="settings">
+                class="sidebar-link flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors"
+                data-target="settings">
                 <i class="ph ph-gear text-xl"></i> Settings
             </a>
         </div>
@@ -89,7 +95,7 @@
 
         <!-- Dashboard Content -->
         <div class="flex-1 overflow-y-auto p-8" id="main-content-area">
-            
+
             <div id="section-dashboard" class="content-section">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <!-- Stat Card 1 -->
@@ -139,7 +145,8 @@
             <div id="section-my-courses" class="content-section hidden">
                 <h3 class="text-2xl font-bold text-gray-900 mb-6">My Courses</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="my-courses-list">
-                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500 col-span-full">
+                    <div
+                        class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500 col-span-full">
                         Loading your courses...
                     </div>
                 </div>
@@ -172,7 +179,7 @@
 
     <script src="script.js"></script>
     <script>
-        const API_BASE = 'http://127.0.0.1:8000/api';
+        const API_BASE = 'https://tutor-bhaiya.onrender.com/api';
 
         async function loadDashboard() {
             try {
@@ -291,7 +298,7 @@
                 const target = link.getAttribute('data-target');
                 document.getElementById(`section-${target}`).classList.remove('hidden');
 
-                if(target === 'my-courses') {
+                if (target === 'my-courses') {
                     loadMyCourses();
                 }
             });
@@ -306,8 +313,8 @@
                 });
                 const data = await res.json();
                 const container = document.getElementById('my-courses-list');
-                
-                if(!data || data.length === 0) {
+
+                if (!data || data.length === 0) {
                     container.innerHTML = `
                         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500 col-span-full">
                             You haven't purchased any courses yet.

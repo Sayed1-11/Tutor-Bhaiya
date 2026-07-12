@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Player - TutorBhaiya</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -13,234 +15,263 @@
         }
     </script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        video { width: 100%; height: 100%; background: #000; }
-        .lesson-btn.active { border-left-color: #8B5CF6 !important; background: #f5f3ff; }
-        .lesson-btn.active .lesson-label { color: #5b21b6; font-weight: 600; }
-        #assignment-modal { display: none; }
-        #assignment-modal.open { display: flex; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+
+        .lesson-btn.active {
+            border-left-color: #8B5CF6 !important;
+            background: #f5f3ff;
+        }
+
+        .lesson-btn.active .lesson-label {
+            color: #5b21b6;
+            font-weight: 600;
+        }
+
+        #assignment-modal {
+            display: none;
+        }
+
+        #assignment-modal.open {
+            display: flex;
+        }
     </style>
 </head>
+
 <body class="antialiased text-gray-800 bg-gray-50 flex h-screen overflow-hidden">
 
-<!-- ─── Sidebar ─────────────────────────────────────────────────────────────── -->
-<aside class="w-80 bg-white border-r border-gray-200 flex flex-col shrink-0 h-screen overflow-hidden">
-    <div class="h-14 flex items-center px-5 border-b border-gray-200 shrink-0">
-        <a href="dashboard.html" class="text-gray-500 hover:text-gray-900 flex items-center gap-2 text-sm font-semibold">
-            <i class="ph ph-arrow-left text-lg"></i> Back
-        </a>
-    </div>
-    <div class="px-5 py-4 border-b border-gray-200 shrink-0">
-        <h2 id="course-title" class="font-bold text-sm text-gray-900 leading-snug">Loading...</h2>
-        <div class="mt-2 flex items-center gap-2">
-            <div class="flex-1 bg-gray-100 rounded-full h-1.5">
-                <div class="bg-primary h-1.5 rounded-full transition-all duration-500" id="course-progress-bar" style="width:0%"></div>
-            </div>
-            <span class="text-xs font-bold text-gray-500 w-7 text-right" id="course-progress-text">0%</span>
+    <!-- ─── Sidebar ─────────────────────────────────────────────────────────────── -->
+    <aside class="w-80 bg-white border-r border-gray-200 flex flex-col shrink-0 h-screen overflow-hidden">
+        <div class="h-14 flex items-center px-5 border-b border-gray-200 shrink-0">
+            <a href="dashboard.html"
+                class="text-gray-500 hover:text-gray-900 flex items-center gap-2 text-sm font-semibold">
+                <i class="ph ph-arrow-left text-lg"></i> Back
+            </a>
         </div>
-    </div>
-    <div class="flex-1 overflow-y-auto" id="modules-list">
-        <div class="p-5 text-center text-gray-400 text-sm">Loading content...</div>
-    </div>
-</aside>
-
-<!-- ─── Main ───────────────────────────────────────────────────────────────── -->
-<main class="flex-1 flex flex-col h-screen overflow-hidden bg-[#0f0f0f] text-white">
-    <div class="flex-1 overflow-y-auto">
-        <div class="max-w-5xl mx-auto p-4 md:p-6 flex flex-col gap-5">
-
-            <!-- Video Player -->
-            <div class="aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center" id="video-container">
-                <div class="text-center p-8">
-                    <i class="ph ph-play-circle text-7xl text-primary opacity-50 mb-4"></i>
-                    <p class="text-gray-400">Select a lesson from the left to begin</p>
+        <div class="px-5 py-4 border-b border-gray-200 shrink-0">
+            <h2 id="course-title" class="font-bold text-sm text-gray-900 leading-snug">Loading...</h2>
+            <div class="mt-2 flex items-center gap-2">
+                <div class="flex-1 bg-gray-100 rounded-full h-1.5">
+                    <div class="bg-primary h-1.5 rounded-full transition-all duration-500" id="course-progress-bar"
+                        style="width:0%"></div>
                 </div>
+                <span class="text-xs font-bold text-gray-500 w-7 text-right" id="course-progress-text">0%</span>
             </div>
+        </div>
+        <div class="flex-1 overflow-y-auto" id="modules-list">
+            <div class="p-5 text-center text-gray-400 text-sm">Loading content...</div>
+        </div>
+    </aside>
 
-            <!-- Lesson Info + Mark Complete -->
-            <div class="bg-gray-900 rounded-2xl p-5 border border-gray-800">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <h2 class="text-lg font-bold mb-0.5" id="detail-title">Lesson Details</h2>
-                        <p class="text-gray-400 text-sm" id="detail-desc">Click a lesson on the left to load it.</p>
+    <!-- ─── Main ───────────────────────────────────────────────────────────────── -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden bg-[#0f0f0f] text-white">
+        <div class="flex-1 overflow-y-auto">
+            <div class="max-w-5xl mx-auto p-4 md:p-6 flex flex-col gap-5">
+
+                <!-- Video Player -->
+                <div class="aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center"
+                    id="video-container">
+                    <div class="text-center p-8">
+                        <i class="ph ph-play-circle text-7xl text-primary opacity-50 mb-4"></i>
+                        <p class="text-gray-400">Select a lesson from the left to begin</p>
                     </div>
-                    <button id="mark-complete-btn" onclick="markCurrentVideoComplete()" disabled
-                        class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-gray-700 text-gray-400 cursor-not-allowed shrink-0 transition-all">
-                        <i class="ph ph-check-circle text-lg"></i>
-                        <span id="mark-btn-text">Select a video first</span>
+                </div>
+
+                <!-- Lesson Info + Mark Complete -->
+                <div class="bg-gray-900 rounded-2xl p-5 border border-gray-800">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-lg font-bold mb-0.5" id="detail-title">Lesson Details</h2>
+                            <p class="text-gray-400 text-sm" id="detail-desc">Click a lesson on the left to load it.</p>
+                        </div>
+                        <button id="mark-complete-btn" onclick="markCurrentVideoComplete()" disabled
+                            class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-gray-700 text-gray-400 cursor-not-allowed shrink-0 transition-all">
+                            <i class="ph ph-check-circle text-lg"></i>
+                            <span id="mark-btn-text">Select a video first</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- ─── Assignment Modal ───────────────────────────────────────────────────── -->
+    <div id="assignment-modal" class="fixed inset-0 z-50 bg-black/70 items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-orange-500 to-amber-500 p-5">
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <p class="text-orange-100 text-xs font-semibold uppercase tracking-wider mb-1">Assignment</p>
+                        <h3 class="text-white font-bold text-lg leading-snug" id="modal-title">Assignment Title</h3>
+                    </div>
+                    <button onclick="closeAssignmentModal()" class="text-white/70 hover:text-white shrink-0 mt-0.5">
+                        <i class="ph ph-x text-xl"></i>
                     </button>
                 </div>
             </div>
-
-        </div>
-    </div>
-</main>
-
-<!-- ─── Assignment Modal ───────────────────────────────────────────────────── -->
-<div id="assignment-modal" class="fixed inset-0 z-50 bg-black/70 items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-orange-500 to-amber-500 p-5">
-            <div class="flex items-start justify-between gap-3">
-                <div>
-                    <p class="text-orange-100 text-xs font-semibold uppercase tracking-wider mb-1">Assignment</p>
-                    <h3 class="text-white font-bold text-lg leading-snug" id="modal-title">Assignment Title</h3>
+            <!-- Body -->
+            <div class="p-5">
+                <p class="text-gray-600 text-sm mb-3" id="modal-desc"></p>
+                <div class="flex items-center gap-4 text-xs text-gray-500 mb-4">
+                    <span><i class="ph ph-star text-amber-500 mr-1"></i><span id="modal-marks"></span> marks</span>
+                    <span><i class="ph ph-calendar text-blue-500 mr-1"></i>Due: <span id="modal-due"></span></span>
                 </div>
-                <button onclick="closeAssignmentModal()" class="text-white/70 hover:text-white shrink-0 mt-0.5">
-                    <i class="ph ph-x text-xl"></i>
+
+                <!-- Already submitted state -->
+                <div id="already-submitted" class="hidden">
+                    <div class="bg-green-50 border border-green-200 rounded-xl p-4 mb-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="ph-fill ph-check-circle text-secondary text-xl"></i>
+                            <span class="font-semibold text-green-800 text-sm">Already Submitted</span>
+                        </div>
+                        <p class="text-green-700 text-xs" id="submitted-at-label"></p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="text-xs font-semibold text-gray-500 mb-1">Your Answer:</p>
+                        <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm text-gray-700 whitespace-pre-wrap"
+                            id="previous-submission"></div>
+                        <div id="previous-submission-file" class="hidden mt-2">
+                            <a href="#" target="_blank"
+                                class="text-sm font-semibold text-primary hover:underline flex items-center gap-1">
+                                <i class="ph ph-file-text text-lg"></i> View Attached File
+                            </a>
+                        </div>
+                    </div>
+                    <div id="feedback-block" class="hidden mb-3">
+                        <p class="text-xs font-semibold text-gray-500 mb-1">Teacher Feedback:</p>
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-sm text-blue-700"
+                            id="feedback-text"></div>
+                        <p class="text-xs text-gray-400 mt-1">Marks: <strong id="marks-obtained"></strong></p>
+                    </div>
+                    <button onclick="allowResubmit()" class="text-sm text-primary font-semibold hover:underline">
+                        Edit & Resubmit
+                    </button>
+                </div>
+
+                <!-- Submission form -->
+                <div id="submission-form">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Your Answer (Text)</label>
+                    <textarea id="submission-text" rows="4" placeholder="Write your answer here..."
+                        class="w-full border border-gray-200 rounded-xl p-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary resize-none mb-3"></textarea>
+
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Attach File (Optional)</label>
+                    <input type="file" id="submission-file"
+                        class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-primary hover:file:bg-violet-100 mb-2 cursor-pointer" />
+
+                    <p id="submit-error" class="text-red-500 text-xs mt-1 hidden"></p>
+                </div>
+            </div>
+            <!-- Footer -->
+            <div id="modal-footer" class="px-5 pb-5 flex gap-3">
+                <button onclick="closeAssignmentModal()"
+                    class="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
+                    Cancel
+                </button>
+                <button id="submit-btn" onclick="submitAssignment()"
+                    class="flex-1 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold transition-colors flex items-center justify-center gap-2">
+                    <i class="ph ph-paper-plane-tilt"></i> Submit Assignment
                 </button>
             </div>
         </div>
-        <!-- Body -->
-        <div class="p-5">
-            <p class="text-gray-600 text-sm mb-3" id="modal-desc"></p>
-            <div class="flex items-center gap-4 text-xs text-gray-500 mb-4">
-                <span><i class="ph ph-star text-amber-500 mr-1"></i><span id="modal-marks"></span> marks</span>
-                <span><i class="ph ph-calendar text-blue-500 mr-1"></i>Due: <span id="modal-due"></span></span>
-            </div>
-
-            <!-- Already submitted state -->
-            <div id="already-submitted" class="hidden">
-                <div class="bg-green-50 border border-green-200 rounded-xl p-4 mb-4">
-                    <div class="flex items-center gap-2 mb-2">
-                        <i class="ph-fill ph-check-circle text-secondary text-xl"></i>
-                        <span class="font-semibold text-green-800 text-sm">Already Submitted</span>
-                    </div>
-                    <p class="text-green-700 text-xs" id="submitted-at-label"></p>
-                </div>
-                <div class="mb-3">
-                    <p class="text-xs font-semibold text-gray-500 mb-1">Your Answer:</p>
-                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm text-gray-700 whitespace-pre-wrap" id="previous-submission"></div>
-                    <div id="previous-submission-file" class="hidden mt-2">
-                        <a href="#" target="_blank" class="text-sm font-semibold text-primary hover:underline flex items-center gap-1">
-                            <i class="ph ph-file-text text-lg"></i> View Attached File
-                        </a>
-                    </div>
-                </div>
-                <div id="feedback-block" class="hidden mb-3">
-                    <p class="text-xs font-semibold text-gray-500 mb-1">Teacher Feedback:</p>
-                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-sm text-blue-700" id="feedback-text"></div>
-                    <p class="text-xs text-gray-400 mt-1">Marks: <strong id="marks-obtained"></strong></p>
-                </div>
-                <button onclick="allowResubmit()" class="text-sm text-primary font-semibold hover:underline">
-                    Edit & Resubmit
-                </button>
-            </div>
-
-            <!-- Submission form -->
-            <div id="submission-form">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Your Answer (Text)</label>
-                <textarea id="submission-text" rows="4" placeholder="Write your answer here..."
-                    class="w-full border border-gray-200 rounded-xl p-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary resize-none mb-3"></textarea>
-                
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Attach File (Optional)</label>
-                <input type="file" id="submission-file" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-primary hover:file:bg-violet-100 mb-2 cursor-pointer" />
-                
-                <p id="submit-error" class="text-red-500 text-xs mt-1 hidden"></p>
-            </div>
-        </div>
-        <!-- Footer -->
-        <div id="modal-footer" class="px-5 pb-5 flex gap-3">
-            <button onclick="closeAssignmentModal()"
-                class="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
-                Cancel
-            </button>
-            <button id="submit-btn" onclick="submitAssignment()"
-                class="flex-1 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold transition-colors flex items-center justify-center gap-2">
-                <i class="ph ph-paper-plane-tilt"></i> Submit Assignment
-            </button>
-        </div>
     </div>
-</div>
 
-<script>
-    const API_BASE = 'http://127.0.0.1:8000/api';
-    let currentCourseId = null;
-    let currentVideoId = null;
-    let completedVideoIds = [];
-    let currentAssignmentId = null;
-    const videoMap = {};
+    <script>
+        const API_BASE = 'https://tutor-bhaiya.onrender.com/api';
+        let currentCourseId = null;
+        let currentVideoId = null;
+        let completedVideoIds = [];
+        let currentAssignmentId = null;
+        const videoMap = {};
 
-    function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-        return null;
-    }
-
-    // ── Load course ────────────────────────────────────────────────────────────
-    async function loadCourseData() {
-        const userStr = localStorage.getItem('user');
-        if (!userStr) { window.location.href = 'login.html'; return; }
-
-        await fetch(`${API_BASE}/csrf/`, { credentials: 'include' }).catch(() => {});
-
-        const urlParams = new URLSearchParams(window.location.search);
-        currentCourseId = urlParams.get('course');
-
-        if (!currentCourseId) {
-            document.getElementById('course-title').textContent = 'No course specified.';
-            document.getElementById('modules-list').innerHTML = '<div class="p-5 text-red-400 text-sm">No course ID in URL.</div>';
-            return;
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
         }
 
-        try {
-            const res = await fetch(`${API_BASE}/courses/${currentCourseId}/player/`, { credentials: 'include' });
-            if (res.status === 401 || res.status === 403) {
-                document.getElementById('modules-list').innerHTML = '<div class="p-5 text-red-400 text-sm">Not enrolled or not logged in.</div>';
-                return;
-            }
-            if (!res.ok) {
-                document.getElementById('modules-list').innerHTML = '<div class="p-5 text-red-400 text-sm">Failed to load course.</div>';
+        // ── Load course ────────────────────────────────────────────────────────────
+        async function loadCourseData() {
+            const userStr = localStorage.getItem('user');
+            if (!userStr) { window.location.href = 'login.html'; return; }
+
+            await fetch(`${API_BASE}/csrf/`, { credentials: 'include' }).catch(() => { });
+
+            const urlParams = new URLSearchParams(window.location.search);
+            currentCourseId = urlParams.get('course');
+
+            if (!currentCourseId) {
+                document.getElementById('course-title').textContent = 'No course specified.';
+                document.getElementById('modules-list').innerHTML = '<div class="p-5 text-red-400 text-sm">No course ID in URL.</div>';
                 return;
             }
 
-            const data = await res.json();
-            completedVideoIds = data.completed_video_ids || [];
-            const course = data.course;
+            try {
+                const res = await fetch(`${API_BASE}/courses/${currentCourseId}/player/`, { credentials: 'include' });
+                if (res.status === 401 || res.status === 403) {
+                    document.getElementById('modules-list').innerHTML = '<div class="p-5 text-red-400 text-sm">Not enrolled or not logged in.</div>';
+                    return;
+                }
+                if (!res.ok) {
+                    document.getElementById('modules-list').innerHTML = '<div class="p-5 text-red-400 text-sm">Failed to load course.</div>';
+                    return;
+                }
 
-            document.getElementById('course-title').textContent = course.title;
-            updateProgress(data.progress || 0);
-            renderModules(course.modules || []);
+                const data = await res.json();
+                completedVideoIds = data.completed_video_ids || [];
+                const course = data.course;
 
-        } catch (err) {
-            console.error('Load error:', err);
-            document.getElementById('modules-list').innerHTML = '<div class="p-5 text-red-400 text-sm">Network error. Is server running?</div>';
-        }
-    }
+                document.getElementById('course-title').textContent = course.title;
+                updateProgress(data.progress || 0);
+                renderModules(course.modules || []);
 
-    function updateProgress(p) {
-        document.getElementById('course-progress-bar').style.width = `${p}%`;
-        document.getElementById('course-progress-text').textContent = `${p}%`;
-    }
-
-    // ── Render sidebar ─────────────────────────────────────────────────────────
-    function renderModules(modules) {
-        const list = document.getElementById('modules-list');
-        if (!modules.length) {
-            list.innerHTML = '<div class="p-5 text-gray-400 text-sm text-center">No modules yet.</div>';
-            return;
+            } catch (err) {
+                console.error('Load error:', err);
+                document.getElementById('modules-list').innerHTML = '<div class="p-5 text-red-400 text-sm">Network error. Is server running?</div>';
+            }
         }
 
-        list.innerHTML = modules.map((mod, idx) => {
-            const videos = mod.videos || [];
-            const assignments = mod.assignments || [];
-            const completedCount = videos.filter(v => completedVideoIds.includes(v.id)).length;
-            videos.forEach(v => { videoMap[v.id] = v; });
+        function updateProgress(p) {
+            document.getElementById('course-progress-bar').style.width = `${p}%`;
+            document.getElementById('course-progress-text').textContent = `${p}%`;
+        }
 
-            const videoHTML = videos.length === 0
-                ? '<div class="px-5 py-2 text-xs text-gray-400">No videos.</div>'
-                : videos.map(video => {
-                    const done = completedVideoIds.includes(video.id);
-                    return `<button id="lesson-btn-${video.id}" onclick="selectVideoById(${video.id})"
+        // ── Render sidebar ─────────────────────────────────────────────────────────
+        function renderModules(modules) {
+            const list = document.getElementById('modules-list');
+            if (!modules.length) {
+                list.innerHTML = '<div class="p-5 text-gray-400 text-sm text-center">No modules yet.</div>';
+                return;
+            }
+
+            list.innerHTML = modules.map((mod, idx) => {
+                const videos = mod.videos || [];
+                const assignments = mod.assignments || [];
+                const completedCount = videos.filter(v => completedVideoIds.includes(v.id)).length;
+                videos.forEach(v => { videoMap[v.id] = v; });
+
+                const videoHTML = videos.length === 0
+                    ? '<div class="px-5 py-2 text-xs text-gray-400">No videos.</div>'
+                    : videos.map(video => {
+                        const done = completedVideoIds.includes(video.id);
+                        return `<button id="lesson-btn-${video.id}" onclick="selectVideoById(${video.id})"
                         class="lesson-btn w-full text-left px-5 py-2.5 hover:bg-violet-50 text-sm flex items-center gap-3 border-l-2 border-transparent transition-all group">
                         <i id="icon-vid-${video.id}" class="${done ? 'ph-fill ph-check-circle text-secondary' : 'ph ph-play-circle text-gray-400 group-hover:text-primary'} text-base shrink-0"></i>
                         <span class="lesson-label ${done ? 'text-gray-400 line-through' : 'text-gray-700'} flex-1 text-left text-xs leading-snug">${video.title}</span>
                         <span class="text-xs text-gray-400 shrink-0">${video.duration_minutes}m</span>
                     </button>`;
-                }).join('');
+                    }).join('');
 
-            const assignHTML = assignments.length === 0 ? '' : `
+                const assignHTML = assignments.length === 0 ? '' : `
                 <div class="px-5 pt-2 pb-3 border-t border-gray-100 mt-1">
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
                         <i class="ph ph-note-pencil mr-1"></i>Assignments
@@ -257,18 +288,18 @@
                     </button>`).join('')}
                 </div>`;
 
-            // Store assignment metadata for modal use
-            assignments.forEach(a => {
-                const el = document.createElement('span');
-                el.id = `assignment-info-${a.id}`;
-                el.dataset.title = a.title;
-                el.dataset.desc = a.description || '';
-                el.dataset.marks = a.total_marks;
-                el.dataset.due = a.due_date || '';
-                document.getElementById('assignment-data-container').appendChild(el);
-            });
+                // Store assignment metadata for modal use
+                assignments.forEach(a => {
+                    const el = document.createElement('span');
+                    el.id = `assignment-info-${a.id}`;
+                    el.dataset.title = a.title;
+                    el.dataset.desc = a.description || '';
+                    el.dataset.marks = a.total_marks;
+                    el.dataset.due = a.due_date || '';
+                    document.getElementById('assignment-data-container').appendChild(el);
+                });
 
-            return `<div class="border-b border-gray-100 last:border-0">
+                return `<div class="border-b border-gray-100 last:border-0">
                 <button onclick="toggleModule(this)"
                     class="w-full text-left px-5 py-3.5 font-semibold text-sm text-gray-800 hover:bg-gray-50 flex items-center gap-2">
                     <span class="flex-1 leading-snug">${mod.title}</span>
@@ -280,249 +311,250 @@
                     ${assignHTML}
                 </div>
             </div>`;
-        }).join('');
-    }
-
-    function toggleModule(btn) {
-        const content = btn.nextElementSibling;
-        const icon = btn.querySelector('i.ph-caret-down, i.ph-caret-up');
-        content.classList.toggle('hidden');
-        if (icon) {
-            const isHidden = content.classList.contains('hidden');
-            icon.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
+            }).join('');
         }
-    }
 
-    // ── Video ──────────────────────────────────────────────────────────────────
-    function selectVideoById(id) {
-        const v = videoMap[id];
-        if (!v) return;
-        selectVideo(id, v.title, v.video_url || '');
-    }
+        function toggleModule(btn) {
+            const content = btn.nextElementSibling;
+            const icon = btn.querySelector('i.ph-caret-down, i.ph-caret-up');
+            content.classList.toggle('hidden');
+            if (icon) {
+                const isHidden = content.classList.contains('hidden');
+                icon.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
+            }
+        }
 
-    function selectVideo(id, title, url) {
-        currentVideoId = id;
+        // ── Video ──────────────────────────────────────────────────────────────────
+        function selectVideoById(id) {
+            const v = videoMap[id];
+            if (!v) return;
+            selectVideo(id, v.title, v.video_url || '');
+        }
 
-        const container = document.getElementById('video-container');
-        if (url) {
-            container.innerHTML = `<video src="${url}" controls autoplay></video>`;
-        } else {
-            container.innerHTML = `<div class="text-center p-8">
+        function selectVideo(id, title, url) {
+            currentVideoId = id;
+
+            const container = document.getElementById('video-container');
+            if (url) {
+                container.innerHTML = `<video src="${url}" controls autoplay></video>`;
+            } else {
+                container.innerHTML = `<div class="text-center p-8">
                 <i class="ph ph-video-slash text-5xl text-gray-600 mb-3"></i>
                 <p class="text-gray-400 text-sm">No video URL for this lesson.</p>
             </div>`;
+            }
+
+            document.getElementById('detail-title').textContent = title;
+            document.getElementById('detail-desc').textContent = 'Watch the video, then mark it as complete.';
+
+            document.querySelectorAll('.lesson-btn').forEach(b => b.classList.remove('active'));
+            const activeBtn = document.getElementById(`lesson-btn-${id}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            const markBtn = document.getElementById('mark-complete-btn');
+            const markText = document.getElementById('mark-btn-text');
+            if (completedVideoIds.includes(id)) {
+                markBtn.disabled = true;
+                markBtn.className = 'flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-secondary/20 text-secondary cursor-not-allowed shrink-0 transition-all';
+                markText.textContent = 'Completed ✓';
+            } else {
+                markBtn.disabled = false;
+                markBtn.className = 'flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-secondary hover:bg-emerald-600 text-white cursor-pointer shrink-0 transition-all';
+                markText.textContent = 'Mark as Complete';
+            }
         }
 
-        document.getElementById('detail-title').textContent = title;
-        document.getElementById('detail-desc').textContent = 'Watch the video, then mark it as complete.';
+        async function markCurrentVideoComplete() {
+            if (!currentVideoId || !currentCourseId || completedVideoIds.includes(currentVideoId)) return;
 
-        document.querySelectorAll('.lesson-btn').forEach(b => b.classList.remove('active'));
-        const activeBtn = document.getElementById(`lesson-btn-${id}`);
-        if (activeBtn) activeBtn.classList.add('active');
-
-        const markBtn = document.getElementById('mark-complete-btn');
-        const markText = document.getElementById('mark-btn-text');
-        if (completedVideoIds.includes(id)) {
+            const markBtn = document.getElementById('mark-complete-btn');
             markBtn.disabled = true;
-            markBtn.className = 'flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-secondary/20 text-secondary cursor-not-allowed shrink-0 transition-all';
-            markText.textContent = 'Completed ✓';
-        } else {
-            markBtn.disabled = false;
-            markBtn.className = 'flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-secondary hover:bg-emerald-600 text-white cursor-pointer shrink-0 transition-all';
-            markText.textContent = 'Mark as Complete';
-        }
-    }
+            document.getElementById('mark-btn-text').textContent = 'Saving...';
 
-    async function markCurrentVideoComplete() {
-        if (!currentVideoId || !currentCourseId || completedVideoIds.includes(currentVideoId)) return;
+            try {
+                const res = await fetch(`${API_BASE}/enrollments/complete-video/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
+                    credentials: 'include',
+                    body: JSON.stringify({ course_id: parseInt(currentCourseId), video_id: currentVideoId })
+                });
 
-        const markBtn = document.getElementById('mark-complete-btn');
-        markBtn.disabled = true;
-        document.getElementById('mark-btn-text').textContent = 'Saving...';
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    alert('Error: ' + (err.error || 'Could not save progress'));
+                    markBtn.disabled = false;
+                    document.getElementById('mark-btn-text').textContent = 'Mark as Complete';
+                    return;
+                }
 
-        try {
-            const res = await fetch(`${API_BASE}/enrollments/complete-video/`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') || '' },
-                credentials: 'include',
-                body: JSON.stringify({ course_id: parseInt(currentCourseId), video_id: currentVideoId })
-            });
+                const data = await res.json();
+                completedVideoIds.push(currentVideoId);
+                updateProgress(data.progress);
 
-            if (!res.ok) {
-                const err = await res.json().catch(() => ({}));
-                alert('Error: ' + (err.error || 'Could not save progress'));
+                markBtn.className = 'flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-secondary/20 text-secondary cursor-not-allowed shrink-0 transition-all';
+                document.getElementById('mark-btn-text').textContent = 'Completed ✓';
+
+                const icon = document.getElementById(`icon-vid-${currentVideoId}`);
+                if (icon) {
+                    icon.className = 'ph-fill ph-check-circle text-secondary text-base shrink-0';
+                    const lbl = icon.nextElementSibling;
+                    if (lbl) { lbl.classList.add('text-gray-400', 'line-through'); lbl.classList.remove('text-gray-700'); }
+                }
+            } catch (err) {
+                console.error(err);
                 markBtn.disabled = false;
                 document.getElementById('mark-btn-text').textContent = 'Mark as Complete';
+            }
+        }
+
+        // ── Assignment modal ───────────────────────────────────────────────────────
+        const assignmentCache = {};
+
+        async function openAssignment(id) {
+            currentAssignmentId = id;
+
+            // Reset modal state
+            document.getElementById('already-submitted').classList.add('hidden');
+            document.getElementById('submission-form').classList.remove('hidden');
+            document.getElementById('modal-footer').classList.remove('hidden');
+            document.getElementById('submission-text').value = '';
+            document.getElementById('submission-file').value = '';
+            document.getElementById('previous-submission-file').classList.add('hidden');
+            document.getElementById('submit-error').classList.add('hidden');
+            document.getElementById('modal-title').textContent = 'Loading...';
+            document.getElementById('assignment-modal').classList.add('open');
+
+            try {
+                const res = await fetch(`${API_BASE}/assignments/${id}/submit/`, { credentials: 'include' });
+                const data = await res.json();
+
+                // Fill in assignment info from video map or cache
+                // We need assignment info — fetch it from the modules already loaded
+                const allModules = document.querySelectorAll('[id^="assignment-info-"]');
+                const assignInfoEl = document.getElementById(`assignment-info-${id}`);
+                const title = assignInfoEl ? assignInfoEl.dataset.title : `Assignment #${id}`;
+                const desc = assignInfoEl ? assignInfoEl.dataset.desc : '';
+                const marks = assignInfoEl ? assignInfoEl.dataset.marks : '100';
+                const due = assignInfoEl ? assignInfoEl.dataset.due : '';
+
+                document.getElementById('modal-title').textContent = title;
+                document.getElementById('modal-desc').textContent = desc;
+                document.getElementById('modal-marks').textContent = marks;
+                document.getElementById('modal-due').textContent = due ? new Date(due).toLocaleDateString() : 'N/A';
+
+                if (data.submitted) {
+                    document.getElementById('already-submitted').classList.remove('hidden');
+                    document.getElementById('submission-form').classList.add('hidden');
+                    document.getElementById('submitted-at-label').textContent =
+                        'Submitted on ' + new Date(data.submitted_at).toLocaleString();
+                    document.getElementById('previous-submission').textContent = data.submission_text || '';
+
+                    if (data.submission_file_url) {
+                        const fileLink = document.getElementById('previous-submission-file');
+                        fileLink.classList.remove('hidden');
+                        fileLink.querySelector('a').href = data.submission_file_url;
+                    }
+
+                    if (data.feedback) {
+                        document.getElementById('feedback-block').classList.remove('hidden');
+                        document.getElementById('feedback-text').textContent = data.feedback;
+                        document.getElementById('marks-obtained').textContent = data.marks_obtained ?? 'Pending';
+                    }
+                    // Hide submit footer
+                    document.getElementById('modal-footer').querySelector('#submit-btn').style.display = 'none';
+                } else {
+                    document.getElementById('modal-footer').querySelector('#submit-btn').style.display = '';
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function allowResubmit() {
+            document.getElementById('already-submitted').classList.add('hidden');
+            document.getElementById('submission-form').classList.remove('hidden');
+            const prevText = document.getElementById('previous-submission').textContent;
+            document.getElementById('submission-text').value = prevText;
+            document.getElementById('submission-file').value = '';
+            document.getElementById('modal-footer').querySelector('#submit-btn').style.display = '';
+        }
+
+        function closeAssignmentModal() {
+            document.getElementById('assignment-modal').classList.remove('open');
+            currentAssignmentId = null;
+        }
+
+        async function submitAssignment() {
+            const text = document.getElementById('submission-text').value.trim();
+            const fileInput = document.getElementById('submission-file');
+            const file = fileInput.files[0];
+            const errEl = document.getElementById('submit-error');
+
+            if (!text && !file) {
+                errEl.textContent = 'Please provide an answer or attach a file.';
+                errEl.classList.remove('hidden');
                 return;
             }
+            errEl.classList.add('hidden');
 
-            const data = await res.json();
-            completedVideoIds.push(currentVideoId);
-            updateProgress(data.progress);
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
 
-            markBtn.className = 'flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-secondary/20 text-secondary cursor-not-allowed shrink-0 transition-all';
-            document.getElementById('mark-btn-text').textContent = 'Completed ✓';
+            try {
+                const formData = new FormData();
+                formData.append('submission_text', text);
+                if (file) {
+                    formData.append('submission_file', file);
+                }
 
-            const icon = document.getElementById(`icon-vid-${currentVideoId}`);
-            if (icon) {
-                icon.className = 'ph-fill ph-check-circle text-secondary text-base shrink-0';
-                const lbl = icon.nextElementSibling;
-                if (lbl) { lbl.classList.add('text-gray-400', 'line-through'); lbl.classList.remove('text-gray-700'); }
-            }
-        } catch (err) {
-            console.error(err);
-            markBtn.disabled = false;
-            document.getElementById('mark-btn-text').textContent = 'Mark as Complete';
-        }
-    }
+                const res = await fetch(`${API_BASE}/assignments/${currentAssignmentId}/submit/`, {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': getCookie('csrftoken') || '' },
+                    credentials: 'include',
+                    body: formData
+                });
 
-    // ── Assignment modal ───────────────────────────────────────────────────────
-    const assignmentCache = {};
+                const data = await res.json();
+                if (!res.ok) {
+                    errEl.textContent = data.error || 'Failed to submit. Try again.';
+                    errEl.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> Submit Assignment';
+                    return;
+                }
 
-    async function openAssignment(id) {
-        currentAssignmentId = id;
-
-        // Reset modal state
-        document.getElementById('already-submitted').classList.add('hidden');
-        document.getElementById('submission-form').classList.remove('hidden');
-        document.getElementById('modal-footer').classList.remove('hidden');
-        document.getElementById('submission-text').value = '';
-        document.getElementById('submission-file').value = '';
-        document.getElementById('previous-submission-file').classList.add('hidden');
-        document.getElementById('submit-error').classList.add('hidden');
-        document.getElementById('modal-title').textContent = 'Loading...';
-        document.getElementById('assignment-modal').classList.add('open');
-
-        try {
-            const res = await fetch(`${API_BASE}/assignments/${id}/submit/`, { credentials: 'include' });
-            const data = await res.json();
-
-            // Fill in assignment info from video map or cache
-            // We need assignment info — fetch it from the modules already loaded
-            const allModules = document.querySelectorAll('[id^="assignment-info-"]');
-            const assignInfoEl = document.getElementById(`assignment-info-${id}`);
-            const title = assignInfoEl ? assignInfoEl.dataset.title : `Assignment #${id}`;
-            const desc = assignInfoEl ? assignInfoEl.dataset.desc : '';
-            const marks = assignInfoEl ? assignInfoEl.dataset.marks : '100';
-            const due = assignInfoEl ? assignInfoEl.dataset.due : '';
-
-            document.getElementById('modal-title').textContent = title;
-            document.getElementById('modal-desc').textContent = desc;
-            document.getElementById('modal-marks').textContent = marks;
-            document.getElementById('modal-due').textContent = due ? new Date(due).toLocaleDateString() : 'N/A';
-
-            if (data.submitted) {
-                document.getElementById('already-submitted').classList.remove('hidden');
+                // Show success
                 document.getElementById('submission-form').classList.add('hidden');
+                document.getElementById('modal-footer').querySelector('#submit-btn').style.display = 'none';
+                document.getElementById('already-submitted').classList.remove('hidden');
                 document.getElementById('submitted-at-label').textContent =
                     'Submitted on ' + new Date(data.submitted_at).toLocaleString();
-                document.getElementById('previous-submission').textContent = data.submission_text || '';
+                document.getElementById('previous-submission').textContent = text;
 
-                if (data.submission_file_url) {
-                    const fileLink = document.getElementById('previous-submission-file');
-                    fileLink.classList.remove('hidden');
-                    fileLink.querySelector('a').href = data.submission_file_url;
-                }
+                // Reload the assignment view to update the UI correctly (including file link)
+                openAssignment(currentAssignmentId);
 
-                if (data.feedback) {
-                    document.getElementById('feedback-block').classList.remove('hidden');
-                    document.getElementById('feedback-text').textContent = data.feedback;
-                    document.getElementById('marks-obtained').textContent = data.marks_obtained ?? 'Pending';
-                }
-                // Hide submit footer
-                document.getElementById('modal-footer').querySelector('#submit-btn').style.display = 'none';
-            } else {
-                document.getElementById('modal-footer').querySelector('#submit-btn').style.display = '';
-            }
-        } catch (err) {
-            console.error(err);
-        }
-    }
-
-    function allowResubmit() {
-        document.getElementById('already-submitted').classList.add('hidden');
-        document.getElementById('submission-form').classList.remove('hidden');
-        const prevText = document.getElementById('previous-submission').textContent;
-        document.getElementById('submission-text').value = prevText;
-        document.getElementById('submission-file').value = '';
-        document.getElementById('modal-footer').querySelector('#submit-btn').style.display = '';
-    }
-
-    function closeAssignmentModal() {
-        document.getElementById('assignment-modal').classList.remove('open');
-        currentAssignmentId = null;
-    }
-
-    async function submitAssignment() {
-        const text = document.getElementById('submission-text').value.trim();
-        const fileInput = document.getElementById('submission-file');
-        const file = fileInput.files[0];
-        const errEl = document.getElementById('submit-error');
-        
-        if (!text && !file) {
-            errEl.textContent = 'Please provide an answer or attach a file.';
-            errEl.classList.remove('hidden');
-            return;
-        }
-        errEl.classList.add('hidden');
-
-        const btn = document.getElementById('submit-btn');
-        btn.disabled = true;
-        btn.textContent = 'Submitting...';
-
-        try {
-            const formData = new FormData();
-            formData.append('submission_text', text);
-            if (file) {
-                formData.append('submission_file', file);
-            }
-
-            const res = await fetch(`${API_BASE}/assignments/${currentAssignmentId}/submit/`, {
-                method: 'POST',
-                headers: { 'X-CSRFToken': getCookie('csrftoken') || '' },
-                credentials: 'include',
-                body: formData
-            });
-
-            const data = await res.json();
-            if (!res.ok) {
-                errEl.textContent = data.error || 'Failed to submit. Try again.';
+            } catch (err) {
+                console.error(err);
+                errEl.textContent = 'Network error. Try again.';
                 errEl.classList.remove('hidden');
                 btn.disabled = false;
                 btn.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> Submit Assignment';
-                return;
             }
-
-            // Show success
-            document.getElementById('submission-form').classList.add('hidden');
-            document.getElementById('modal-footer').querySelector('#submit-btn').style.display = 'none';
-            document.getElementById('already-submitted').classList.remove('hidden');
-            document.getElementById('submitted-at-label').textContent =
-                'Submitted on ' + new Date(data.submitted_at).toLocaleString();
-            document.getElementById('previous-submission').textContent = text;
-            
-            // Reload the assignment view to update the UI correctly (including file link)
-            openAssignment(currentAssignmentId);
-
-        } catch (err) {
-            console.error(err);
-            errEl.textContent = 'Network error. Try again.';
-            errEl.classList.remove('hidden');
-            btn.disabled = false;
-            btn.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> Submit Assignment';
         }
-    }
 
-    // Close modal when clicking backdrop
-    document.getElementById('assignment-modal').addEventListener('click', function(e) {
-        if (e.target === this) closeAssignmentModal();
-    });
+        // Close modal when clicking backdrop
+        document.getElementById('assignment-modal').addEventListener('click', function (e) {
+            if (e.target === this) closeAssignmentModal();
+        });
 
-    document.addEventListener('DOMContentLoaded', loadCourseData);
-</script>
+        document.addEventListener('DOMContentLoaded', loadCourseData);
+    </script>
 
-<!-- Hidden assignment data anchors (populated during renderModules) -->
-<div id="assignment-data-container" class="hidden"></div>
+    <!-- Hidden assignment data anchors (populated during renderModules) -->
+    <div id="assignment-data-container" class="hidden"></div>
 
 </body>
+
 </html>
