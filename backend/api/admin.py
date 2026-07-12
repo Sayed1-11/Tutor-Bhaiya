@@ -97,3 +97,48 @@ class ContactMessageAdmin(admin.ModelAdmin):
     ordering = ('-submitted_at',)
     list_editable = ('is_read',)
     readonly_fields = ('submitted_at',)
+
+# ─── Course Contents ─────────────────────────────────────────────────────────
+
+from .models import Module, Video, Resource, Assignment, StudentAssignment, Payment
+
+@admin.register(Module)
+class ModuleAdmin(admin.ModelAdmin):
+    list_display = ('title', 'course', 'order')
+    list_filter = ('course',)
+    search_fields = ('title', 'course__title')
+    ordering = ('course', 'order')
+
+@admin.register(Video)
+class VideoAdmin(admin.ModelAdmin):
+    list_display = ('title', 'module', 'duration_minutes', 'order')
+    list_filter = ('module__course', 'module')
+    search_fields = ('title', 'module__title')
+    ordering = ('module', 'order')
+
+@admin.register(Resource)
+class ResourceAdmin(admin.ModelAdmin):
+    list_display = ('title', 'course', 'module')
+    list_filter = ('course', 'module')
+    search_fields = ('title', 'course__title', 'module__title')
+
+@admin.register(Assignment)
+class AssignmentAdmin(admin.ModelAdmin):
+    list_display = ('title', 'course', 'module', 'due_date', 'total_marks')
+    list_filter = ('course', 'module')
+    search_fields = ('title', 'course__title')
+
+@admin.register(StudentAssignment)
+class StudentAssignmentAdmin(admin.ModelAdmin):
+    list_display = ('student', 'assignment', 'submitted_at', 'marks_obtained')
+    list_filter = ('assignment__course', 'assignment')
+    search_fields = ('student__email', 'assignment__title')
+
+# ─── Accounting ──────────────────────────────────────────────────────────────
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'course', 'amount', 'status', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('user__email', 'course__title', 'transaction_id')
+    ordering = ('-created_at',)

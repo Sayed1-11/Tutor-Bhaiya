@@ -32,6 +32,7 @@ from .serializers import (
     AssignmentSerializer,
     StudentAssignmentSerializer,
     PaymentSerializer,
+    CoursePlayerSerializer,
 )
 
 User = get_user_model()
@@ -80,7 +81,7 @@ class LoginView(APIView):
     def post(self, request):
         email = request.data.get('email', '').strip()
         password = request.data.get('password', '')
-
+        print("email and password", email, password)
         if not email or not password:
             return Response(
                 {'error': 'Email and password are required.'},
@@ -90,13 +91,15 @@ class LoginView(APIView):
         # Django authenticates by username; we look up by email first
         try:
             user_obj = User.objects.get(email=email)
+            print("user_obj",user_obj)
+            
         except User.DoesNotExist:
             return Response(
                 {'error': 'No account found with this email.'},
                 status=status.HTTP_401_UNAUTHORIZED
             )
 
-        user = authenticate(request, username=user_obj.username, password=password)
+        user = authenticate(request, email=user_obj.email, password=password)
         if user is None:
             return Response(
                 {'error': 'Incorrect password.'},
@@ -205,6 +208,61 @@ class CourseDetailView(generics.RetrieveAPIView):
             )
         return qs
 
+class CoursePlayerView(APIView):
+    """GET /api/courses/<id>/player/ — Returns course data, modules, videos and user progress."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+        try:
+            course = Course.objects.get(pk=pk, is_active=True)
+            enrollment = Enrollment.objects.get(user=request.user, course=course)
+        except (Course.DoesNotExist, Enrollment.DoesNotExist):
+            return Response({'error': 'Not enrolled or course not found.'}, status=403)
+
+        serializer = CoursePlayerSerializer(course, context={'request': request})
+        completed_ids = list(enrollment.completed_videos.values_list('id', flat=True))
+
+        return Response({
+            'course': serializer.data,
+            'progress': enrollment.progress,
+            'completed_video_ids': completed_ids
+        })
+
+class MarkVideoCompleteView(APIView):
+    """POST /api/enrollments/complete-video/ — Mark a video as completed and update progress."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        course_id = request.data.get('course_id')
+        video_id = request.data.get('video_id')
+
+        if not course_id or not video_id:
+            return Response({'error': 'course_id and video_id are required'}, status=400)
+
+        try:
+            enrollment = Enrollment.objects.get(user=request.user, course_id=course_id)
+            video = Video.objects.get(id=video_id)
+        except (Enrollment.DoesNotExist, Video.DoesNotExist):
+            return Response({'error': 'Enrollment or video not found'}, status=404)
+
+        enrollment.completed_videos.add(video)
+        
+        # Calculate new progress
+        total_videos = Video.objects.filter(module__course_id=course_id).count()
+        completed = enrollment.completed_videos.count()
+        
+        if total_videos > 0:
+            enrollment.progress = int((completed / total_videos) * 100)
+            if enrollment.progress >= 100:
+                enrollment.is_completed = True
+            enrollment.save()
+            
+        return Response({
+            'message': 'Video marked as complete',
+            'progress': enrollment.progress,
+            'completed_video_id': video.id
+        })
+
 
 # ─── Enrollments ──────────────────────────────────────────────────────────────
 
@@ -236,6 +294,65 @@ class EnrollmentDetailView(generics.RetrieveUpdateAPIView):
     def get_queryset(self):
         return Enrollment.objects.filter(user=self.request.user)
 
+
+class SubmitAssignmentView(APIView):
+    """
+    GET  /api/assignments/<id>/submit/ — Check if student already submitted.
+    POST /api/assignments/<id>/submit/ — Submit assignment answer text.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+        try:
+            assignment = Assignment.objects.get(pk=pk)
+        except Assignment.DoesNotExist:
+            return Response({'error': 'Assignment not found'}, status=404)
+
+        submission = StudentAssignment.objects.filter(
+            assignment=assignment, student=request.user
+        ).first()
+
+        if submission:
+            return Response({
+                'submitted': True,
+                'submission_text': submission.submission_text,
+                'submission_file_url': request.build_absolute_uri(submission.submission_file.url) if submission.submission_file else None,
+                'submitted_at': submission.submitted_at,
+                'marks_obtained': submission.marks_obtained,
+                'feedback': submission.feedback,
+            })
+        return Response({'submitted': False})
+
+    def post(self, request, pk):
+        try:
+            assignment = Assignment.objects.get(pk=pk)
+        except Assignment.DoesNotExist:
+            return Response({'error': 'Assignment not found'}, status=404)
+
+        submission_text = request.data.get('submission_text', '').strip()
+        submission_file = request.FILES.get('submission_file')
+        
+        if not submission_text and not submission_file:
+            return Response({'error': 'submission_text or submission_file is required'}, status=400)
+
+        submission, created = StudentAssignment.objects.get_or_create(
+            assignment=assignment,
+            student=request.user,
+            defaults={'submission_text': submission_text}
+        )
+        if not created:
+            submission.submission_text = submission_text
+        
+        if submission_file:
+            submission.submission_file = submission_file
+        
+        submission.save()
+
+        return Response({
+            'message': 'Assignment submitted successfully!',
+            'submitted': True,
+            'submitted_at': submission.submitted_at,
+        }, status=201 if created else 200)
 
 # ─── Dashboard ───────────────────────────────────────────────────────────────
 

@@ -287,12 +287,15 @@
                             class="bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-3 text-sm text-slate-600">
                             <div class="flex items-center gap-2"><i class="ph ph-user text-primary text-lg"></i>
                                 <span>Instructor: <strong id="modal-instructor" class="text-slate-900">Faria
-                                        Rahman</strong></span></div>
+                                        Rahman</strong></span>
+                            </div>
                             <div class="flex items-center gap-2"><i class="ph ph-clock text-primary text-lg"></i>
                                 <span>Duration: <strong id="modal-duration" class="text-slate-900">40
-                                        Hrs</strong></span></div>
+                                        Hrs</strong></span>
+                            </div>
                             <div class="flex items-center gap-2"><i class="ph ph-tag text-primary text-lg"></i>
-                                <span>Price: <strong id="modal-price" class="text-slate-900">৳2000</strong></span></div>
+                                <span>Price: <strong id="modal-price" class="text-slate-900">৳2000</strong></span>
+                            </div>
                         </div>
                         <button id="modal-enroll-btn"
                             class="w-full bg-secondary hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-secondary/30 hover:shadow-secondary/50 flex items-center justify-center gap-2">
@@ -425,7 +428,7 @@
 
     <!-- Dynamic Course Loading & Filter JS -->
     <script>
-        const API_BASE = 'https://tutor-bhaiya.onrender.com/api';
+        const API_BASE = 'http://127.0.0.1:8000/api';
 
         document.addEventListener('DOMContentLoaded', () => {
             const courseGrid = document.getElementById('course-grid');

@@ -116,7 +116,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5500',
     'http://127.0.0.1:5501',
     'http://localhost:5501',
-    'https://tutor-bhaiya.onrender.com',
+    'http://127.0.0.1:8000',
 ]
 
 SESSION_COOKIE_SAMESITE = 'Lax'

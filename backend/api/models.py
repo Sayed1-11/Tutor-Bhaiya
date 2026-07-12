@@ -150,6 +150,7 @@ class Enrollment(models.Model):
     progress = models.PositiveIntegerField(
         default=0, help_text="Progress percentage (0–100)"
     )
+    completed_videos = models.ManyToManyField('Video', blank=True, related_name='completed_by')
     is_completed = models.BooleanField(default=False)
     last_accessed = models.DateTimeField(auto_now=True)
 

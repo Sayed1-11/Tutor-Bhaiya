@@ -101,7 +101,7 @@
     </div>
 
     <script>
-        const API_BASE = 'https://tutor-bhaiya.onrender.com/api';
+        const API_BASE = 'http://127.0.0.1:8000/api';
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -127,6 +127,8 @@
                 });
 
                 const data = await res.json();
+                console.log("Data", data)
+
                 if (res.ok) {
                     localStorage.setItem('user', JSON.stringify(data.user));
                     window.location.href = 'dashboard.html';

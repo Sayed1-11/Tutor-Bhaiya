@@ -186,19 +186,24 @@ class ResourceSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class AssignmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Assignment
+        fields = '__all__'
+
+
 class ModuleSerializer(serializers.ModelSerializer):
     videos = VideoSerializer(many=True, read_only=True)
     resources = ResourceSerializer(many=True, read_only=True)
+    assignments = serializers.SerializerMethodField()
 
     class Meta:
         model = Module
         fields = '__all__'
 
-
-class AssignmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Assignment
-        fields = '__all__'
+    def get_assignments(self, obj):
+        qs = obj.assignments.all()
+        return AssignmentSerializer(qs, many=True).data
 
 
 class StudentAssignmentSerializer(serializers.ModelSerializer):
@@ -221,3 +226,11 @@ class PaymentSerializer(serializers.ModelSerializer):
         model = Payment
         fields = '__all__'
         read_only_fields = ('created_at', 'status')
+
+
+class CoursePlayerSerializer(CourseDetailSerializer):
+    """Full course details including all nested modules and videos."""
+    modules = ModuleSerializer(many=True, read_only=True)
+
+    class Meta(CourseDetailSerializer.Meta):
+        fields = CourseDetailSerializer.Meta.fields + ('modules',)

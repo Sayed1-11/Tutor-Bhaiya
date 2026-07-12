@@ -5,7 +5,18 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tutorbhaiya.settings')
 django.setup()
 
-from api.models import Category, Course, User
+from api.models import Category, Course, User, Module, Video
+
+def seed_modules_for_course(course):
+    # Module 1
+    m1 = Module.objects.create(course=course, title="1. Introduction & Basics", order=1)
+    Video.objects.create(module=m1, title="1.1 Getting Started", video_url="https://www.w3schools.com/html/mov_bbb.mp4", duration_minutes=15, order=1)
+    Video.objects.create(module=m1, title="1.2 Core Concepts", video_url="https://www.w3schools.com/html/mov_bbb.mp4", duration_minutes=25, order=2)
+    
+    # Module 2
+    m2 = Module.objects.create(course=course, title="2. Advanced Topics", order=2)
+    Video.objects.create(module=m2, title="2.1 Deep Dive", video_url="https://www.w3schools.com/html/mov_bbb.mp4", duration_minutes=35, order=1)
+    Video.objects.create(module=m2, title="2.2 Project Setup", video_url="https://www.w3schools.com/html/mov_bbb.mp4", duration_minutes=40, order=2)
 
 def run_seed():
     print("Clearing existing Categories and Courses to avoid duplicates...")
@@ -57,7 +68,7 @@ def run_seed():
     ]
 
     for c in ev_courses:
-        Course.objects.create(
+        c_obj = Course.objects.create(
             title=c["title"],
             category=cat_ev,
             instructor=teacher,
@@ -68,6 +79,7 @@ def run_seed():
             description=f"Comprehensive course for {c['title']} covering all core subjects.",
             is_active=True
         )
+        seed_modules_for_course(c_obj)
 
     # 3. English Medium Courses
     print("Creating English Medium Courses...")
@@ -81,7 +93,7 @@ def run_seed():
     ]
 
     for c in em_courses:
-        Course.objects.create(
+        c_obj = Course.objects.create(
             title=c["title"],
             category=cat_em,
             instructor=teacher,
@@ -92,6 +104,7 @@ def run_seed():
             description=f"Expertly designed course for {c['title']}.",
             is_active=True
         )
+        seed_modules_for_course(c_obj)
 
     # 4. Skills Courses
     print("Creating Skills & More Courses...")
@@ -104,7 +117,7 @@ def run_seed():
     ]
 
     for c in skill_courses:
-        Course.objects.create(
+        c_obj = Course.objects.create(
             title=c["title"],
             category=cat_skills,
             instructor=teacher,
@@ -116,6 +129,7 @@ def run_seed():
             is_active=True,
             is_featured=True
         )
+        seed_modules_for_course(c_obj)
 
     print("Done seeding courses!")
 

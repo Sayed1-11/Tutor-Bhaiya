@@ -20,10 +20,12 @@ urlpatterns = [
     # ── Courses ───────────────────────────────────────────────────────────────
     path('courses/',         views.CourseListView.as_view(),   name='courses'),
     path('courses/<slug:slug>/', views.CourseDetailView.as_view(), name='course-detail'),
+    path('courses/<int:pk>/player/', views.CoursePlayerView.as_view(), name='course-player'),
 
     # ── Enrollments ───────────────────────────────────────────────────────────
-    path('enrollments/',         views.EnrollmentListCreateView.as_view(), name='enrollments'),
-    path('enrollments/<int:pk>/', views.EnrollmentDetailView.as_view(),    name='enrollment-detail'),
+    path('enrollments/',                   views.EnrollmentListCreateView.as_view(), name='enrollments'),
+    path('enrollments/complete-video/',    views.MarkVideoCompleteView.as_view(),    name='mark-video-complete'),
+    path('enrollments/<int:pk>/',          views.EnrollmentDetailView.as_view(),     name='enrollment-detail'),
 
     # ── Dashboard ─────────────────────────────────────────────────────────────
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
@@ -33,5 +35,8 @@ urlpatterns = [
 
     # ── Contact ───────────────────────────────────────────────────────────────
     path('contact/', views.ContactView.as_view(), name='contact'),
+
+    # ── Assignments ───────────────────────────────────────────────────────────
+    path('assignments/<int:pk>/submit/', views.SubmitAssignmentView.as_view(), name='submit-assignment'),
 ]
 

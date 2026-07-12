@@ -38,23 +38,23 @@
             </a>
         </div>
         <div class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
-            <a href="#" class="flex items-center gap-3 px-4 py-3 bg-white/10 rounded-xl text-primary font-medium">
+            <a href="#" class="sidebar-link active flex items-center gap-3 px-4 py-3 bg-white/10 rounded-xl text-primary font-medium" data-target="dashboard">
                 <i class="ph ph-squares-four text-xl"></i> Dashboard
             </a>
             <a href="#"
-                class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors">
+                class="sidebar-link flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors" data-target="my-courses">
                 <i class="ph ph-play-circle text-xl"></i> My Courses
             </a>
             <a href="#"
-                class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors">
+                class="sidebar-link flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors" data-target="exams">
                 <i class="ph ph-exam text-xl"></i> Exams & Quizzes
             </a>
             <a href="#"
-                class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors">
+                class="sidebar-link flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors" data-target="certificates">
                 <i class="ph ph-certificate text-xl"></i> Certificates
             </a>
             <a href="#"
-                class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors">
+                class="sidebar-link flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors" data-target="settings">
                 <i class="ph ph-gear text-xl"></i> Settings
             </a>
         </div>
@@ -88,49 +88,81 @@
         </header>
 
         <!-- Dashboard Content -->
-        <div class="flex-1 overflow-y-auto p-8">
+        <div class="flex-1 overflow-y-auto p-8" id="main-content-area">
+            
+            <div id="section-dashboard" class="content-section">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Stat Card 1 -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                        <div
+                            class="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 text-2xl">
+                            <i class="ph-fill ph-book-open"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Active Courses</p>
+                            <h3 id="stat-active" class="text-2xl font-bold text-gray-900">—</h3>
+                        </div>
+                    </div>
+                    <!-- Stat Card 2 -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                        <div
+                            class="w-14 h-14 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500 text-2xl">
+                            <i class="ph-fill ph-check-circle"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Completed Courses</p>
+                            <h3 id="stat-completed" class="text-2xl font-bold text-gray-900">—</h3>
+                        </div>
+                    </div>
+                    <!-- Stat Card 3 -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                        <div
+                            class="w-14 h-14 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500 text-2xl">
+                            <i class="ph-fill ph-trophy"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Average Progress</p>
+                            <h3 id="stat-progress" class="text-2xl font-bold text-gray-900">—</h3>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <!-- Stat Card 1 -->
-                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                    <div
-                        class="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 text-2xl">
-                        <i class="ph-fill ph-book-open"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 font-medium">Active Courses</p>
-                        <h3 id="stat-active" class="text-2xl font-bold text-gray-900">—</h3>
-                    </div>
-                </div>
-                <!-- Stat Card 2 -->
-                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                    <div
-                        class="w-14 h-14 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500 text-2xl">
-                        <i class="ph-fill ph-check-circle"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 font-medium">Completed Courses</p>
-                        <h3 id="stat-completed" class="text-2xl font-bold text-gray-900">—</h3>
-                    </div>
-                </div>
-                <!-- Stat Card 3 -->
-                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                    <div
-                        class="w-14 h-14 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500 text-2xl">
-                        <i class="ph-fill ph-trophy"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 font-medium">Average Progress</p>
-                        <h3 id="stat-progress" class="text-2xl font-bold text-gray-900">—</h3>
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Continue Learning</h3>
+                <div id="continue-learning-section">
+                    <!-- Loaded dynamically -->
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center text-gray-500">
+                        Loading course data...
                     </div>
                 </div>
             </div>
 
-            <h3 class="text-lg font-bold text-gray-900 mb-4">Continue Learning</h3>
-            <div id="continue-learning-section">
-                <!-- Loaded dynamically -->
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center text-gray-500">
-                    Loading course data...
+            <div id="section-my-courses" class="content-section hidden">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">My Courses</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="my-courses-list">
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500 col-span-full">
+                        Loading your courses...
+                    </div>
+                </div>
+            </div>
+
+            <div id="section-exams" class="content-section hidden">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">Exams & Quizzes</h3>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500">
+                    No active exams or quizzes at the moment.
+                </div>
+            </div>
+
+            <div id="section-certificates" class="content-section hidden">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">My Certificates</h3>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500">
+                    You haven't earned any certificates yet. Complete a course to earn one!
+                </div>
+            </div>
+
+            <div id="section-settings" class="content-section hidden">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">Settings</h3>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-gray-500">
+                    Settings panel coming soon.
                 </div>
             </div>
 
@@ -140,7 +172,7 @@
 
     <script src="script.js"></script>
     <script>
-        const API_BASE = 'https://tutor-bhaiya.onrender.com/api';
+        const API_BASE = 'http://127.0.0.1:8000/api';
 
         async function loadDashboard() {
             try {
@@ -235,6 +267,75 @@
             localStorage.removeItem('user');
             window.location.href = 'index.html';
         });
+
+        // Handle Sidebar Switching
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        const sections = document.querySelectorAll('.content-section');
+
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Remove active classes
+                sidebarLinks.forEach(l => {
+                    l.classList.remove('bg-white/10', 'text-primary');
+                    l.classList.add('text-gray-400', 'hover:bg-white/5', 'hover:text-white');
+                });
+                // Hide all sections
+                sections.forEach(s => s.classList.add('hidden'));
+
+                // Add active to clicked
+                link.classList.add('bg-white/10', 'text-primary');
+                link.classList.remove('text-gray-400', 'hover:bg-white/5', 'hover:text-white');
+
+                // Show target section
+                const target = link.getAttribute('data-target');
+                document.getElementById(`section-${target}`).classList.remove('hidden');
+
+                if(target === 'my-courses') {
+                    loadMyCourses();
+                }
+            });
+        });
+
+        async function loadMyCourses() {
+            try {
+                const res = await fetch(`${API_BASE}/enrollments/`, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' },
+                    credentials: 'include'
+                });
+                const data = await res.json();
+                const container = document.getElementById('my-courses-list');
+                
+                if(!data || data.length === 0) {
+                    container.innerHTML = `
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500 col-span-full">
+                            You haven't purchased any courses yet.
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = data.map(enrollment => {
+                    const course = enrollment.course;
+                    return `
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-all">
+                        <img src="${course.thumbnail_url || 'assets/course1.jpg'}" class="w-full h-40 object-cover" alt="${course.title}">
+                        <div class="p-6 flex-1 flex flex-col">
+                            <h4 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">${course.title}</h4>
+                            <div class="w-full bg-gray-100 rounded-full h-2 mb-4 mt-auto">
+                                <div class="bg-primary h-2 rounded-full" style="width: ${enrollment.progress || 0}%"></div>
+                            </div>
+                            <a href="course-player.html?course=${course.id}" class="w-full bg-gray-900 hover:bg-primary text-white py-2.5 rounded-xl font-semibold transition-colors text-center block">
+                                Enter Course
+                            </a>
+                        </div>
+                    </div>
+                `}).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', loadDashboard);
