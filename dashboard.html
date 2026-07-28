@@ -179,41 +179,39 @@
 
     <script src="script.js"></script>
     <script>
-        const API_BASE = 'https://tutor-bhaiya.onrender.com/api';
+        // Auth guard — must be logged in to view dashboard
+        if (!isLoggedIn()) {
+            window.location.href = 'login.html';
+        }
 
+        // Load dashboard data from API
         async function loadDashboard() {
             try {
-                const token = localStorage.getItem('token');
-                const headers = { 'Accept': 'application/json' };
-                if (token) headers['Authorization'] = `Token ${token}`;
-
-                const res = await fetch(`${API_BASE}/dashboard/`, {
-                    method: 'GET',
-                    headers: headers,
-                    credentials: 'include'
-                });
+                const res = await authFetch(`${API_BASE}/dashboard/`);
 
                 if (res.status === 401) {
-                    localStorage.removeItem('user');
+                    clearAuth();
                     window.location.href = 'login.html';
                     return;
                 }
 
                 const data = await res.json();
 
-                // Update header details
+                // Header
                 document.getElementById('welcome-msg').textContent = `Welcome back, ${data.user.full_name}!`;
-                document.getElementById('avatar-placeholder').textContent = data.user.avatar_initial;
+                const avatarEl = document.getElementById('avatar-placeholder');
                 if (data.user.profile_picture) {
-                    document.getElementById('avatar-placeholder').innerHTML = `<img src="${data.user.profile_picture}" class="w-full h-full rounded-full object-cover">`;
+                    avatarEl.innerHTML = `<img src="${data.user.profile_picture}" class="w-full h-full rounded-full object-cover">`;
+                } else {
+                    avatarEl.textContent = data.user.avatar_initial || data.user.full_name[0];
                 }
 
-                // Update Stats
+                // Stats
                 document.getElementById('stat-active').textContent = data.stats.active_courses;
                 document.getElementById('stat-completed').textContent = data.stats.completed_courses;
                 document.getElementById('stat-progress').textContent = `${data.stats.average_progress}%`;
 
-                // Update Continue Learning
+                // Continue Learning
                 const continueSection = document.getElementById('continue-learning-section');
                 if (data.continue_learning) {
                     const c = data.continue_learning;
@@ -227,107 +225,76 @@
                                 <div class="w-full bg-gray-100 rounded-full h-2.5 mb-2">
                                     <div class="bg-primary h-2.5 rounded-full" style="width: ${c.progress}%"></div>
                                 </div>
-                                <p class="text-sm text-gray-500">${c.progress}% Completed • Next: Chapter/Lecture</p>
+                                <p class="text-sm text-gray-500">${c.progress}% Completed</p>
                             </div>
-                            <button class="bg-gray-900 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary transition-colors whitespace-nowrap">
+                            <a href="course-player.html?course=${course.id}" class="bg-gray-900 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary transition-colors whitespace-nowrap">
                                 Resume Class
-                            </button>
-                        </div>
-                    `;
+                            </a>
+                        </div>`;
                 } else {
                     continueSection.innerHTML = `
                         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center">
                             <p class="text-gray-500 mb-4">You are not currently enrolled in any active courses.</p>
-                            <a href="courses.html" class="inline-block bg-primary hover:bg-violet-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
-                                Browse All Courses
-                            </a>
-                        </div>
-                    `;
+                            <a href="courses.html" class="inline-block bg-primary hover:bg-violet-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors">Browse All Courses</a>
+                        </div>`;
                 }
             } catch (err) {
                 console.error(err);
-                const cachedUser = localStorage.getItem('user');
-                if (cachedUser) {
-                    const user = JSON.parse(cachedUser);
+                // Show cached user data if API is down
+                const user = getUser();
+                if (user) {
                     document.getElementById('welcome-msg').textContent = `Welcome back, ${user.full_name}!`;
                     document.getElementById('avatar-placeholder').textContent = user.avatar_initial || user.full_name[0];
                 } else {
+                    clearAuth();
                     window.location.href = 'login.html';
                 }
             }
         }
 
-        // Handle Logout
-        document.getElementById('logout-btn').addEventListener('click', async () => {
-            try {
-                const csrfRes = await fetch(`${API_BASE}/csrf/`);
-                const { csrfToken } = await csrfRes.json();
-
-                const token = localStorage.getItem('token');
-                const headers = { 'X-CSRFToken': csrfToken };
-                if (token) headers['Authorization'] = `Token ${token}`;
-
-                await fetch(`${API_BASE}/auth/logout/`, {
-                    method: 'POST',
-                    headers: headers,
-                    credentials: 'include'
-                });
-            } catch (err) {
-                console.error('Logout error:', err);
-            }
-            localStorage.removeItem('user');
-            window.location.href = 'index.html';
+        // Logout button — calls shared logout() from script.js
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            logout();
         });
 
-        // Handle Sidebar Switching
+        // Sidebar tab switching
         const sidebarLinks = document.querySelectorAll('.sidebar-link');
         const sections = document.querySelectorAll('.content-section');
 
         sidebarLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                // Remove active classes
                 sidebarLinks.forEach(l => {
                     l.classList.remove('bg-white/10', 'text-primary');
                     l.classList.add('text-gray-400', 'hover:bg-white/5', 'hover:text-white');
                 });
-                // Hide all sections
                 sections.forEach(s => s.classList.add('hidden'));
 
-                // Add active to clicked
                 link.classList.add('bg-white/10', 'text-primary');
                 link.classList.remove('text-gray-400', 'hover:bg-white/5', 'hover:text-white');
 
-                // Show target section
                 const target = link.getAttribute('data-target');
                 document.getElementById(`section-${target}`).classList.remove('hidden');
 
-                if (target === 'my-courses') {
-                    loadMyCourses();
-                }
+                if (target === 'my-courses') loadMyCourses();
             });
         });
 
+        // Load enrolled courses
         async function loadMyCourses() {
+            const container = document.getElementById('my-courses-list');
+            container.innerHTML = `<div class="col-span-full text-center text-gray-400 py-8">Loading…</div>`;
             try {
-                const token = localStorage.getItem('token');
-                const headers = { 'Accept': 'application/json' };
-                if (token) headers['Authorization'] = `Token ${token}`;
-
-                const res = await fetch(`${API_BASE}/enrollments/`, {
-                    method: 'GET',
-                    headers: headers,
-                    credentials: 'include'
-                });
+                const res = await authFetch(`${API_BASE}/enrollments/`);
                 const data = await res.json();
-                const container = document.getElementById('my-courses-list');
 
                 if (!data || data.length === 0) {
                     container.innerHTML = `
                         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500 col-span-full">
-                            You haven't purchased any courses yet.
-                        </div>
-                    `;
+                            You haven't enrolled in any courses yet.
+                            <br><a href="courses.html" class="mt-4 inline-block text-primary font-semibold hover:underline">Browse Courses →</a>
+                        </div>`;
                     return;
                 }
 
@@ -345,15 +312,16 @@
                                 Enter Course
                             </a>
                         </div>
-                    </div>
-                `}).join('');
+                    </div>`;
+                }).join('');
             } catch (err) {
                 console.error(err);
+                container.innerHTML = `<div class="col-span-full text-center text-red-400 py-8">Failed to load courses.</div>`;
             }
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', loadDashboard);
+        // Run dashboard on load (no DOMContentLoaded needed — script runs after DOM is ready)
+        loadDashboard();
     </script>
 </body>
 

@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TutorBhaiya — Backend API Documentation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --purple:    #7C3AED;
+      --purple-lt: #EDE9FE;
+      --indigo:    #4F46E5;
+      --blue:      #2563EB;
+      --teal:      #0D9488;
+      --green:     #059669;
+      --amber:     #D97706;
+      --red:       #DC2626;
+      --gray-50:   #F9FAFB;
+      --gray-100:  #F3F4F6;
+      --gray-200:  #E5E7EB;
+      --gray-400:  #9CA3AF;
+      --gray-600:  #4B5563;
+      --gray-700:  #374151;
+      --gray-800:  #1F2937;
+      --gray-900:  #111827;
+    }
+
+    html { font-size: 14px; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--gray-800);
+      background: #fff;
+      line-height: 1.65;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 48px 40px 80px;
+    }
+
+    .cover {
+      min-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      border-bottom: 3px solid var(--purple);
+      margin-bottom: 60px;
+      padding-bottom: 48px;
+      page-break-after: always;
+    }
+
+    .cover-logo {
+      background: linear-gradient(135deg, var(--purple) 0%, var(--indigo) 100%);
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: 800;
+      padding: 12px 28px;
+      border-radius: 12px;
+      letter-spacing: -0.5px;
+      margin-bottom: 40px;
+      display: inline-block;
+    }
+
+    .cover h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--gray-900);
+      letter-spacing: -1.5px;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .cover h1 span {
+      background: linear-gradient(90deg, var(--purple), var(--indigo));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .cover .subtitle {
+      font-size: 1.2rem;
+      color: var(--gray-600);
+      font-weight: 400;
+      margin-bottom: 40px;
+      max-width: 560px;
+    }
+
+    .cover-meta {
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      gap: 16px;
+    }
+
+    .cover-meta-item {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 14px 20px;
+    }
+
+    .cover-meta-item .label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--gray-400);
+      margin-bottom: 4px;
+    }
+
+    .cover-meta-item .value {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--gray-800);
+    }
+
+    .toc {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 14px;
+      padding: 32px 36px;
+      margin-bottom: 60px;
+      page-break-after: always;
+    }
+
+    .toc h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--gray-200);
+    }
+
+    .toc ol { list-style: none; counter-reset: toc-counter; }
+
+    .toc > ol > li {
+      counter-increment: toc-counter;
+      margin-bottom: 8px;
+    }
+
+    .toc > ol > li::before {
+      content: counter(toc-counter) ".";
+      font-weight: 700;
+      color: var(--purple);
+      margin-right: 10px;
+      font-size: 0.9rem;
+    }
+
+    .toc a { text-decoration: none; color: var(--gray-700); font-weight: 500; font-size: 0.95rem; }
+    .toc a:hover { color: var(--purple); }
+
+    .toc .sub-list { list-style: none; margin: 6px 0 6px 28px; }
+
+    .toc .sub-list li {
+      font-size: 0.88rem;
+      color: var(--gray-600);
+      margin-bottom: 3px;
+      position: relative;
+      padding-left: 14px;
+    }
+
+    .toc .sub-list li::before { content: "—"; position: absolute; left: 0; color: var(--gray-400); }
+
+    .section { margin-bottom: 52px; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--gray-200);
+    }
+
+    .section-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .icon-purple { background: #EDE9FE; }
+    .icon-blue   { background: #DBEAFE; }
+    .icon-green  { background: #D1FAE5; }
+    .icon-amber  { background: #FEF3C7; }
+    .icon-teal   { background: #CCFBF1; }
+    .icon-red    { background: #FEE2E2; }
+    .icon-indigo { background: #E0E7FF; }
+    .icon-pink   { background: #FCE7F3; }
+
+    .section-title { font-size: 1.5rem; font-weight: 800; color: var(--gray-900); letter-spacing: -0.5px; }
+    .section-title .num { color: var(--purple); }
+
+    h3.sub-section { font-size: 1.1rem; font-weight: 700; color: var(--gray-800); margin: 28px 0 12px; }
+
+    .card { border: 1px solid var(--gray-200); border-radius: 12px; overflow: hidden; margin-bottom: 18px; }
+
+    .card-header {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 16px 20px;
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .card-body { padding: 16px 20px; }
+
+    .method {
+      display: inline-flex; align-items: center;
+      padding: 3px 10px; border-radius: 6px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em;
+      white-space: nowrap;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .method-get    { background: #D1FAE5; color: #065F46; }
+    .method-post   { background: #DBEAFE; color: #1E40AF; }
+    .method-patch  { background: #FEF3C7; color: #92400E; }
+    .method-delete { background: #FEE2E2; color: #991B1B; }
+    .method-multi  { background: #EDE9FE; color: #5B21B6; }
+
+    .route {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem; color: var(--gray-700);
+      background: white; padding: 4px 10px;
+      border-radius: 6px; border: 1px solid var(--gray-200);
+    }
+
+    .fn-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem; font-weight: 600; color: var(--purple);
+      background: var(--purple-lt); padding: 2px 8px; border-radius: 5px;
+    }
+
+    .desc { font-size: 0.9rem; color: var(--gray-600); line-height: 1.7; }
+
+    .tag {
+      display: inline-block; font-size: 0.72rem; font-weight: 600;
+      padding: 2px 9px; border-radius: 20px; margin: 2px 3px 2px 0;
+    }
+
+    .tag-auth    { background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; }
+    .tag-public  { background: #F0F9FF; color: #0369A1; border: 1px solid #BAE6FD; }
+    .tag-admin   { background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
+    .tag-teacher { background: #FFFBEB; color: #92400E; border: 1px solid #FDE68A; }
+
+    .param-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 8px; }
+
+    .param-table th {
+      text-align: left; padding: 7px 12px;
+      background: var(--gray-100); color: var(--gray-600);
+      font-weight: 600; font-size: 0.78rem;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+
+    .param-table td {
+      padding: 8px 12px; border-bottom: 1px solid var(--gray-100);
+      color: var(--gray-700); vertical-align: top;
+    }
+
+    .param-table tr:last-child td { border-bottom: none; }
+
+    .param-table td code {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+      background: var(--gray-100); padding: 1px 6px; border-radius: 4px;
+      color: var(--gray-700);
+    }
+
+    .model-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+
+    .model-table th {
+      text-align: left; padding: 8px 12px;
+      background: linear-gradient(to right, var(--gray-800), var(--gray-700));
+      color: #fff; font-weight: 600; font-size: 0.78rem;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+
+    .model-table th:first-child { border-radius: 8px 0 0 0; }
+    .model-table th:last-child  { border-radius: 0 8px 0 0; }
+
+    .model-table td {
+      padding: 8px 12px; border-bottom: 1px solid var(--gray-100);
+      color: var(--gray-700); vertical-align: top;
+    }
+
+    .model-table tr:nth-child(even) td { background: var(--gray-50); }
+    .model-table tr:last-child td { border-bottom: none; }
+
+    .model-table td code {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+      background: #EDE9FE; color: var(--purple);
+      padding: 1px 6px; border-radius: 4px;
+    }
+
+    .serializer-block {
+      background: var(--gray-50); border: 1px solid var(--gray-200);
+      border-left: 4px solid var(--teal);
+      border-radius: 0 8px 8px 0;
+      padding: 14px 18px; margin-bottom: 14px;
+    }
+
+    .serializer-block .name {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.88rem;
+      font-weight: 600; color: var(--teal); margin-bottom: 4px;
+    }
+
+    .perm-block { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+
+    .perm-card {
+      flex: 1; min-width: 200px;
+      border: 1px solid var(--gray-200); border-radius: 10px;
+      padding: 14px 16px;
+    }
+
+    .perm-card .perm-name {
+      font-family: 'JetBrains Mono', monospace; font-weight: 700;
+      font-size: 0.9rem; color: var(--indigo); margin-bottom: 6px;
+    }
+
+    .perm-card .perm-desc { font-size: 0.83rem; color: var(--gray-600); }
+
+    .info-box {
+      background: #EFF6FF; border: 1px solid #BFDBFE;
+      border-left: 4px solid var(--blue);
+      border-radius: 0 8px 8px 0; padding: 14px 18px;
+      margin: 16px 0; font-size: 0.88rem; color: var(--gray-700);
+    }
+
+    .info-box strong { color: var(--blue); }
+
+    .warn-box {
+      background: #FFFBEB; border: 1px solid #FDE68A;
+      border-left: 4px solid var(--amber);
+      border-radius: 0 8px 8px 0; padding: 14px 18px;
+      margin: 16px 0; font-size: 0.88rem; color: var(--gray-700);
+    }
+
+    .warn-box strong { color: var(--amber); }
+
+    .flow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 14px 0; }
+
+    .flow-step {
+      background: white; border: 1.5px solid var(--gray-200);
+      border-radius: 8px; padding: 7px 14px;
+      font-size: 0.82rem; font-weight: 500; color: var(--gray-700);
+    }
+
+    .flow-arrow { color: var(--purple); font-size: 1.1rem; font-weight: 700; }
+
+    @media print {
+      body { padding: 0; max-width: 100%; }
+      .cover { min-height: 100vh; }
+      .section { page-break-inside: avoid; }
+      .card { page-break-inside: avoid; }
+      a { color: inherit; text-decoration: none; }
+      .no-print { display: none !important; }
+    }
+
+    .doc-footer {
+      margin-top: 80px; padding-top: 24px;
+      border-top: 2px solid var(--gray-200);
+      text-align: center; color: var(--gray-400); font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-logo">📚 TutorBhaiya</div>
+  <h1>Backend API<br /><span>Documentation</span></h1>
+  <p class="subtitle">
+    A complete technical reference for all API endpoints, view functions,
+    database models, serializers, and custom permissions in the TutorBhaiya
+    Django REST Framework backend.
+  </p>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <div class="label">Framework</div>
+      <div class="value">Django 5 + DRF 3.15</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="label">Database</div>
+      <div class="value">SQLite (dev)</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="label">Auth</div>
+      <div class="value">Token + Session</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="label">Base URL</div>
+      <div class="value">localhost:8000/api/</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="label">Total Endpoints</div>
+      <div class="value">15 Endpoints</div>
+    </div>
+    <div class="cover-meta-item">
+      <div class="label">Generated</div>
+      <div class="value">July 2026</div>
+    </div>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>📋 Table of Contents</h2>
+  <ol>
+    <li><a href="#overview">Project Overview</a></li>
+    <li>
+      <a href="#auth">Authentication APIs</a>
+      <ul class="sub-list">
+        <li>GET /api/csrf/</li>
+        <li>POST /api/auth/register/</li>
+        <li>POST /api/auth/login/</li>
+        <li>POST /api/auth/logout/</li>
+        <li>GET | PATCH /api/auth/me/</li>
+      </ul>
+    </li>
+    <li>
+      <a href="#courses">Course APIs</a>
+      <ul class="sub-list">
+        <li>GET /api/categories/</li>
+        <li>GET /api/courses/</li>
+        <li>GET /api/courses/slug/</li>
+        <li>GET /api/courses/id/player/</li>
+      </ul>
+    </li>
+    <li>
+      <a href="#enrollments">Enrollment APIs</a>
+      <ul class="sub-list">
+        <li>GET | POST /api/enrollments/</li>
+        <li>GET | PATCH /api/enrollments/id/</li>
+        <li>POST /api/enrollments/complete-video/</li>
+      </ul>
+    </li>
+    <li><a href="#assignments">Assignment APIs</a></li>
+    <li>
+      <a href="#dashboard">Dashboard APIs</a>
+      <ul class="sub-list">
+        <li>GET /api/dashboard/ (Student)</li>
+        <li>GET /api/teacher/courses/</li>
+        <li>GET /api/teacher/students/</li>
+        <li>GET /api/admin/dashboard/</li>
+      </ul>
+    </li>
+    <li><a href="#contact">Contact API</a></li>
+    <li><a href="#models">Database Models</a></li>
+    <li><a href="#serializers">Serializers</a></li>
+    <li><a href="#permissions">Custom Permissions</a></li>
+  </ol>
+</div>
+
+<!-- 1. OVERVIEW -->
+<div class="section" id="overview">
+  <div class="section-header">
+    <div class="section-icon icon-purple">🏗️</div>
+    <div class="section-title"><span class="num">1.</span> Project Overview</div>
+  </div>
+
+  <p class="desc">
+    TutorBhaiya is an online learning platform built with <strong>Django 5</strong> and
+    <strong>Django REST Framework (DRF) 3.15</strong>. The backend exposes a RESTful JSON
+    API consumed by static HTML/JS frontend pages. Authentication supports both
+    <em>Token-based</em> (for API calls) and <em>Session-based</em> (for browser-based flows).
+  </p>
+
+  <div class="info-box" style="margin-top:16px;">
+    <strong>Base URL:</strong> All API endpoints are prefixed with <code>http://localhost:8000/api/</code>.
+    Defined in <code>tutorbhaiya/urls.py</code> as <code>path('api/', include('api.urls'))</code>.
+  </div>
+
+  <h3 class="sub-section">Tech Stack</h3>
+  <div style="border:1px solid var(--gray-200); border-radius:10px; overflow:hidden;">
+    <table class="param-table">
+      <thead><tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Web Framework</strong></td><td><code>Django 5.x</code></td><td>ORM, admin, routing, middleware</td></tr>
+        <tr><td><strong>API Layer</strong></td><td><code>DRF 3.15</code></td><td>Serializers, generic views, token auth</td></tr>
+        <tr><td><strong>Auth Tokens</strong></td><td><code>rest_framework.authtoken</code></td><td>Token-based authentication</td></tr>
+        <tr><td><strong>CORS</strong></td><td><code>django-cors-headers 4.3</code></td><td>Cross-origin requests from frontend</td></tr>
+        <tr><td><strong>Image Handling</strong></td><td><code>Pillow 10</code></td><td>Profile pictures and course thumbnails</td></tr>
+        <tr><td><strong>Database</strong></td><td><code>SQLite 3</code></td><td>Development database</td></tr>
+        <tr><td><strong>Timezone</strong></td><td><code>Asia/Dhaka</code></td><td>Bangladesh local time</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub-section">Authentication Flow</h3>
+  <div class="flow">
+    <div class="flow-step">Client sends credentials</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">POST /api/auth/login/</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">Server returns Token</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">Client stores Token</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">Authorization: Token &lt;key&gt;</div>
+  </div>
+
+  <h3 class="sub-section">User Roles</h3>
+  <div style="border:1px solid var(--gray-200); border-radius:10px; overflow:hidden;">
+    <table class="param-table">
+      <thead><tr><th>Role</th><th>Access Level</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag tag-public">student</span></td><td>Browse courses, enroll, view course player, submit assignments, personal dashboard</td></tr>
+        <tr><td><span class="tag tag-teacher">teacher</span></td><td>All student access + view own courses list and enrolled students</td></tr>
+        <tr><td><span class="tag tag-admin">admin</span></td><td>Full access including global stats, revenue reporting, Django admin panel</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 2. AUTH -->
+<div class="section" id="auth">
+  <div class="section-header">
+    <div class="section-icon icon-blue">🔐</div>
+    <div class="section-title"><span class="num">2.</span> Authentication APIs</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-get">GET</span>
+      <code class="route">/api/csrf/</code>
+      <span class="tag tag-public">Public</span>
+    </div>
+    <div class="card-body">
+      <p><strong>Function:</strong> <span class="fn-name">get_csrf_token(request)</span></p>
+      <p class="desc" style="margin-top:8px;">
+        Returns a CSRF token the frontend must include in all unsafe HTTP requests.
+        Generated via Django's <code>get_token()</code>. Open to everyone — no login required.
+        Response: <code>{ "csrfToken": "..." }</code>
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-post">POST</span>
+      <code class="route">/api/auth/register/</code>
+      <span class="tag tag-public">Public</span>
+    </div>
+    <div class="card-body">
+      <p><strong>View Class:</strong> <span class="fn-name">RegisterView</span></p>
+      <p class="desc" style="margin-top:8px;">
+        Creates a new user account using <code>UserRegistrationSerializer</code>.
+        Validates password strength and email uniqueness. Splits <code>full_name</code>
+        into first/last name. Auto-generates a unique username from the email prefix.
+        Auto-logs the user in and creates a DRF auth token on success.
+      </p>
+      <table class="param-table" style="margin-top:12px;">
+        <thead><tr><th>Request Field</th><th>Required</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>full_name</code></td><td>Yes</td><td>Full name — split into first/last name</td></tr>
+          <tr><td><code>email</code></td><td>Yes</td><td>Unique email, used as login identifier</td></tr>
+          <tr><td><code>password</code></td><td>Yes</td><td>Must pass Django password validators</td></tr>
+          <tr><td><code>phone</code></td><td>Optional</td><td>Phone number string</td></tr>
+        </tbody>
+      </table>
+      <table class="param-table" style="margin-top:10px;">
+        <thead><tr><th>Response Field</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>message</code></td><td>Success text</td></tr>
+          <tr><td><code>user</code></td><td>Full user profile (UserProfileSerializer)</td></tr>
+          <tr><td><code>token</code></td><td>Auth token for subsequent API calls</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-post">POST</span>
+      <code class="route">/api/auth/login/</code>
+      <span class="tag tag-public">Public</span>
+    </div>
+    <div class="card-body">
+      <p><strong>View Class:</strong> <span class="fn-name">LoginView</span></p>
+      <p class="desc" style="margin-top:8px;">
+        Authenticates an existing user. Looks up the user by email first (since Django's
+        <code>authenticate()</code> normally uses username), then passes credentials to
+        <code>authenticate()</code>. On success, creates/retrieves a DRF token and
+        starts a Django session.
+      </p>
+      <table class="param-table" style="margin-top:12px;">
+        <thead><tr><th>Request Field</th><th>Required</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>email</code></td><td>Yes</td><td>Registered email address</td></tr>
+          <tr><td><code>password</code></td><td>Yes</td><td>Account password</td></tr>
+        </tbody>
+      </table>
+      <div class="warn-box" style="margin-top:12px;">
+        <strong>Error cases:</strong> Returns HTTP 401 if email not found, or if password is incorrect (separate error messages for each).
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-post">POST</span>
+      <code class="route">/api/auth/logout/</code>
+      <span class="tag tag-auth">Auth Required</span>
+    </div>
+    <div class="card-body">
+      <p><strong>View Class:</strong> <span class="fn-name">LogoutView</span></p>
+      <p class="desc" style="margin-top:8px;">
+        Terminates the current Django session by calling <code>logout(request)</code>.
+        The client should also discard the locally stored auth token after calling this endpoint.
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-multi">GET | PATCH</span>
+      <code class="route">/api/auth/me/</code>
+      <span class="tag tag-auth">Auth Required</span>
+    </div>
+    <div class="card-body">
+      <p><strong>View Class:</strong> <span class="fn-name">MeView</span></p>
+      <p class="desc" style="margin-top:8px;">
+        <strong>GET</strong> — Returns the current user's profile via <code>UserProfileSerializer</code>.
+        If not authenticated, returns <code>{ "authenticated": false }</code> with HTTP 401.<br/><br/>
+        <strong>PATCH</strong> — Updates editable profile fields using <code>UserUpdateSerializer</code>
+        in <em>partial mode</em>, so only changed fields need to be provided.
+      </p>
+      <table class="param-table" style="margin-top:12px;">
+        <thead><tr><th>PATCH-able Field</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>first_name</code></td><td>First name</td></tr>
+          <tr><td><code>last_name</code></td><td>Last name</td></tr>
+          <tr><td><code>phone</code></td><td>Phone number</td></tr>
+          <tr><td><code>bio</code></td><td>Biography text</td></tr>
+          <tr><td><code>profile_picture</code></td><td>Image file upload</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 3. COURSES -->
+<div class="section" id="courses">
+  <div class="section-header">
+    <div class="section-icon icon-green">📗</div>
+    <div class="section-title"><span class="num">3.</span> Course APIs</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-get">GET</span>
+      <code class="route">/api/categories/</code>
+      <span class="tag tag-public">Public</span>
+    </div>
+    <div class="card-body">
+      <p><strong>View Class:</strong> <span class="fn-name">CategoryListView</span></p>
+      <p class="desc" style="margin-top:8px;">
+        Returns a flat list of all course categories. Each category includes its name, slug, icon,
+        description, and a computed <code>course_count</code> (active courses only).
+        Used to populate the filter tabs on the Courses page.
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-get">GET</span>
+      <code class="route">/api/courses/</code>
+      <span class="tag tag-public">Public</span>
+    </div>
+    <div class="card-body">
+      <p><strong>View Class:</strong> <span class="fn-name">CourseListView</span> — <strong>Method:</strong> <span class="fn-name">get_queryset()</span></p>
+      <p class="desc" style="margin-top:8px;">
+        Returns all active courses as lightweight listing cards. Supports three query filters.
+        For authenticated users, each course includes an <code>is_enrolled</code> boolean
+        annotated via a database subquery.
+      </p>
+      <table class="param-table" style="margin-top:12px;">
+        <thead><tr><th>Query Param</th><th>Example</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td><code>?category=slug</code></td><td><code>?category=ssc</code></td><td>Filter by category slug</td></tr>
+          <tr><td><code>?featured=true</code></td><td><code>?featured=true</code></td><td>Return only featured courses</td></tr>
+          <tr><td><code>?search=term</code></td><td><code>?search=math</code></td><td>Search on title or instructor name (case-insensitive)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-get">GET</span>
+      <code class="route">/api/courses/&lt;slug&gt;/</code>
+      <span class="tag tag-public">Public</span>
+    </div>
+    <div class="card-body">
+      <p><strong>View Class:</strong> <span class="fn-name">CourseDetailView</span></p>
+      <p class="desc" style="margin-top:8px;">
+        Returns full details of a single course identified by its URL slug.
+        Uses <code>CourseDetailSerializer</code> which adds: description, created_at,
+        outline (JSON array), roadmap (JSON array), assignments_count, exams_count,
+        quizzes_count. Annotates <code>is_enrolled</code> for authenticated users.
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-get">GET</span>
+      <code class="route">/api/courses/&lt;id&gt;/player/</code>
+      <span class="tag tag-auth">Auth Required</span>
+    </div>
+    <div class="card-body">
+      <p><strong>View Class:</strong> <span class="fn-name">CoursePlayerView</span> — <strong>Method:</strong> <span class="fn-name">get(request, pk)</span></p>
+      <p class="desc" style="margin-top:8px;">
+        Returns the full course player payload — course details with all nested modules,
+        videos, resources, and assignments. Also returns the user's progress percentage
+        and the list of completed video IDs. Requires an active enrollment;
+        returns HTTP 403 if not enrolled.
+      </p>
+      <table class="param-table" style="margin-top:12px;">
+        <thead><tr><th>Response Field</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>course</code></td><td>Full course with nested modules and videos (CoursePlayerSerializer)</td></tr>
+          <tr><td><code>progress</code></td><td>Integer 0–100 representing completion percentage</td></tr>
+          <tr><td><code>completed_video_ids</code></td><td>Array of video IDs already watched by this student</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 4. ENROLLMENTS -->
+<div class="section" id="enrollments">
+  <div class="section-header">
+    <div class="section-icon icon-amber">📋</div>
+    <div class="section-title"><span class="num">4.</span> Enrollment APIs</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-multi">GET | POST</span>
+      <code class="route">/api/enrollments/</code>
+      <span class="tag tag-auth">Auth Required</span>
+    </div>
+    <div class="card-body">
+      <p><strong>View Class:</strong> <span class="fn-name">EnrollmentListCreateView</span></p>
+      <p class="desc" style="margin-top:8px;">
+        <strong>GET</strong> — Lists all courses the current user is enrolled in. Each
+        enrollment includes nested course info, progress %, completion status, and timestamps.
+        Results are scoped to the logged-in user only.<br/><br/>
+        <strong>POST</strong> — Enrolls the user in a course. Uses <code>get_or_create</code>
+        so duplicate enrollments are safely ignored (idempotent).
+      </p>
+      <table class="param-table" style="margin-top:12px;">
+        <thead><tr><th>POST Field</th><th>Required</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>course_id</code></td><td>Yes</td><td>Primary key of the course to enroll in</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-multi">GET | PATCH</span>
+      <code class="route">/api/enrollments/&lt;id&gt;/</code>
+      <span class="tag tag-auth">Auth Required</span>
+    </div>
+    <div class="card-body">
+      <p><strong>View Class:</strong> <span class="fn-name">EnrollmentDetailView</span></p>
+      <p class="desc" style="margin-top:8px;">
+        Retrieve or update a single enrollment record. The queryset is filtered to the current
+        user, ensuring users cannot access other users' enrollments. PATCH allows manually
+        updating the progress field.
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-post">POST</span>
+      <code class="route">/api/enrollments/complete-video/</code>
+      <span class="tag tag-auth">Auth Required</span>
+    </div>
+    <div class="card-body">
+      <p><strong>View Class:</strong> <span class="fn-name">MarkVideoCompleteView</span> — <strong>Method:</strong> <span class="fn-name">post(request)</span></p>
+      <p class="desc" style="margin-top:8px;">
+        Marks a specific video as watched in the student's enrollment.
+        After adding the video to <code>completed_videos</code> (ManyToMany), recalculates
+        and saves the enrollment's progress percentage using the formula below.
+        If progress reaches 100%, sets <code>is_completed = True</code>.
+      </p>
+      <div class="flow">
+        <div class="flow-step">completed videos</div>
+        <div class="flow-arrow">÷</div>
+        <div class="flow-step">total videos in course</div>
+        <div class="flow-arrow">×</div>
+        <div class="flow-step">100 = progress %</div>
+      </div>
+      <table class="param-table" style="margin-top:12px;">
+        <thead><tr><th>Request Field</th><th>Required</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>course_id</code></td><td>Yes</td><td>ID of the course</td></tr>
+          <tr><td><code>video_id</code></td><td>Yes</td><td>ID of the video to mark complete</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 5. ASSIGNMENTS -->
+<div class="section" id="assignments">
+  <div class="section-header">
+    <div class="section-icon icon-teal">📝</div>
+    <div class="section-title"><span class="num">5.</span> Assignment APIs</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-multi">GET | POST</span>
+      <code class="route">/api/assignments/&lt;id&gt;/submit/</code>
+      <span class="tag tag-auth">Auth Required</span>
+    </div>
+    <div class="card-body">
+      <p><strong>View Class:</strong> <span class="fn-name">SubmitAssignmentView</span></p>
+      <p class="desc" style="margin-top:8px;">
+        <strong>GET</strong> — Checks whether the student has already submitted this assignment.
+        Returns full submission details (text, file URL, timestamp, marks, teacher feedback)
+        if submitted; otherwise returns <code>{ "submitted": false }</code>.<br/><br/>
+        <strong>POST</strong> — Submits the assignment. Accepts plain text, a file upload, or both.
+        Uses <code>get_or_create</code> so re-submitting updates the existing record instead of
+        creating a duplicate. Returns HTTP 201 on first submit, 200 on update.
+      </p>
+      <table class="param-table" style="margin-top:12px;">
+        <thead><tr><th>POST Field</th><th>Required</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>submission_text</code></td><td>At least one required</td><td>Written answer text</td></tr>
+          <tr><td><code>submission_file</code></td><td>At least one required</td><td>File upload (multipart/form-data)</td></tr>
+        </tbody>
+      </table>
+      <table class="param-table" style="margin-top:10px;">
+        <thead><tr><th>GET Response Field</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>submitted</code></td><td>Boolean — true if already submitted</td></tr>
+          <tr><td><code>submission_text</code></td><td>Written answer (if submitted)</td></tr>
+          <tr><td><code>submission_file_url</code></td><td>Absolute URL to uploaded file</td></tr>
+          <tr><td><code>submitted_at</code></td><td>Timestamp of submission</td></tr>
+          <tr><td><code>marks_obtained</code></td><td>Score given by teacher (nullable)</td></tr>
+          <tr><td><code>feedback</code></td><td>Teacher feedback text</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 6. DASHBOARD -->
+<div class="section" id="dashboard">
+  <div class="section-header">
+    <div class="section-icon icon-indigo">📊</div>
+    <div class="section-title"><span class="num">6.</span> Dashboard APIs</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-get">GET</span>
+      <code class="route">/api/dashboard/</code>
+      <span class="tag tag-auth">Auth Required</span>
+    </div>
+    <div class="card-body">
+      <p><strong>View Class:</strong> <span class="fn-name">DashboardView</span> — <strong>Method:</strong> <span class="fn-name">get(request)</span></p>
+      <p class="desc" style="margin-top:8px;">
+        Aggregates all student dashboard data in a single request. Queries all user enrollments
+        and computes stats in-memory. Returns user profile, stats summary, a "Continue Learning"
+        item (most recent incomplete enrollment), and the last 5 recent enrollments.
+      </p>
+      <table class="param-table" style="margin-top:12px;">
+        <thead><tr><th>Response Field</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>user</code></td><td>Current user profile (UserProfileSerializer)</td></tr>
+          <tr><td><code>stats.active_courses</code></td><td>Count of ongoing (not completed) enrollments</td></tr>
+          <tr><td><code>stats.completed_courses</code></td><td>Count of fully completed enrollments</td></tr>
+          <tr><td><code>stats.total_enrollments</code></td><td>Total enrollment count</td></tr>
+          <tr><td><code>stats.average_progress</code></td><td>Rounded mean progress % across all enrollments</td></tr>
+          <tr><td><code>continue_learning</code></td><td>Most recent incomplete enrollment (for Resume button)</td></tr>
+          <tr><td><code>recent_enrollments</code></td><td>Last 5 enrollments with course info</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-get">GET</span>
+      <code class="route">/api/teacher/courses/</code>
+      <span class="tag tag-teacher">Teacher Only</span>
+    </div>
+    <div class="card-body">
+      <p><strong>View Class:</strong> <span class="fn-name">TeacherCourseListView</span></p>
+      <p class="desc" style="margin-top:8px;">
+        Returns all courses where the instructor is the currently logged-in teacher.
+        Restricted by <code>IsTeacher</code> permission class. Uses the same
+        <code>CourseListSerializer</code> as the public course list.
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-get">GET</span>
+      <code class="route">/api/teacher/students/</code>
+      <span class="tag tag-teacher">Teacher Only</span>
+    </div>
+    <div class="card-body">
+      <p><strong>View Class:</strong> <span class="fn-name">TeacherStudentListView</span> — <strong>Method:</strong> <span class="fn-name">get(request)</span></p>
+      <p class="desc" style="margin-top:8px;">
+        Returns all students enrolled in any of the teacher's courses. Queries
+        courses by teacher → then all enrollments for those courses.
+        Builds and returns a custom list (not a serializer).
+      </p>
+      <table class="param-table" style="margin-top:12px;">
+        <thead><tr><th>Response Field (per item)</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>enrollment_id</code></td><td>ID of the enrollment record</td></tr>
+          <tr><td><code>student_name</code></td><td>Full name of the student</td></tr>
+          <tr><td><code>student_email</code></td><td>Student's email address</td></tr>
+          <tr><td><code>course_title</code></td><td>Name of the enrolled course</td></tr>
+          <tr><td><code>progress</code></td><td>Student's progress percentage</td></tr>
+          <tr><td><code>enrolled_at</code></td><td>Enrollment timestamp</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-get">GET</span>
+      <code class="route">/api/admin/dashboard/</code>
+      <span class="tag tag-admin">Admin Only</span>
+    </div>
+    <div class="card-body">
+      <p><strong>View Class:</strong> <span class="fn-name">AdminDashboardView</span> — <strong>Method:</strong> <span class="fn-name">get(request)</span></p>
+      <p class="desc" style="margin-top:8px;">
+        Returns platform-wide statistics. Revenue is computed with Django's
+        <code>aggregate(Sum('amount'))</code> across all Payment records.
+        Restricted by <code>IsAdmin</code> permission class.
+      </p>
+      <table class="param-table" style="margin-top:12px;">
+        <thead><tr><th>Response Field</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>total_courses</code></td><td>Total number of courses in the system</td></tr>
+          <tr><td><code>total_students</code></td><td>User count with role='student'</td></tr>
+          <tr><td><code>total_teachers</code></td><td>User count with role='teacher'</td></tr>
+          <tr><td><code>total_revenue</code></td><td>Sum of all Payment.amount values</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 7. CONTACT -->
+<div class="section" id="contact">
+  <div class="section-header">
+    <div class="section-icon icon-pink">✉️</div>
+    <div class="section-title"><span class="num">7.</span> Contact API</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-post">POST</span>
+      <code class="route">/api/contact/</code>
+      <span class="tag tag-public">Public</span>
+    </div>
+    <div class="card-body">
+      <p><strong>View Class:</strong> <span class="fn-name">ContactView</span></p>
+      <p class="desc" style="margin-top:8px;">
+        Saves a contact form submission to the database as a <code>ContactMessage</code> record.
+        Fully public — no authentication required. CSRF is disabled via <code>@csrf_exempt</code>
+        so the static HTML frontend can call it directly. Returns HTTP 201 on success.
+        Admins can view and mark messages as read in the Django admin panel.
+      </p>
+      <table class="param-table" style="margin-top:12px;">
+        <thead><tr><th>Request Field</th><th>Required</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>name</code></td><td>Yes</td><td>Sender's name</td></tr>
+          <tr><td><code>email</code></td><td>Yes</td><td>Sender's email address</td></tr>
+          <tr><td><code>phone</code></td><td>Optional</td><td>Phone number</td></tr>
+          <tr><td><code>subject</code></td><td>Optional</td><td>Message subject line</td></tr>
+          <tr><td><code>message</code></td><td>Yes</td><td>Full message body</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 8. MODELS -->
+<div class="section" id="models">
+  <div class="section-header">
+    <div class="section-icon icon-purple">🗄️</div>
+    <div class="section-title"><span class="num">8.</span> Database Models</div>
+  </div>
+
+  <p class="desc" style="margin-bottom:20px;">All models live in <code>api/models.py</code>. The custom user model is registered as <code>AUTH_USER_MODEL = 'api.User'</code>.</p>
+
+  <h3 class="sub-section">User (extends AbstractUser)</h3>
+  <div style="border:1px solid var(--gray-200); border-radius:10px; overflow:hidden; margin-bottom:24px;">
+    <table class="model-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>email</code></td><td>EmailField</td><td>Unique. Used as USERNAME_FIELD for login</td></tr>
+        <tr><td><code>username</code></td><td>CharField (inherited)</td><td>Auto-generated from email prefix on registration</td></tr>
+        <tr><td><code>first_name / last_name</code></td><td>CharField (inherited)</td><td>Split from full_name during registration</td></tr>
+        <tr><td><code>phone</code></td><td>CharField(20)</td><td>Optional phone number</td></tr>
+        <tr><td><code>profile_picture</code></td><td>ImageField</td><td>Uploaded to profile_pictures/ via Pillow</td></tr>
+        <tr><td><code>bio</code></td><td>TextField</td><td>Short biography text</td></tr>
+        <tr><td><code>role</code></td><td>CharField(20)</td><td>Choices: student / teacher / admin. Default: student</td></tr>
+        <tr><td><code>full_name</code></td><td>@property</td><td>Returns get_full_name() or falls back to username</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub-section">Category</h3>
+  <div style="border:1px solid var(--gray-200); border-radius:10px; overflow:hidden; margin-bottom:24px;">
+    <table class="model-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>name</code></td><td>CharField(100)</td><td>Display name</td></tr>
+        <tr><td><code>slug</code></td><td>SlugField</td><td>Unique. Auto-generated from name via slugify()</td></tr>
+        <tr><td><code>icon</code></td><td>CharField(50)</td><td>Phosphor icon class (e.g. ph-books, ph-code)</td></tr>
+        <tr><td><code>description</code></td><td>TextField</td><td>Optional description</td></tr>
+        <tr><td><code>order</code></td><td>PositiveIntegerField</td><td>Display sort order</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub-section">Course</h3>
+  <div style="border:1px solid var(--gray-200); border-radius:10px; overflow:hidden; margin-bottom:24px;">
+    <table class="model-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>title</code></td><td>CharField(200)</td><td>Course name</td></tr>
+        <tr><td><code>slug</code></td><td>SlugField</td><td>Unique. Auto-generated from title. Used in course detail URL.</td></tr>
+        <tr><td><code>category</code></td><td>ForeignKey → Category</td><td>SET_NULL on delete</td></tr>
+        <tr><td><code>instructor</code></td><td>ForeignKey → User</td><td>Limited to role='teacher'. SET_NULL on delete</td></tr>
+        <tr><td><code>price</code></td><td>DecimalField</td><td>Course price</td></tr>
+        <tr><td><code>discount_percentage</code></td><td>PositiveIntegerField</td><td>0–100 discount; frontend calculates discounted price</td></tr>
+        <tr><td><code>duration_hours</code></td><td>PositiveIntegerField</td><td>Total course duration in hours</td></tr>
+        <tr><td><code>thumbnail</code></td><td>ImageField</td><td>Uploaded to course_thumbnails/</td></tr>
+        <tr><td><code>badge_label</code></td><td>CharField(50)</td><td>Short badge text e.g. "SSC BATCH"</td></tr>
+        <tr><td><code>is_featured</code></td><td>BooleanField</td><td>Featured courses appear on homepage</td></tr>
+        <tr><td><code>is_active</code></td><td>BooleanField</td><td>Inactive courses are hidden from API</td></tr>
+        <tr><td><code>outline</code></td><td>JSONField</td><td>Array of outline topic strings</td></tr>
+        <tr><td><code>roadmap</code></td><td>JSONField</td><td>Array of milestone strings</td></tr>
+        <tr><td><code>enrollment_count</code></td><td>@property</td><td>Counts related Enrollment objects dynamically</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub-section">Enrollment</h3>
+  <div style="border:1px solid var(--gray-200); border-radius:10px; overflow:hidden; margin-bottom:24px;">
+    <table class="model-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>user</code></td><td>ForeignKey → User</td><td>CASCADE delete</td></tr>
+        <tr><td><code>course</code></td><td>ForeignKey → Course</td><td>CASCADE delete</td></tr>
+        <tr><td><code>enrolled_at</code></td><td>DateTimeField</td><td>Auto-set on creation (auto_now_add=True)</td></tr>
+        <tr><td><code>progress</code></td><td>PositiveIntegerField</td><td>0–100%. Updated by the complete-video API</td></tr>
+        <tr><td><code>completed_videos</code></td><td>ManyToManyField → Video</td><td>All videos the student has completed</td></tr>
+        <tr><td><code>is_completed</code></td><td>BooleanField</td><td>Automatically set True when progress reaches 100</td></tr>
+        <tr><td><code>last_accessed</code></td><td>DateTimeField</td><td>Auto-updated on every save (auto_now=True)</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box" style="margin:0 16px 16px; border-radius:8px;">
+      <strong>Constraint:</strong> unique_together('user', 'course') — one enrollment per user per course.
+    </div>
+  </div>
+
+  <h3 class="sub-section">Course Content Models</h3>
+  <div style="border:1px solid var(--gray-200); border-radius:10px; overflow:hidden; margin-bottom:24px;">
+    <table class="model-table">
+      <thead><tr><th>Model</th><th>Key Fields</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Module</strong></td>
+          <td><code>course</code>, <code>title</code>, <code>order</code>, <code>description</code></td>
+          <td>A chapter or section within a course. Ordered by the order field.</td>
+        </tr>
+        <tr>
+          <td><strong>Video</strong></td>
+          <td><code>module</code>, <code>title</code>, <code>video_url</code>, <code>duration_minutes</code>, <code>order</code></td>
+          <td>Individual video lesson inside a module. URL typically points to YouTube.</td>
+        </tr>
+        <tr>
+          <td><strong>Resource</strong></td>
+          <td><code>course</code>, <code>module</code>, <code>title</code>, <code>file</code>, <code>url</code></td>
+          <td>Downloadable file or link. Can belong to a course or a specific module.</td>
+        </tr>
+        <tr>
+          <td><strong>Assignment</strong></td>
+          <td><code>course</code>, <code>module</code>, <code>title</code>, <code>description</code>, <code>due_date</code>, <code>total_marks</code></td>
+          <td>Assignment created by a teacher for a course/module.</td>
+        </tr>
+        <tr>
+          <td><strong>StudentAssignment</strong></td>
+          <td><code>assignment</code>, <code>student</code>, <code>submission_text</code>, <code>submission_file</code>, <code>marks_obtained</code>, <code>feedback</code></td>
+          <td>Student's submission. unique_together('assignment','student'). Teacher adds marks and feedback here.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub-section">Payment</h3>
+  <div style="border:1px solid var(--gray-200); border-radius:10px; overflow:hidden; margin-bottom:24px;">
+    <table class="model-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>user</code></td><td>ForeignKey → User</td><td>Who made the payment</td></tr>
+        <tr><td><code>course</code></td><td>ForeignKey → Course</td><td>SET_NULL — course can be deleted without losing payment history</td></tr>
+        <tr><td><code>amount</code></td><td>DecimalField</td><td>Amount paid</td></tr>
+        <tr><td><code>payment_method</code></td><td>CharField(50)</td><td>e.g. "bkash", "card"</td></tr>
+        <tr><td><code>transaction_id</code></td><td>CharField(100)</td><td>External payment gateway reference</td></tr>
+        <tr><td><code>status</code></td><td>CharField(20)</td><td>Default: "completed"</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub-section">ContactMessage</h3>
+  <div style="border:1px solid var(--gray-200); border-radius:10px; overflow:hidden; margin-bottom:24px;">
+    <table class="model-table">
+      <thead><tr><th>Field</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>name, email, phone, subject, message</code></td><td>Fields submitted from the contact form</td></tr>
+        <tr><td><code>submitted_at</code></td><td>Auto-set timestamp (auto_now_add=True)</td></tr>
+        <tr><td><code>is_read</code></td><td>Admin toggles this in the Django admin to track read/unread messages</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 9. SERIALIZERS -->
+<div class="section" id="serializers">
+  <div class="section-header">
+    <div class="section-icon icon-teal">🔄</div>
+    <div class="section-title"><span class="num">9.</span> Serializers</div>
+  </div>
+
+  <p class="desc" style="margin-bottom:20px;">
+    Serializers in <code>api/serializers.py</code> control how model instances are converted
+    to/from JSON and handle input validation on write operations.
+  </p>
+
+  <div class="serializer-block">
+    <div class="name">UserRegistrationSerializer</div>
+    <p class="desc">Handles new user sign-up. Validates password strength via Django's built-in validators, checks email uniqueness, splits full_name into first/last, auto-generates a unique username from the email prefix, and calls create_user().</p>
+  </div>
+
+  <div class="serializer-block">
+    <div class="name">UserProfileSerializer</div>
+    <p class="desc">Read-only profile data returned after login/register and by /me/. Adds two computed fields: full_name (calls get_full_name()) and avatar_initial (first letter of name, upper-cased — used for avatar circle in the UI).</p>
+  </div>
+
+  <div class="serializer-block">
+    <div class="name">UserUpdateSerializer</div>
+    <p class="desc">Allows updating: first_name, last_name, phone, bio, profile_picture. Used with partial=True so individual fields can be updated without sending the entire profile.</p>
+  </div>
+
+  <div class="serializer-block">
+    <div class="name">CategorySerializer</div>
+    <p class="desc">Adds a computed course_count field counting only active courses in that category (filters is_active=True). Returns: id, name, slug, icon, description, course_count.</p>
+  </div>
+
+  <div class="serializer-block">
+    <div class="name">CourseListSerializer</div>
+    <p class="desc">Lightweight serializer for course listing cards. Adds: category_name, category_slug, instructor_name (from related User model), and an absolute thumbnail_url (built from request context). Includes is_enrolled field (defaults False; annotated by views for authenticated users).</p>
+  </div>
+
+  <div class="serializer-block">
+    <div class="name">CourseDetailSerializer (extends CourseListSerializer)</div>
+    <p class="desc">Adds extra fields for the course detail page: description, created_at, outline (JSON array), roadmap (JSON array), assignments_count, exams_count, quizzes_count.</p>
+  </div>
+
+  <div class="serializer-block">
+    <div class="name">CoursePlayerSerializer (extends CourseDetailSerializer)</div>
+    <p class="desc">The heaviest serializer — adds fully nested modules (each module contains its videos, resources, and assignments via ModuleSerializer). Used only by the course player view to provide all course content in one API call.</p>
+  </div>
+
+  <div class="serializer-block">
+    <div class="name">EnrollmentSerializer</div>
+    <p class="desc">Nests the full CourseListSerializer for read operations. For write operations, accepts a course_id field. The create() override uses get_or_create to safely handle duplicate enrollment attempts (idempotent).</p>
+  </div>
+
+  <div class="serializer-block">
+    <div class="name">ModuleSerializer</div>
+    <p class="desc">Includes nested VideoSerializer (all videos in the module), ResourceSerializer (all resources), and a custom get_assignments() method returning all assignments via AssignmentSerializer. Provides the full content tree for one module.</p>
+  </div>
+
+  <div class="serializer-block">
+    <div class="name">StudentAssignmentSerializer</div>
+    <p class="desc">Adds read-only computed fields: assignment_title and student_name. The marks_obtained and feedback fields are read-only — they can only be set by admins/teachers via the Django admin panel.</p>
+  </div>
+
+  <div class="serializer-block">
+    <div class="name">PaymentSerializer</div>
+    <p class="desc">Adds read-only course_title and user_name fields for display. Timestamps (created_at) and status are also read-only.</p>
+  </div>
+
+  <div class="serializer-block">
+    <div class="name">ContactMessageSerializer</div>
+    <p class="desc">Simple serializer for the contact form. The submitted_at field is read-only and auto-set by the model. Used in the public ContactView API.</p>
+  </div>
+</div>
+
+<!-- 10. PERMISSIONS -->
+<div class="section" id="permissions">
+  <div class="section-header">
+    <div class="section-icon icon-red">🛡️</div>
+    <div class="section-title"><span class="num">10.</span> Custom Permissions</div>
+  </div>
+
+  <p class="desc" style="margin-bottom:20px;">
+    Three custom permission classes in <code>api/permissions.py</code> extend DRF's
+    <code>BasePermission</code>. They inspect the <code>role</code> field on the User model.
+  </p>
+
+  <div class="perm-block">
+    <div class="perm-card">
+      <div class="perm-name">IsAdmin</div>
+      <div class="perm-desc">
+        Grants access if <code>user.role == 'admin'</code> or <code>user.is_superuser</code>.
+        <br/><strong>Used on:</strong> /api/admin/dashboard/
+      </div>
+    </div>
+    <div class="perm-card">
+      <div class="perm-name">IsTeacher</div>
+      <div class="perm-desc">
+        Grants access if role is 'teacher' or 'admin' (admins can access teacher views too).
+        <br/><strong>Used on:</strong> /api/teacher/courses/ and /api/teacher/students/
+      </div>
+    </div>
+    <div class="perm-card">
+      <div class="perm-name">IsStudent</div>
+      <div class="perm-desc">
+        Grants access to any authenticated user (student, teacher, or admin).
+        Defined and available but not currently applied to a specific route.
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sub-section">Permission Matrix</h3>
+  <div style="border:1px solid var(--gray-200); border-radius:10px; overflow:hidden;">
+    <table class="model-table">
+      <thead><tr><th>Endpoint</th><th>Anonymous</th><th>Student</th><th>Teacher</th><th>Admin</th></tr></thead>
+      <tbody>
+        <tr><td>GET /api/csrf/</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>POST /api/auth/register/</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>POST /api/auth/login/</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>GET /api/categories/</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>GET /api/courses/</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>GET /api/courses/slug/</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>POST /api/contact/</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>GET /api/courses/id/player/</td><td>❌</td><td>✅ (if enrolled)</td><td>✅</td><td>✅</td></tr>
+        <tr><td>GET | POST /api/enrollments/</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>POST /api/enrollments/complete-video/</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>GET /api/dashboard/</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>GET | POST /api/assignments/id/submit/</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>GET /api/teacher/courses/</td><td>❌</td><td>❌</td><td>✅</td><td>✅</td></tr>
+        <tr><td>GET /api/teacher/students/</td><td>❌</td><td>❌</td><td>✅</td><td>✅</td></tr>
+        <tr><td>GET /api/admin/dashboard/</td><td>❌</td><td>❌</td><td>❌</td><td>✅</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="doc-footer">
+  <p>TutorBhaiya Backend Documentation &nbsp;·&nbsp; Generated July 2026</p>
+  <p style="margin-top:6px;">Django 5 · Django REST Framework 3.15 · SQLite · Token Authentication</p>
+</div>
+
+<!-- Print Button -->
+<div class="no-print" style="position:fixed; bottom:30px; right:30px;">
+  <button onclick="window.print()"
+    style="background:linear-gradient(135deg,#7C3AED,#4F46E5);color:#fff;border:none;
+           padding:14px 28px;border-radius:50px;font-size:1rem;font-weight:700;
+           cursor:pointer;box-shadow:0 8px 24px rgba(124,58,237,.4);
+           font-family:'Inter',sans-serif; letter-spacing:-0.3px;">
+    🖨️ Save as PDF
+  </button>
+</div>
+
+</body>
+</html>

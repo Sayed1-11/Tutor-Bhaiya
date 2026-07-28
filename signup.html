@@ -121,22 +121,30 @@
 
     <script src="script.js"></script>
     <script>
-        const API_BASE = 'https://tutor-bhaiya.onrender.com/api';
+        // Redirect if already logged in
+        if (isLoggedIn()) {
+            window.location.href = 'dashboard.html';
+        }
 
-        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+        const signupForm = document.getElementById('signup-form');
+        const submitBtn = signupForm.querySelector('button[type="submit"]');
+        const errorDiv = document.getElementById('error-message');
+
+        signupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const fullName = document.getElementById('fullname').value;
-            const email = document.getElementById('email').value;
+            const fullName = document.getElementById('fullname').value.trim();
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-            const errorDiv = document.getElementById('error-message');
+
             errorDiv.classList.add('hidden');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg> Creating Account…`;
 
             try {
-                // Get CSRF Token
+                // Get CSRF token
                 const csrfRes = await fetch(`${API_BASE}/csrf/`);
                 const { csrfToken } = await csrfRes.json();
 
-                // Register request
                 const res = await fetch(`${API_BASE}/auth/register/`, {
                     method: 'POST',
                     headers: {
@@ -148,27 +156,32 @@
                 });
 
                 const data = await res.json();
+
                 if (res.ok) {
                     localStorage.setItem('user', JSON.stringify(data.user));
-                    if (data.token) localStorage.setItem('token', data.token);
+                    localStorage.setItem('token', data.token);
                     window.location.href = 'dashboard.html';
                 } else {
-                    // Check for validation errors on password or email
+                    // Collect all field errors
                     let errors = [];
                     for (const field in data) {
                         if (Array.isArray(data[field])) {
-                            errors.push(`${field}: ${data[field].join(' ')}`);
-                        } else {
+                            errors.push(data[field].join(' '));
+                        } else if (typeof data[field] === 'string') {
                             errors.push(data[field]);
                         }
                     }
-                    errorDiv.innerHTML = errors.join('<br>') || 'Registration failed. Please check inputs.';
+                    errorDiv.innerHTML = errors.join('<br>') || 'Registration failed. Please check your inputs.';
                     errorDiv.classList.remove('hidden');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `Sign Up <i class="ph ph-arrow-right"></i>`;
                 }
             } catch (err) {
                 console.error(err);
-                errorDiv.textContent = 'Server connection error. Please try again.';
+                errorDiv.textContent = 'Cannot connect to server. Is the backend running?';
                 errorDiv.classList.remove('hidden');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `Sign Up <i class="ph ph-arrow-right"></i>`;
             }
         });
     </script>

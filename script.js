@@ -1,39 +1,137 @@
+/**
+ * TutorBhaiya — Global Script
+ * Handles: Navbar scroll, mobile menu, FAQ, auth state, navbar UI
+ */
+
+const API_BASE = 'http://127.0.0.1:8000/api';
+
+// ─── Auth Helpers ─────────────────────────────────────────────────────────────
+
+function getToken() {
+    return localStorage.getItem('token') || null;
+}
+
+function getUser() {
+    try {
+        const u = localStorage.getItem('user');
+        return u ? JSON.parse(u) : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function isLoggedIn() {
+    return !!(getToken() && getUser());
+}
+
+function clearAuth() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+}
+
+// ─── Fetch with Auth ──────────────────────────────────────────────────────────
+
+async function authFetch(url, options = {}) {
+    const token = getToken();
+    const headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        ...(options.headers || {}),
+    };
+    if (token) headers['Authorization'] = `Token ${token}`;
+    return fetch(url, { ...options, headers, credentials: 'include' });
+}
+
+// ─── Logout ───────────────────────────────────────────────────────────────────
+
+async function logout() {
+    try {
+        const csrfRes = await fetch(`${API_BASE}/csrf/`);
+        const { csrfToken } = await csrfRes.json();
+        const token = getToken();
+        const headers = { 'X-CSRFToken': csrfToken };
+        if (token) headers['Authorization'] = `Token ${token}`;
+        await fetch(`${API_BASE}/auth/logout/`, {
+            method: 'POST',
+            headers,
+            credentials: 'include'
+        });
+    } catch (err) {
+        console.warn('Logout API error (clearing local anyway):', err);
+    }
+    clearAuth();
+    window.location.href = 'index.html';
+}
+
+// ─── Update Navbar for Auth State ─────────────────────────────────────────────
+
+function updateNavbarAuth() {
+    const user = getUser();
+    const loggedIn = isLoggedIn();
+
+    // Desktop navbar: login button → user avatar + Dashboard, or keep Login
+    const loginBtn = document.querySelector('a[href="login.html"].bg-secondary, a[href="login.html"].bg-primary');
+    const dashboardLink = document.querySelector('a[href="dashboard.html"].nav-link');
+
+    if (loggedIn && user) {
+        const initial = user.avatar_initial || (user.full_name ? user.full_name.charAt(0).toUpperCase() : 'U');
+
+        // Replace login button with user avatar pill
+        if (loginBtn) {
+            loginBtn.href = 'profile.html';
+            loginBtn.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">${initial}</div>
+                    <span>${user.full_name ? user.full_name.split(' ')[0] : 'Dashboard'}</span>
+                </div>`;
+            loginBtn.classList.remove('bg-secondary', 'hover:bg-emerald-600', 'shadow-secondary/30', 'hover:shadow-secondary/50');
+            loginBtn.classList.add('bg-primary', 'hover:bg-violet-700');
+        }
+
+        // Show Dashboard nav link
+        if (dashboardLink) dashboardLink.style.display = '';
+
+        // Wire all logout buttons on the page
+        document.querySelectorAll('#logout-btn, .logout-trigger').forEach(btn => {
+            btn.addEventListener('click', (e) => { e.preventDefault(); logout(); });
+        });
+
+        // Mobile menu: if Login link exists, turn it into Dashboard
+        document.querySelectorAll('#mobile-menu a[href="login.html"]').forEach(el => {
+            el.href = 'dashboard.html';
+            el.textContent = 'My Dashboard';
+        });
+
+    } else {
+        // Not logged in: hide Dashboard link
+        if (dashboardLink) dashboardLink.style.display = 'none';
+    }
+}
+
+// ─── DOMContentLoaded ─────────────────────────────────────────────────────────
+
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     // 1. Navbar Scroll Effect & Mobile Menu Logic
     const navbar = document.getElementById('navbar');
     const logoText = document.getElementById('logo-text');
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
-    const navLinks = document.querySelectorAll('.nav-link');
-    
-    // Check if the current page has a transparent/dark navbar by default (e.g. index.html)
+
     const isTransparentNavbar = navbar && navbar.classList.contains('bg-transparent');
-    
+
     if (isTransparentNavbar) {
         window.addEventListener('scroll', () => {
             if (window.scrollY > 50) {
                 navbar.classList.add('bg-white/95', 'backdrop-blur-md', 'shadow-md', 'border-b', 'border-slate-200/50', 'text-slate-700');
                 navbar.classList.remove('bg-transparent', 'text-gray-200');
-                if (logoText) {
-                    logoText.classList.add('text-slate-900');
-                    logoText.classList.remove('text-white');
-                }
-                if (mobileMenuBtn) {
-                    mobileMenuBtn.classList.add('text-slate-700');
-                    mobileMenuBtn.classList.remove('text-gray-200');
-                }
+                if (logoText) { logoText.classList.add('text-slate-900'); logoText.classList.remove('text-white'); }
+                if (mobileMenuBtn) { mobileMenuBtn.classList.add('text-slate-700'); mobileMenuBtn.classList.remove('text-gray-200'); }
             } else {
                 navbar.classList.remove('bg-white/95', 'backdrop-blur-md', 'shadow-md', 'border-b', 'border-slate-200/50', 'text-slate-700');
                 navbar.classList.add('bg-transparent', 'text-gray-200');
-                if (logoText) {
-                    logoText.classList.remove('text-slate-900');
-                    logoText.classList.add('text-white');
-                }
-                if (mobileMenuBtn) {
-                    mobileMenuBtn.classList.remove('text-slate-700');
-                    mobileMenuBtn.classList.add('text-gray-200');
-                }
+                if (logoText) { logoText.classList.remove('text-slate-900'); logoText.classList.add('text-white'); }
+                if (mobileMenuBtn) { mobileMenuBtn.classList.remove('text-slate-700'); mobileMenuBtn.classList.add('text-gray-200'); }
             }
         });
     }
@@ -44,102 +142,49 @@ document.addEventListener('DOMContentLoaded', () => {
             e.stopPropagation();
             mobileMenu.classList.toggle('hidden');
         });
-        
-        // Close mobile menu on clicking anywhere else
         document.addEventListener('click', () => {
             if (!mobileMenu.classList.contains('hidden')) {
                 mobileMenu.classList.add('hidden');
             }
         });
-
-        mobileMenu.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
+        mobileMenu.addEventListener('click', (e) => e.stopPropagation());
     }
 
-    // 2. Swiper Initialization (Testimonials)
+    // 2. Swiper (Testimonials)
     if (typeof Swiper !== 'undefined' && document.querySelector('.testimonialSwiper')) {
-        const swiper = new Swiper('.testimonialSwiper', {
-            slidesPerView: 1,
-            spaceBetween: 30,
-            loop: true,
-            autoplay: {
-                delay: 5000,
-                disableOnInteraction: false,
-            },
-            pagination: {
-                el: '.swiper-pagination-custom',
-                clickable: true,
-            },
-            navigation: {
-                nextEl: '.swiper-button-next-custom',
-                prevEl: '.swiper-button-prev-custom',
-            },
+        new Swiper('.testimonialSwiper', {
+            slidesPerView: 1, spaceBetween: 30, loop: true,
+            autoplay: { delay: 5000, disableOnInteraction: false },
+            pagination: { el: '.swiper-pagination-custom', clickable: true },
+            navigation: { nextEl: '.swiper-button-next-custom', prevEl: '.swiper-button-prev-custom' },
         });
     }
 
-    // 3. FAQ Accordion Logic
-    const faqItems = document.querySelectorAll('.faq-item');
-
-    faqItems.forEach(item => {
+    // 3. FAQ Accordion
+    document.querySelectorAll('.faq-item').forEach(item => {
         const button = item.querySelector('.faq-button');
         const content = item.querySelector('.faq-content');
         const icon = item.querySelector('.ph-plus');
-
-        if (button) {
-            button.addEventListener('click', () => {
-                const isActive = item.classList.contains('active');
-
-                // Close all items
-                faqItems.forEach(otherItem => {
-                    otherItem.classList.remove('active');
-                    otherItem.querySelector('.faq-content').style.maxHeight = null;
-                    otherItem.querySelector('.ph-plus').style.transform = 'rotate(0deg)';
-                    otherItem.classList.replace('border-primary', 'border-gray-200');
-                });
-
-                // Open clicked item if it wasn't active
-                if (!isActive) {
-                    item.classList.add('active');
-                    content.style.maxHeight = content.scrollHeight + "px";
-                    icon.style.transform = 'rotate(45deg)';
-                    item.classList.replace('border-gray-200', 'border-primary');
-                }
+        if (!button) return;
+        button.addEventListener('click', () => {
+            const isActive = item.classList.contains('active');
+            document.querySelectorAll('.faq-item').forEach(other => {
+                other.classList.remove('active');
+                other.querySelector('.faq-content').style.maxHeight = null;
+                other.querySelector('.ph-plus').style.transform = 'rotate(0deg)';
+                other.classList.replace('border-primary', 'border-gray-200');
             });
-        }
+            if (!isActive) {
+                item.classList.add('active');
+                content.style.maxHeight = content.scrollHeight + 'px';
+                icon.style.transform = 'rotate(45deg)';
+                item.classList.replace('border-gray-200', 'border-primary');
+            }
+        });
     });
 
-    // 4. Global Auth Check for Navbar
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-        try {
-            const user = JSON.parse(userStr);
-            const loginBtns = document.querySelectorAll('a[href="login.html"]');
-            
-            loginBtns.forEach(btn => {
-                // Desktop button
-                if (btn.classList.contains('px-6') || btn.classList.contains('px-5')) {
-                    btn.href = 'dashboard.html';
-                    btn.innerHTML = `<div class="flex items-center gap-2"><div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-white text-xs font-bold">${user.avatar_initial || user.full_name.charAt(0).toUpperCase()}</div><span>Dashboard</span></div>`;
-                    btn.classList.replace('bg-secondary', 'bg-primary');
-                    btn.classList.replace('hover:bg-emerald-600', 'hover:bg-violet-700');
-                } 
-                // Mobile menu button
-                else if (btn.closest('#mobile-menu')) {
-                     btn.href = 'dashboard.html';
-                     btn.textContent = 'Dashboard';
-                }
-            });
-
-            // Hide the extra "Dashboard" text link if the login button turned into a Dashboard button
-            const navActions = document.querySelector('.hidden.md\\:flex.items-center.space-x-4');
-            if (navActions) {
-                 const dashboardLink = navActions.querySelector('a[href="dashboard.html"].nav-link');
-                 if(dashboardLink) dashboardLink.style.display = 'none';
-            }
-        } catch(e) {
-            console.error("Error parsing user data for navbar", e);
-        }
-    }
+    // 4. Update navbar auth state on every page
+    updateNavbarAuth();
 
 });
+
