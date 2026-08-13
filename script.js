@@ -3,7 +3,7 @@
  * Handles: Navbar scroll, mobile menu, FAQ, auth state, navbar UI
  */
 
-const API_BASE = 'http://127.0.0.1:8000/api';
+const API_BASE = 'https://tutor-bhaiya.onrender.com/api';
 
 // ─── Auth Helpers ─────────────────────────────────────────────────────────────
 
@@ -70,6 +70,7 @@ function updateNavbarAuth() {
     const loggedIn = isLoggedIn();
 
     // Desktop navbar: login button → user avatar + Dashboard, or keep Login
+    // Desktop navbar: login button → user avatar + Profile, or keep Login
     const loginBtn = document.querySelector('a[href="login.html"].bg-secondary, a[href="login.html"].bg-primary');
     const dashboardLink = document.querySelector('a[href="dashboard.html"].nav-link');
 
@@ -82,7 +83,7 @@ function updateNavbarAuth() {
             loginBtn.innerHTML = `
                 <div class="flex items-center gap-2">
                     <div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">${initial}</div>
-                    <span>${user.full_name ? user.full_name.split(' ')[0] : 'Dashboard'}</span>
+                    <span>${user.full_name ? user.full_name.split(' ')[0] : 'Profile'}</span>
                 </div>`;
             loginBtn.classList.remove('bg-secondary', 'hover:bg-emerald-600', 'shadow-secondary/30', 'hover:shadow-secondary/50');
             loginBtn.classList.add('bg-primary', 'hover:bg-violet-700');
@@ -96,10 +97,10 @@ function updateNavbarAuth() {
             btn.addEventListener('click', (e) => { e.preventDefault(); logout(); });
         });
 
-        // Mobile menu: if Login link exists, turn it into Dashboard
+        // Mobile menu: if Login link exists, turn it into Profile
         document.querySelectorAll('#mobile-menu a[href="login.html"]').forEach(el => {
-            el.href = 'dashboard.html';
-            el.textContent = 'My Dashboard';
+            el.href = 'profile.html';
+            el.textContent = 'My Profile';
         });
 
     } else {
