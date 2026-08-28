@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Careers at TutorBhaiya — We Are Hiring!</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#090d16',
+                        light: '#F9FAFB',
+                        primary: '#8B5CF6',
+                        secondary: '#10B981',
+                        accent1: '#F59E0B',
+                        accent2: '#38BDF8'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="font-sans antialiased text-gray-800 bg-gray-50 flex flex-col min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 text-slate-800 shadow-sm" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="index.html" class="flex-shrink-0 flex items-center gap-2">
+                    <img src="assets/logo.png" alt="TutorBhaiya" class="h-10 w-auto object-contain">
+                    <span class="font-bold text-xl text-slate-900 tracking-tight">TutorBhaiya</span>
+                </a>
+
+                <div class="hidden md:flex items-center space-x-6 text-sm font-semibold">
+                    <a href="index.html" class="nav-link hover:text-primary transition-colors">Home</a>
+                    <a href="courses.html" class="nav-link hover:text-primary transition-colors">Courses</a>
+                    
+                    <div class="relative group cursor-pointer py-7">
+                        <span class="nav-link flex items-center gap-1 text-primary border-b-2 border-primary">
+                            More <i class="ph ph-caret-down text-xs"></i>
+                        </span>
+                        <div class="absolute left-0 top-full w-56 rounded-2xl bg-white text-slate-800 shadow-2xl border border-slate-100 py-3 hidden group-hover:block z-50">
+                            <a href="books.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary text-sm font-medium">Books</a>
+                            <a href="courses.html?filter=spoken-english" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary text-sm font-medium">Spoken English</a>
+                            <a href="courses.html?filter=english-foundation" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary text-sm font-medium">English Foundation</a>
+                            <a href="careers.html" class="block px-5 py-2.5 bg-violet-50 text-primary font-semibold text-sm">Career</a>
+                            <a href="certificate.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary text-sm font-medium">Certificate</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="dashboard.html" class="text-sm font-semibold hover:text-primary transition-colors nav-link">Dashboard</a>
+                    <a href="login.html" class="bg-secondary hover:bg-emerald-600 text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-md">
+                        Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Careers Hero -->
+    <header class="pt-32 pb-20 bg-dark text-white relative overflow-hidden bg-star-pattern bg-star-size">
+        <div class="max-w-7xl mx-auto px-4 text-center relative z-10">
+            <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary/20 text-secondary text-xs font-bold uppercase tracking-wider mb-4 border border-secondary/30">
+                <span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span> WE ARE HIRING
+            </span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 leading-tight">
+                Shape the Future of Education <br/><span class="text-accent2">With TutorBhaiya</span>
+            </h1>
+            <p class="text-gray-300 max-w-2xl mx-auto text-lg leading-relaxed mb-8">
+                Join an extraordinary team of educators, engineers, and creators building Bangladesh's premier online learning platform.
+            </p>
+        </div>
+    </header>
+
+    <!-- Culture & Perks -->
+    <section class="py-12 bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="p-6 rounded-2xl bg-gray-50 border border-gray-100 flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary text-2xl flex items-center justify-center shrink-0">
+                        <i class="ph ph-rocket"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-lg mb-1">Impactful Mission</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed">Directly impact thousands of students across Bangladesh by crafting accessible, quality education.</p>
+                    </div>
+                </div>
+                <div class="p-6 rounded-2xl bg-gray-50 border border-gray-100 flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-secondary/10 text-secondary text-2xl flex items-center justify-center shrink-0">
+                        <i class="ph ph-currency-circle-dollar"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-lg mb-1">Competitive Rewards</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed">Industry-leading salary packages, performance bonuses, health coverage, and flexible work options.</p>
+                    </div>
+                </div>
+                <div class="p-6 rounded-2xl bg-gray-50 border border-gray-100 flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-500 text-2xl flex items-center justify-center shrink-0">
+                        <i class="ph ph-users-three"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-lg mb-1">Empathetic Culture</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed">Work alongside collaborative mentors and creative minds who value growth and continuous learning.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Open Positions Section -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="mb-10 text-center md:text-left">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-2">Open Positions</h2>
+            <p class="text-gray-600 text-sm">Browse our active job openings and apply for the role that fits your passion.</p>
+        </div>
+
+        <div class="space-y-6" id="jobs-container">
+            <div class="text-center py-12 text-gray-400">Loading career openings...</div>
+        </div>
+    </main>
+
+    <!-- Application Modal -->
+    <div id="apply-modal" class="fixed inset-0 z-50 bg-black/70 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden flex flex-col">
+            <div class="bg-gradient-to-r from-violet-600 to-indigo-600 p-6 text-white flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-violet-200 font-semibold uppercase tracking-wider">Job Application</span>
+                    <h3 class="font-bold text-xl leading-snug" id="modal-job-title">Apply for Position</h3>
+                </div>
+                <button onclick="closeApplyModal()" class="text-white/70 hover:text-white"><i class="ph ph-x text-2xl"></i></button>
+            </div>
+            
+            <form id="application-form" onsubmit="submitJobApplication(event)" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+                <input type="hidden" id="job-id-input" />
+                
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Full Name *</label>
+                    <input type="text" id="applicant-name" required placeholder="e.g. Sheikh Sayed"
+                        class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Email Address *</label>
+                        <input type="email" id="applicant-email" required placeholder="name@example.com"
+                            class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Phone Number *</label>
+                        <input type="tel" id="applicant-phone" required placeholder="01712XXXXXX"
+                            class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Portfolio / LinkedIn Link (Optional)</label>
+                    <input type="url" id="applicant-portfolio" placeholder="https://linkedin.com/in/username"
+                        class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Why are you a great fit? (Cover Note)</label>
+                    <textarea id="applicant-note" rows="3" placeholder="Briefly describe your experience and passion..."
+                        class="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Attach Resume / CV (PDF/Doc)</label>
+                    <input type="file" id="applicant-resume" accept=".pdf,.doc,.docx"
+                        class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-violet-50 file:text-primary hover:file:bg-violet-100 cursor-pointer" />
+                </div>
+
+                <div id="modal-feedback" class="hidden text-xs font-semibold p-3 rounded-xl"></div>
+
+                <div class="pt-2 flex justify-end gap-3">
+                    <button type="button" onclick="closeApplyModal()" class="px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50">Cancel</button>
+                    <button type="submit" id="submit-app-btn" class="px-6 py-2.5 rounded-xl bg-primary hover:bg-violet-700 text-white text-sm font-bold shadow-md transition-colors flex items-center gap-2">
+                        <i class="ph ph-paper-plane text-lg"></i> Submit Application
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-gray-400 py-8 border-t border-gray-800 text-center text-xs mt-auto">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>© 2026 TutorBhaiya. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        async function fetchJobs() {
+            const container = document.getElementById('jobs-container');
+            try {
+                const res = await fetch(`${API_BASE}/careers/`);
+                const jobs = await res.json();
+                
+                if (!jobs || jobs.length === 0) {
+                    container.innerHTML = `<div class="bg-white rounded-2xl border border-gray-100 p-8 text-center text-gray-500">There are no open positions at the moment. Please check back soon!</div>`;
+                    return;
+                }
+
+                container.innerHTML = jobs.map(job => `
+                    <div class="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div class="space-y-3 flex-1">
+                            <div class="flex items-center gap-3">
+                                <span class="bg-violet-50 text-primary text-xs font-bold px-3 py-1 rounded-full uppercase">${job.department}</span>
+                                <span class="text-xs text-gray-400">• ${job.job_type}</span>
+                                <span class="text-xs text-gray-400">• ${job.location}</span>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-900">${job.title}</h3>
+                            <p class="text-sm text-gray-600 leading-relaxed">${job.description}</p>
+                            
+                            ${job.requirements && job.requirements.length > 0 ? `
+                                <div class="pt-2">
+                                    <p class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Key Requirements:</p>
+                                    <ul class="list-disc pl-5 text-xs text-gray-600 space-y-1">
+                                        ${job.requirements.map(req => `<li>${req}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="shrink-0 flex md:flex-col items-center justify-between gap-4 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-8">
+                            <div class="text-right hidden md:block">
+                                <span class="text-xs text-gray-400 block">Experience</span>
+                                <strong class="text-sm text-gray-800">${job.experience_level || '1-2 Years'}</strong>
+                            </div>
+                            <button onclick="openApplyModal(${job.id}, '${job.title}')"
+                                class="w-full md:w-auto bg-primary hover:bg-violet-700 text-white font-bold px-6 py-3 rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
+                                Apply Now <i class="ph ph-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `<div class="bg-white rounded-2xl border border-gray-100 p-8 text-center text-red-500">Failed to load active job postings.</div>`;
+            }
+        }
+
+        function openApplyModal(jobId, jobTitle) {
+            document.getElementById('job-id-input').value = jobId;
+            document.getElementById('modal-job-title').textContent = `Apply for: ${jobTitle}`;
+            document.getElementById('application-form').reset();
+            document.getElementById('modal-feedback').classList.add('hidden');
+            document.getElementById('apply-modal').classList.remove('hidden');
+            document.getElementById('apply-modal').classList.add('flex');
+        }
+
+        function closeApplyModal() {
+            document.getElementById('apply-modal').classList.add('hidden');
+            document.getElementById('apply-modal').classList.remove('flex');
+        }
+
+        async function submitJobApplication(event) {
+            event.preventDefault();
+            const jobId = document.getElementById('job-id-input').value;
+            const name = document.getElementById('applicant-name').value;
+            const email = document.getElementById('applicant-email').value;
+            const phone = document.getElementById('applicant-phone').value;
+            const portfolio = document.getElementById('applicant-portfolio').value;
+            const note = document.getElementById('applicant-note').value;
+            const resumeFile = document.getElementById('applicant-resume').files[0];
+            const feedbackEl = document.getElementById('modal-feedback');
+
+            const formData = new FormData();
+            formData.append('applicant_name', name);
+            formData.append('applicant_email', email);
+            formData.append('phone', phone);
+            if (portfolio) formData.append('portfolio_url', portfolio);
+            if (note) formData.append('cover_note', note);
+            if (resumeFile) formData.append('resume_file', resumeFile);
+
+            try {
+                const res = await fetch(`${API_BASE}/careers/${jobId}/apply/`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    feedbackEl.className = "text-xs font-semibold p-3 rounded-xl bg-green-50 text-green-700 border border-green-200";
+                    feedbackEl.textContent = "🎉 Application submitted successfully! Our HR team will get in touch with you.";
+                    feedbackEl.classList.remove('hidden');
+                    setTimeout(() => { closeApplyModal(); }, 2500);
+                } else {
+                    feedbackEl.className = "text-xs font-semibold p-3 rounded-xl bg-red-50 text-red-700 border border-red-200";
+                    feedbackEl.textContent = data.error || "Failed to submit application. Please check your fields.";
+                    feedbackEl.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error(err);
+                feedbackEl.className = "text-xs font-semibold p-3 rounded-xl bg-red-50 text-red-700 border border-red-200";
+                feedbackEl.textContent = "Error connecting to server. Please try again.";
+                feedbackEl.classList.remove('hidden');
+            }
+        }
+
+        fetchJobs();
+    </script>
+</body>
+</html>

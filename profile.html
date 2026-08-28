@@ -20,20 +20,25 @@
                         accent1: '#F59E0B',
                         accent2: '#38BDF8'
                     },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    backgroundImage: {
-                        'star-pattern': "radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)",
-                    },
-                    backgroundSize: {
-                        'star-size': '20px 20px'
-                    }
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    backgroundImage: { 'star-pattern': "radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)" },
+                    backgroundSize: { 'star-size': '20px 20px' }
                 }
             }
         }
     </script>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .tab-active { background: #8B5CF6; color: white; }
+        .tab-inactive { color: #9ca3af; }
+        .tab-inactive:hover { color: white; background: rgba(255,255,255,0.05); }
+        #avatar-upload-overlay {
+            background: rgba(0,0,0,0.55);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        #avatar-wrapper:hover #avatar-upload-overlay { opacity: 1; }
+    </style>
 </head>
 
 <body class="font-sans antialiased text-gray-200 bg-dark bg-star-pattern bg-star-size min-h-screen flex flex-col">
@@ -43,264 +48,439 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <a href="index.html" class="flex-shrink-0 flex items-center gap-2 cursor-pointer">
-                    <img src="assets/logo.png" alt="TutorBhaiya" class="h-10 w-auto object-contain" id="navbar-logo">
-                    <span class="font-bold text-xl text-white tracking-tight" id="logo-text">TutorBhaiya</span>
+                    <img src="assets/logo.png" alt="TutorBhaiya" class="h-10 w-auto object-contain">
+                    <span class="font-bold text-xl text-white tracking-tight">TutorBhaiya</span>
                 </a>
-
                 <div class="hidden md:flex items-center space-x-6 text-sm font-semibold">
                     <a href="index.html" class="nav-link hover:text-white transition-colors duration-300">Home</a>
                     <a href="courses.html" class="nav-link hover:text-white transition-colors duration-300">Courses</a>
                     <a href="dashboard.html" class="nav-link hover:text-white transition-colors duration-300">Dashboard</a>
                 </div>
-
                 <div class="hidden md:flex items-center space-x-4">
                     <a href="profile.html" class="bg-primary hover:bg-violet-700 text-white px-5 py-2 rounded-full text-sm font-bold transition-all flex items-center gap-2" id="user-avatar-btn">
                         <div class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs" id="user-avatar-initial">U</div>
                         <span id="user-avatar-name">Profile</span>
                     </a>
-                    <button class="bg-white/5 hover:bg-red-500/20 hover:text-red-400 border border-white/10 text-gray-300 px-4 py-2 rounded-full text-sm font-bold transition-all" id="logout-btn">
-                        Logout
-                    </button>
+                    <button class="bg-white/5 hover:bg-red-500/20 hover:text-red-400 border border-white/10 text-gray-300 px-4 py-2 rounded-full text-sm font-bold transition-all" id="logout-btn">Logout</button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
+    <!-- Main -->
     <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-12 relative z-10">
         <div class="mb-8">
             <h1 class="text-3xl font-extrabold text-white tracking-tight">Profile Settings</h1>
-            <p class="text-gray-400 mt-2">Manage your personal details, login credentials, and account settings.</p>
+            <p class="text-gray-400 mt-2">Manage your photo, personal details, and account password.</p>
         </div>
 
+        <!-- Global Status -->
+        <div id="status-message" class="hidden mb-6 p-4 rounded-xl text-sm font-semibold border text-center"></div>
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Sidebar Panel -->
+
+            <!-- ── LEFT SIDEBAR ────────────────────────────── -->
             <div class="md:col-span-1 space-y-6">
-                <!-- User Summary Card -->
+
+                <!-- Avatar Card -->
                 <div class="bg-white/5 border border-white/10 rounded-2xl p-6 text-center backdrop-blur-xl">
-                    <div class="relative w-24 h-24 mx-auto mb-4">
-                        <div class="w-full h-full rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center text-white text-3xl font-bold uppercase" id="profile-avatar">
-                            U
+
+                    <!-- Clickable avatar with upload overlay -->
+                    <div class="relative w-28 h-28 mx-auto mb-4 cursor-pointer" id="avatar-wrapper" onclick="document.getElementById('avatar-file-input').click()" title="Click to change photo">
+                        <div class="w-full h-full rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center text-white text-3xl font-bold uppercase overflow-hidden" id="profile-avatar">U</div>
+                        <div id="avatar-upload-overlay" class="absolute inset-0 rounded-full flex flex-col items-center justify-center text-white text-xs font-bold gap-1">
+                            <i class="ph ph-camera text-2xl"></i>
+                            <span>Change</span>
                         </div>
+                        <!-- Hidden file input -->
+                        <input type="file" id="avatar-file-input" accept="image/*" class="hidden">
                     </div>
-                    <h3 class="text-lg font-bold text-white" id="profile-name">Student Name</h3>
-                    <p class="text-sm text-gray-400 mt-1 uppercase tracking-wider font-semibold" id="profile-role">Student</p>
+
+                    <p class="text-xs text-gray-500 mb-3">Click photo to upload new image</p>
+
+                    <!-- Upload progress / status -->
+                    <div id="avatar-upload-status" class="hidden text-xs font-semibold py-1.5 px-3 rounded-lg mb-3"></div>
+
+                    <h3 class="text-lg font-bold text-white" id="profile-name">Loading…</h3>
+                    <p class="text-sm mt-1 font-bold uppercase tracking-widest" id="profile-role-badge">—</p>
                     <div class="mt-4 pt-4 border-t border-white/10 text-left text-xs space-y-2 text-gray-400">
-                        <div>Joined: <span class="text-white" id="profile-joined">N/A</span></div>
+                        <div>Joined: <span class="text-white" id="profile-joined">—</span></div>
                         <div>Email status: <span class="text-secondary font-semibold">Verified</span></div>
                     </div>
                 </div>
 
-                <!-- Navigation Tabs -->
+                <!-- Tab Buttons -->
                 <div class="bg-white/5 border border-white/10 rounded-2xl p-2 space-y-1">
-                    <button class="w-full text-left px-4 py-3 rounded-xl bg-primary text-white font-medium flex items-center gap-3 transition-all" id="tab-personal-btn">
+                    <button class="w-full text-left px-4 py-3 rounded-xl font-medium flex items-center gap-3 transition-all tab-active" id="tab-personal-btn">
                         <i class="ph ph-user text-lg"></i> Personal Details
                     </button>
-                    <button class="w-full text-left px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 font-medium flex items-center gap-3 transition-all" id="tab-security-btn">
-                        <i class="ph ph-lock text-lg"></i> Security & Password
+                    <button class="w-full text-left px-4 py-3 rounded-xl font-medium flex items-center gap-3 transition-all tab-inactive" id="tab-security-btn">
+                        <i class="ph ph-lock text-lg"></i> Change Password
                     </button>
                 </div>
             </div>
 
-            <!-- Forms Panel -->
+            <!-- ── FORMS PANEL ──────────────────────────────── -->
             <div class="md:col-span-2 space-y-6">
-                <!-- Status Messages -->
-                <div id="status-message" class="hidden p-4 rounded-xl text-sm font-semibold border text-center"></div>
 
-                <!-- Tab: Personal Details -->
+                <!-- ── Personal Details Tab ─────────────────── -->
                 <div class="bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8 backdrop-blur-xl" id="section-personal">
                     <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
                         <i class="ph ph-user-focus text-primary text-2xl"></i> Personal Details
                     </h3>
-
-                    <form id="personal-form" class="space-y-6">
+                    <form id="personal-form" class="space-y-5">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">First Name</label>
-                                <input type="text" id="first_name" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder-gray-500 outline-none transition-all">
+                                <input type="text" id="first_name" placeholder="John"
+                                    class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder-gray-500 outline-none transition-all">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Last Name</label>
-                                <input type="text" id="last_name" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder-gray-500 outline-none transition-all">
+                                <input type="text" id="last_name" placeholder="Doe"
+                                    class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder-gray-500 outline-none transition-all">
                             </div>
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Email Address</label>
-                            <input type="email" id="email" class="w-full px-4 py-3 bg-white/10 border border-white/10 rounded-xl text-gray-400 outline-none cursor-not-allowed" readonly disabled>
-                            <p class="text-xs text-gray-500 mt-1">To change your email address, contact support.</p>
+                            <input type="email" id="email"
+                                class="w-full px-4 py-3 bg-white/10 border border-white/10 rounded-xl text-gray-400 outline-none cursor-not-allowed" readonly disabled>
+                            <p class="text-xs text-gray-500 mt-1">Email cannot be changed. Contact support if needed.</p>
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Phone Number</label>
-                            <input type="text" id="phone" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder-gray-500 outline-none transition-all" placeholder="e.g. +8801700000000">
+                            <input type="text" id="phone" placeholder="+8801700000000"
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder-gray-500 outline-none transition-all">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Biography / Bio</label>
-                            <textarea id="bio" rows="4" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder-gray-500 outline-none transition-all resize-none" placeholder="Tell us about yourself..."></textarea>
+                            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Bio</label>
+                            <textarea id="bio" rows="4" placeholder="Tell us a little about yourself…"
+                                class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder-gray-500 outline-none transition-all resize-none"></textarea>
                         </div>
 
-                        <button type="submit" class="w-full bg-secondary hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
-                            Save Changes <i class="ph ph-check"></i>
+                        <button type="submit" id="personal-submit-btn"
+                            class="w-full bg-secondary hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
+                            <i class="ph ph-floppy-disk"></i> Save Changes
                         </button>
                     </form>
                 </div>
 
-                <!-- Tab: Security & Password -->
+                <!-- ── Change Password Tab ──────────────────── -->
                 <div class="bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8 backdrop-blur-xl hidden" id="section-security">
                     <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                        <i class="ph ph-shield-check text-primary text-2xl"></i> Security & Password
+                        <i class="ph ph-shield-check text-primary text-2xl"></i> Change Password
                     </h3>
 
-                    <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-6 text-sm text-amber-200">
-                        <div class="flex gap-2">
-                            <i class="ph ph-warning-circle text-lg flex-shrink-0"></i>
-                            <span>You cannot change your password directly from the frontend interface. To update password details, request a reset link or access the Django administration backend.</span>
-                        </div>
+                    <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mb-6 text-sm text-blue-200 flex gap-2">
+                        <i class="ph ph-info text-lg flex-shrink-0 mt-0.5"></i>
+                        <span>After changing your password you will stay logged in automatically — your session token will be refreshed.</span>
                     </div>
 
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center p-4 bg-white/5 rounded-xl border border-white/5">
-                            <div>
-                                <h4 class="font-bold text-white text-sm">Django Admin Panel</h4>
-                                <p class="text-xs text-gray-400 mt-0.5">Edit password settings via backend portal</p>
+                    <form id="password-form" class="space-y-5">
+                        <!-- Current Password -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Current Password</label>
+                            <div class="relative">
+                                <input type="password" id="old_password" placeholder="••••••••"
+                                    class="w-full px-4 py-3 pr-12 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary text-white placeholder-gray-500 outline-none transition-all">
+                                <button type="button" onclick="togglePwd('old_password', 'eye1')"
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors">
+                                    <i class="ph ph-eye text-lg" id="eye1"></i>
+                                </button>
                             </div>
-                            <a href="http://127.0.0.1:8000/admin/" target="_blank" class="bg-primary hover:bg-violet-700 text-xs text-white px-4 py-2 rounded-lg font-semibold transition-all">Open Admin</a>
                         </div>
-                    </div>
+
+                        <!-- New Password -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">New Password</label>
+                            <div class="relative">
+                                <input type="password" id="new_password" placeholder="Min. 8 characters"
+                                    class="w-full px-4 py-3 pr-12 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary text-white placeholder-gray-500 outline-none transition-all">
+                                <button type="button" onclick="togglePwd('new_password', 'eye2')"
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors">
+                                    <i class="ph ph-eye text-lg" id="eye2"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Confirm New Password -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Confirm New Password</label>
+                            <div class="relative">
+                                <input type="password" id="confirm_password" placeholder="Repeat new password"
+                                    class="w-full px-4 py-3 pr-12 bg-white/5 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary text-white placeholder-gray-500 outline-none transition-all">
+                                <button type="button" onclick="togglePwd('confirm_password', 'eye3')"
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors">
+                                    <i class="ph ph-eye text-lg" id="eye3"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Strength bar -->
+                        <div>
+                            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                <span>Password strength</span>
+                                <span id="strength-label">—</span>
+                            </div>
+                            <div class="w-full bg-white/10 rounded-full h-1.5">
+                                <div id="strength-bar" class="h-1.5 rounded-full transition-all duration-300 w-0"></div>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="password-submit-btn"
+                            class="w-full bg-primary hover:bg-violet-700 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
+                            <i class="ph ph-lock-key"></i> Update Password
+                        </button>
+                    </form>
                 </div>
+
             </div>
         </div>
     </main>
 
     <!-- Footer -->
     <footer class="bg-dark/80 border-t border-white/10 py-6 text-center text-xs text-gray-500 mt-12">
-        <div class="max-w-7xl mx-auto px-4">
-            &copy; 2026 TutorBhaiya. All rights reserved. Dhaka, Bangladesh.
-        </div>
+        <div class="max-w-7xl mx-auto px-4">&copy; 2026 TutorBhaiya. All rights reserved. Dhaka, Bangladesh.</div>
     </footer>
 
     <script src="script.js"></script>
     <script>
-        // Redirect to login if not logged in
-        if (!isLoggedIn()) {
-            window.location.href = 'login.html';
-        }
+        if (!isLoggedIn()) window.location.href = 'login.html';
 
-        const tabPersonalBtn = document.getElementById('tab-personal-btn');
-        const tabSecurityBtn = document.getElementById('tab-security-btn');
-        const secPersonal = document.getElementById('section-personal');
-        const secSecurity = document.getElementById('section-security');
         const statusDiv = document.getElementById('status-message');
 
-        // Tab Switching
-        tabPersonalBtn.addEventListener('click', () => {
-            tabPersonalBtn.className = "w-full text-left px-4 py-3 rounded-xl bg-primary text-white font-medium flex items-center gap-3 transition-all";
-            tabSecurityBtn.className = "w-full text-left px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 font-medium flex items-center gap-3 transition-all";
-            secPersonal.classList.remove('hidden');
-            secSecurity.classList.add('hidden');
-        });
-
-        tabSecurityBtn.addEventListener('click', () => {
-            tabSecurityBtn.className = "w-full text-left px-4 py-3 rounded-xl bg-primary text-white font-medium flex items-center gap-3 transition-all";
-            tabPersonalBtn.className = "w-full text-left px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 font-medium flex items-center gap-3 transition-all";
-            secSecurity.classList.remove('hidden');
-            secPersonal.classList.add('hidden');
-        });
-
-        // Show status message
+        // ── Status Helper ─────────────────────────────────────────────────────
         function showStatus(text, isError = false) {
             statusDiv.textContent = text;
-            statusDiv.classList.remove('hidden', 'bg-red-500/10', 'border-red-500/20', 'text-red-200', 'bg-emerald-500/10', 'border-emerald-500/20', 'text-emerald-200');
-            if (isError) {
-                statusDiv.classList.add('bg-red-500/10', 'border-red-500/20', 'text-red-200');
-            } else {
-                statusDiv.classList.add('bg-emerald-500/10', 'border-emerald-500/20', 'text-emerald-200');
-            }
+            statusDiv.className = `mb-6 p-4 rounded-xl text-sm font-semibold border text-center ${
+                isError
+                    ? 'bg-red-500/10 border-red-500/20 text-red-200'
+                    : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-200'
+            }`;
+            statusDiv.classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => statusDiv.classList.add('hidden'), 5000);
         }
 
-        // Fill initial profile data
+        // ── Tab Switching ─────────────────────────────────────────────────────
+        document.getElementById('tab-personal-btn').addEventListener('click', () => {
+            document.getElementById('tab-personal-btn').className = 'w-full text-left px-4 py-3 rounded-xl font-medium flex items-center gap-3 transition-all tab-active';
+            document.getElementById('tab-security-btn').className = 'w-full text-left px-4 py-3 rounded-xl font-medium flex items-center gap-3 transition-all tab-inactive';
+            document.getElementById('section-personal').classList.remove('hidden');
+            document.getElementById('section-security').classList.add('hidden');
+        });
+        document.getElementById('tab-security-btn').addEventListener('click', () => {
+            document.getElementById('tab-security-btn').className = 'w-full text-left px-4 py-3 rounded-xl font-medium flex items-center gap-3 transition-all tab-active';
+            document.getElementById('tab-personal-btn').className = 'w-full text-left px-4 py-3 rounded-xl font-medium flex items-center gap-3 transition-all tab-inactive';
+            document.getElementById('section-security').classList.remove('hidden');
+            document.getElementById('section-personal').classList.add('hidden');
+        });
+
+        // ── Password Strength ─────────────────────────────────────────────────
+        document.getElementById('new_password').addEventListener('input', function () {
+            const val = this.value;
+            const bar = document.getElementById('strength-bar');
+            const label = document.getElementById('strength-label');
+            let score = 0;
+            if (val.length >= 8) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+            const configs = [
+                { pct: '0%', color: 'bg-gray-500', text: '—' },
+                { pct: '25%', color: 'bg-red-500', text: 'Weak' },
+                { pct: '50%', color: 'bg-amber-500', text: 'Fair' },
+                { pct: '75%', color: 'bg-blue-500', text: 'Good' },
+                { pct: '100%', color: 'bg-emerald-500', text: 'Strong' },
+            ];
+            const cfg = configs[score];
+            bar.style.width = cfg.pct;
+            bar.className = `h-1.5 rounded-full transition-all duration-300 ${cfg.color}`;
+            label.textContent = cfg.text;
+        });
+
+        // ── Show / Hide Password ──────────────────────────────────────────────
+        function togglePwd(inputId, iconId) {
+            const inp = document.getElementById(inputId);
+            const ico = document.getElementById(iconId);
+            if (inp.type === 'password') {
+                inp.type = 'text';
+                ico.className = 'ph ph-eye-slash text-lg';
+            } else {
+                inp.type = 'password';
+                ico.className = 'ph ph-eye text-lg';
+            }
+        }
+
+        // ── Load Profile ──────────────────────────────────────────────────────
         async function fetchProfile() {
             try {
                 const res = await authFetch(`${API_BASE}/auth/me/`);
-                if (!res.ok) throw new Error("Failed to load user profile.");
+                if (!res.ok) throw new Error();
                 const data = await res.json();
-                
-                // Update local storage
                 localStorage.setItem('user', JSON.stringify(data.user));
                 updateNavbarAuth();
+                const u = data.user;
 
-                const user = data.user;
-                
-                // Fill Summary Card
-                document.getElementById('profile-name').textContent = user.full_name;
-                document.getElementById('profile-role').textContent = user.role;
-                document.getElementById('profile-joined').textContent = new Date(user.date_joined).toLocaleDateString();
-                
+                // Sidebar card
+                document.getElementById('profile-name').textContent = u.full_name || 'User';
+                const roleColors = { admin: 'text-red-400', teacher: 'text-secondary', student: 'text-primary' };
+                document.getElementById('profile-role-badge').className = `text-sm mt-1 font-bold uppercase tracking-widest ${roleColors[u.role] || 'text-gray-400'}`;
+                document.getElementById('profile-role-badge').textContent = u.role || 'Student';
+                document.getElementById('profile-joined').textContent = new Date(u.date_joined).toLocaleDateString();
+
                 const avatarEl = document.getElementById('profile-avatar');
-                if (user.profile_picture) {
-                    avatarEl.innerHTML = `<img src="${user.profile_picture}" class="w-full h-full rounded-full object-cover">`;
+                if (u.profile_picture) {
+                    avatarEl.innerHTML = `<img src="${u.profile_picture}" class="w-full h-full rounded-full object-cover">`;
                 } else {
-                    avatarEl.textContent = user.avatar_initial;
+                    avatarEl.innerHTML = u.avatar_initial || 'U';
                 }
 
-                // Fill Form Fields
-                // split name into first and last
-                const parts = user.full_name.split(' ');
+                // Form fields
+                const parts = (u.full_name || '').split(' ');
                 document.getElementById('first_name').value = parts[0] || '';
                 document.getElementById('last_name').value = parts.slice(1).join(' ') || '';
-                document.getElementById('email').value = user.email || '';
-                document.getElementById('phone').value = user.phone || '';
-                document.getElementById('bio').value = user.bio || '';
-            } catch (err) {
-                console.error(err);
-                showStatus("Error loading profile details.", true);
+                document.getElementById('email').value = u.email || '';
+                document.getElementById('phone').value = u.phone || '';
+                document.getElementById('bio').value = u.bio || '';
+            } catch {
+                showStatus('Could not load profile. Please try again.', true);
             }
         }
 
-        // Submit form modifications
-        document.getElementById('personal-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const first_name = document.getElementById('first_name').value.trim();
-            const last_name = document.getElementById('last_name').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const bio = document.getElementById('bio').value.trim();
+        // ── Profile Picture Upload ────────────────────────────────────────────
+        document.getElementById('avatar-file-input').addEventListener('change', async function () {
+            const file = this.files[0];
+            if (!file) return;
 
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = `Saving Changes…`;
+            // Preview immediately
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('profile-avatar').innerHTML = `<img src="${e.target.result}" class="w-full h-full rounded-full object-cover">`;
+            };
+            reader.readAsDataURL(file);
+
+            const statusEl = document.getElementById('avatar-upload-status');
+            statusEl.className = 'text-xs font-semibold py-1.5 px-3 rounded-lg mb-3 bg-white/10 text-gray-300';
+            statusEl.textContent = 'Uploading photo…';
+            statusEl.classList.remove('hidden');
 
             try {
-                // Get CSRF Token
+                const formData = new FormData();
+                formData.append('profile_picture', file);
+
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_BASE}/auth/me/`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': `Token ${token}` },
+                    body: formData,
+                });
+
+                if (!res.ok) throw new Error('Upload failed');
+                const data = await res.json();
+                localStorage.setItem('user', JSON.stringify(data));
+                updateNavbarAuth();
+
+                statusEl.className = 'text-xs font-semibold py-1.5 px-3 rounded-lg mb-3 bg-emerald-500/20 text-emerald-300';
+                statusEl.textContent = 'Profile photo updated!';
+                setTimeout(() => statusEl.classList.add('hidden'), 3000);
+                await fetchProfile();
+            } catch {
+                statusEl.className = 'text-xs font-semibold py-1.5 px-3 rounded-lg mb-3 bg-red-500/20 text-red-300';
+                statusEl.textContent = 'Upload failed. Try again.';
+            }
+        });
+
+        // ── Personal Details Form ─────────────────────────────────────────────
+        document.getElementById('personal-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('personal-submit-btn');
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg> Saving…`;
+
+            try {
                 const csrfRes = await fetch(`${API_BASE}/csrf/`);
                 const { csrfToken } = await csrfRes.json();
 
                 const res = await authFetch(`${API_BASE}/auth/me/`, {
                     method: 'PATCH',
-                    headers: {
-                        'X-CSRFToken': csrfToken
-                    },
-                    body: JSON.stringify({ first_name, last_name, phone, bio })
+                    headers: { 'X-CSRFToken': csrfToken },
+                    body: JSON.stringify({
+                        first_name: document.getElementById('first_name').value.trim(),
+                        last_name:  document.getElementById('last_name').value.trim(),
+                        phone:      document.getElementById('phone').value.trim(),
+                        bio:        document.getElementById('bio').value.trim(),
+                    })
                 });
 
-                if (!res.ok) throw new Error("Could not update profile fields.");
-                
-                showStatus("Profile updated successfully!");
+                if (!res.ok) { const d = await res.json(); throw new Error(Object.values(d).flat().join(' ')); }
+                showStatus('Profile updated successfully!');
                 await fetchProfile();
             } catch (err) {
-                console.error(err);
-                showStatus(err.message || "Failed to update profile info.", true);
+                showStatus(err.message || 'Failed to update profile.', true);
             } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = `Save Changes <i class="ph ph-check"></i>`;
+                btn.disabled = false;
+                btn.innerHTML = `<i class="ph ph-floppy-disk"></i> Save Changes`;
             }
         });
 
-        // Initialize Page
+        // ── Change Password Form ──────────────────────────────────────────────
+        document.getElementById('password-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('password-submit-btn');
+            const oldPwd  = document.getElementById('old_password').value;
+            const newPwd  = document.getElementById('new_password').value;
+            const confPwd = document.getElementById('confirm_password').value;
+
+            if (newPwd !== confPwd) {
+                showStatus('New password and confirmation do not match.', true);
+                return;
+            }
+            if (newPwd.length < 8) {
+                showStatus('New password must be at least 8 characters.', true);
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg> Updating…`;
+
+            try {
+                const csrfRes = await fetch(`${API_BASE}/csrf/`);
+                const { csrfToken } = await csrfRes.json();
+
+                const res = await authFetch(`${API_BASE}/auth/me/`, {
+                    method: 'PATCH',
+                    headers: { 'X-CSRFToken': csrfToken },
+                    body: JSON.stringify({ old_password: oldPwd, new_password: newPwd })
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to update password.');
+
+                // Update token in localStorage so user stays logged in
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                }
+
+                showStatus('Password changed successfully! Your session has been refreshed.');
+                e.target.reset();
+                document.getElementById('strength-bar').style.width = '0%';
+                document.getElementById('strength-label').textContent = '—';
+            } catch (err) {
+                showStatus(err.message || 'Password update failed.', true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="ph ph-lock-key"></i> Update Password`;
+            }
+        });
+
+        // Init
         fetchProfile();
+        updateNavbarAuth();
     </script>
 </body>
-
 </html>

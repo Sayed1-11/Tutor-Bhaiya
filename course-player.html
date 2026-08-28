@@ -97,6 +97,18 @@
                             <span id="mark-btn-text">Select a video first</span>
                         </button>
                     </div>
+                <!-- Course Routine & Time Schedule Section -->
+                <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+                    <div class="flex items-center justify-between mb-4 border-b border-gray-800 pb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="ph ph-calendar-check text-primary text-xl"></i>
+                            <h3 class="text-base font-bold text-white">Course Routine & Class Schedule</h3>
+                        </div>
+                        <span class="text-xs bg-gray-800 text-gray-400 px-3 py-1 rounded-full font-medium">Weekly Timetable</span>
+                    </div>
+                    <div id="routine-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="text-xs text-gray-500 py-4 col-span-full text-center">Loading course routine...</div>
+                    </div>
                 </div>
 
             </div>
@@ -240,6 +252,7 @@
                 document.getElementById('course-title').textContent = course.title;
                 updateProgress(data.progress || 0);
                 renderModules(course.modules || []);
+                renderRoutines(course.routines || []);
 
             } catch (err) {
                 console.error('Load error:', err);
@@ -250,6 +263,51 @@
         function updateProgress(p) {
             document.getElementById('course-progress-bar').style.width = `${p}%`;
             document.getElementById('course-progress-text').textContent = `${p}%`;
+        }
+
+        function renderRoutines(routines) {
+            const container = document.getElementById('routine-container');
+            if (!routines || routines.length === 0) {
+                container.innerHTML = `<div class="text-xs text-gray-500 py-3 col-span-full text-center">No routine scheduled yet for this course.</div>`;
+                return;
+            }
+
+            container.innerHTML = routines.map(rt => {
+                let badgeClass = "bg-primary/20 text-primary border-primary/30";
+                let iconClass = "ph-broadcast";
+                let eventBadge = "LIVE CLASS";
+
+                if (rt.event_type === 'exam') {
+                    badgeClass = "bg-amber-500/20 text-amber-400 border-amber-500/30";
+                    iconClass = "ph-exam";
+                    eventBadge = "EXAM / TEST";
+                } else if (rt.event_type === 'off_day') {
+                    badgeClass = "bg-gray-800 text-gray-400 border-gray-700";
+                    iconClass = "ph-moon";
+                    eventBadge = "OFF DAY";
+                }
+
+                return `
+                    <div class="bg-gray-800/80 rounded-xl p-4 border border-gray-700/60 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${badgeClass} inline-flex items-center gap-1">
+                                    <i class="ph ${iconClass}"></i> ${eventBadge}
+                                </span>
+                                <span class="text-xs font-semibold text-gray-400">${rt.day_of_week || (rt.date ? new Date(rt.date).toLocaleDateString() : '')}</span>
+                            </div>
+                            <h4 class="font-bold text-sm text-white mb-1">${rt.title}</h4>
+                            <p class="text-xs text-gray-400 mb-3">${rt.description || 'Regularly scheduled session.'}</p>
+                        </div>
+                        <div class="flex items-center justify-between pt-2 border-t border-gray-700/50">
+                            <span class="text-xs text-gray-300 font-medium">
+                                <i class="ph ph-clock mr-1 text-primary"></i> ${rt.start_time ? rt.start_time.substring(0,5) : '00:00'} - ${rt.end_time ? rt.end_time.substring(0,5) : '00:00'}
+                            </span>
+                            ${rt.live_link ? `<a href="${rt.live_link}" target="_blank" class="px-3 py-1 rounded-lg bg-primary hover:bg-violet-600 text-white font-bold text-xs transition-colors inline-flex items-center gap-1"><i class="ph ph-video-camera"></i> Join Live</a>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         // ── Render sidebar ─────────────────────────────────────────────────────────
@@ -463,8 +521,23 @@
                 if (data.submitted) {
                     document.getElementById('already-submitted').classList.remove('hidden');
                     document.getElementById('submission-form').classList.add('hidden');
-                    document.getElementById('submitted-at-label').textContent =
-                        'Submitted on ' + new Date(data.submitted_at).toLocaleString();
+                    
+                    let statusLabel = 'Pending Review';
+                    let statusClass = 'text-amber-700 bg-amber-50 border-amber-200';
+                    if (data.status === 'approved') {
+                        statusLabel = 'Approved by Teacher';
+                        statusClass = 'text-green-800 bg-green-50 border-green-200';
+                    } else if (data.status === 'rejected') {
+                        statusLabel = 'Rejected (Needs Revision)';
+                        statusClass = 'text-red-800 bg-red-50 border-red-200';
+                    }
+
+                    document.getElementById('submitted-at-label').innerHTML = `
+                        Submitted on ${new Date(data.submitted_at).toLocaleString()}
+                        <div class="mt-2 inline-block px-3 py-1 text-xs font-bold rounded-lg border ${statusClass}">
+                            Status: ${statusLabel}
+                        </div>`;
+                    
                     document.getElementById('previous-submission').textContent = data.submission_text || '';
 
                     if (data.submission_file_url) {
@@ -473,10 +546,10 @@
                         fileLink.querySelector('a').href = data.submission_file_url;
                     }
 
-                    if (data.feedback) {
+                    if (data.feedback || data.marks_obtained !== null) {
                         document.getElementById('feedback-block').classList.remove('hidden');
-                        document.getElementById('feedback-text').textContent = data.feedback;
-                        document.getElementById('marks-obtained').textContent = data.marks_obtained ?? 'Pending';
+                        document.getElementById('feedback-text').textContent = data.feedback || 'No written comment.';
+                        document.getElementById('marks-obtained').textContent = data.marks_obtained !== null ? `${data.marks_obtained}/${marks}` : 'Pending Grading';
                     }
                     // Hide submit footer
                     document.getElementById('modal-footer').querySelector('#submit-btn').style.display = 'none';

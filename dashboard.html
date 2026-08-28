@@ -25,45 +25,37 @@
             }
         }
     </script>
+    <style>
+        .badge-role {
+            font-size: 0.65rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+        .modal-backdrop {
+            background: rgba(9, 13, 22, 0.75);
+            backdrop-filter: blur(4px);
+        }
+    </style>
 </head>
 
 <body class="font-sans antialiased text-gray-800 bg-gray-50 flex h-screen overflow-hidden">
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-dark border-r border-gray-800 text-white flex flex-col hidden md:flex">
+    <!-- ─── Sidebar ─────────────────────────────────────────────────────────────── -->
+    <aside class="w-64 bg-dark border-r border-gray-800 text-white flex flex-col hidden md:flex shrink-0">
         <div class="h-20 flex items-center px-6 border-b border-gray-800">
             <a href="index.html" class="flex items-center gap-2">
                 <img src="assets/logo.png" alt="TutorBhaiya" class="h-8 w-auto object-contain">
                 <span class="font-bold text-lg tracking-tight">TutorBhaiya</span>
             </a>
         </div>
-        <div class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
-            <a href="#"
-                class="sidebar-link active flex items-center gap-3 px-4 py-3 bg-white/10 rounded-xl text-primary font-medium"
-                data-target="dashboard">
-                <i class="ph ph-squares-four text-xl"></i> Dashboard
-            </a>
-            <a href="#"
-                class="sidebar-link flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors"
-                data-target="my-courses">
-                <i class="ph ph-play-circle text-xl"></i> My Courses
-            </a>
-            <a href="#"
-                class="sidebar-link flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors"
-                data-target="exams">
-                <i class="ph ph-exam text-xl"></i> Exams & Quizzes
-            </a>
-            <a href="#"
-                class="sidebar-link flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors"
-                data-target="certificates">
-                <i class="ph ph-certificate text-xl"></i> Certificates
-            </a>
-            <a href="#"
-                class="sidebar-link flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-colors"
-                data-target="settings">
-                <i class="ph ph-gear text-xl"></i> Settings
-            </a>
+        
+        <!-- Dynamic Role Navigation Menu -->
+        <div class="flex-1 overflow-y-auto py-6 px-4 space-y-1" id="sidebar-nav-links">
+            <!-- Populated via JS based on user.role -->
+            <div class="text-xs text-gray-500 py-4 px-4">Loading navigation...</div>
         </div>
+
         <div class="p-4 border-t border-gray-800">
             <button id="logout-btn"
                 class="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-500/10 rounded-xl text-gray-400 hover:text-red-400 transition-colors text-left font-medium">
@@ -72,104 +64,446 @@
         </div>
     </aside>
 
-    <!-- Main Content -->
+    <!-- ─── Main Content Area ─────────────────────────────────────────────────── -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden">
 
         <!-- Top Header -->
         <header class="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8 shrink-0">
             <div class="flex items-center gap-4">
                 <button class="md:hidden text-gray-500 hover:text-gray-900"><i class="ph ph-list text-2xl"></i></button>
-                <h2 id="welcome-msg" class="text-xl font-bold text-gray-900">Welcome back, Student!</h2>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h2 id="welcome-msg" class="text-xl font-bold text-gray-900">Welcome back!</h2>
+                        <span id="role-badge" class="badge-role bg-violet-100 text-violet-800 px-2.5 py-0.5 rounded-full">STUDENT</span>
+                    </div>
+                    <p class="text-xs text-gray-500" id="user-email-subtitle">Loading account details...</p>
+                </div>
             </div>
             <div class="flex items-center gap-4">
-                <button
-                    class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200">
-                    <i class="ph ph-bell text-xl"></i>
-                </button>
                 <div id="avatar-placeholder"
                     class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold cursor-pointer shadow-md">
-                    S
+                    U
                 </div>
             </div>
         </header>
 
-        <!-- Dashboard Content -->
+        <!-- Dynamic Content Body -->
         <div class="flex-1 overflow-y-auto p-8" id="main-content-area">
 
+            <!-- ─── 1. OVERVIEW DASHBOARD ───────────────────────────────────────── -->
             <div id="section-dashboard" class="content-section">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <!-- Stat Card 1 -->
-                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                        <div
-                            class="w-14 h-14 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 text-2xl">
-                            <i class="ph-fill ph-book-open"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500 font-medium">Active Courses</p>
-                            <h3 id="stat-active" class="text-2xl font-bold text-gray-900">—</h3>
-                        </div>
-                    </div>
-                    <!-- Stat Card 2 -->
-                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                        <div
-                            class="w-14 h-14 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500 text-2xl">
-                            <i class="ph-fill ph-check-circle"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500 font-medium">Completed Courses</p>
-                            <h3 id="stat-completed" class="text-2xl font-bold text-gray-900">—</h3>
-                        </div>
-                    </div>
-                    <!-- Stat Card 3 -->
-                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                        <div
-                            class="w-14 h-14 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500 text-2xl">
-                            <i class="ph-fill ph-trophy"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500 font-medium">Average Progress</p>
-                            <h3 id="stat-progress" class="text-2xl font-bold text-gray-900">—</h3>
-                        </div>
-                    </div>
+                <!-- Stat Cards Container -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" id="overview-stats-grid">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center text-gray-400">Loading stats...</div>
                 </div>
 
-                <h3 class="text-lg font-bold text-gray-900 mb-4">Continue Learning</h3>
-                <div id="continue-learning-section">
-                    <!-- Loaded dynamically -->
-                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center text-gray-500">
-                        Loading course data...
+                <!-- Section Details -->
+                <div id="overview-dynamic-content">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Recent Activity & Overview</h3>
+                    <div id="continue-learning-section">
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center text-gray-500">
+                            Loading overview...
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- ─── 2. MY COURSES ───────────────────────────────────────────────── -->
             <div id="section-my-courses" class="content-section hidden">
-                <h3 class="text-2xl font-bold text-gray-900 mb-6">My Courses</h3>
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900">My Enrolled Courses</h3>
+                        <p class="text-xs text-gray-500 mt-1">Access video lessons, downloadable notes, resources & quizzes.</p>
+                    </div>
+                    <a href="courses.html" class="bg-primary hover:bg-violet-700 text-white font-semibold px-4 py-2 rounded-xl text-sm transition-colors">Browse Catalog</a>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="my-courses-list">
-                    <div
-                        class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500 col-span-full">
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500 col-span-full">
                         Loading your courses...
                     </div>
                 </div>
             </div>
 
+            <!-- ─── 3. EXAMS & QUIZZES SECTION ───────────────────────────────────── -->
             <div id="section-exams" class="content-section hidden">
-                <h3 class="text-2xl font-bold text-gray-900 mb-6">Exams & Quizzes</h3>
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500">
-                    No active exams or quizzes at the moment.
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900">Exams & Course Quizzes</h3>
+                        <p class="text-xs text-gray-500 mt-1">Test your skills to unlock official TutorBhaiya course certificates.</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="quizzes-container">
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500 col-span-full">
+                        Loading available quizzes...
+                    </div>
                 </div>
             </div>
 
+            <!-- ─── 4. CERTIFICATES SECTION ─────────────────────────────────────── -->
             <div id="section-certificates" class="content-section hidden">
-                <h3 class="text-2xl font-bold text-gray-900 mb-6">My Certificates</h3>
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500">
-                    You haven't earned any certificates yet. Complete a course to earn one!
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">Verified Course Certificates</h3>
+                    <p class="text-xs text-gray-500 mt-1">Certificates require 100% video completion, teacher-approved assignments, and passed quizzes.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="user-certificates-list">
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500 col-span-full">
+                        Loading certificates...
+                    </div>
                 </div>
             </div>
 
+            <!-- ─── 5. LEADERBOARD SECTION ──────────────────────────────────────── -->
+            <div id="section-leaderboard" class="content-section hidden">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">Student Leaderboard</h3>
+                    <p class="text-xs text-gray-500 mt-1">Top performers ranked by approved assignment marks and quiz scores across TutorBhaiya.</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" id="leaderboard-container">
+                    <div class="p-8 text-center text-gray-500">Loading leaderboard...</div>
+                </div>
+            </div>
+
+            <!-- ─── 6. TEACHER CONTENT UPLOADS ──────────────────────────────────── -->
+            <div id="section-teacher-uploads" class="content-section hidden">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">Manage Course Work & Content</h3>
+                    <p class="text-xs text-gray-500 mt-1">Add video lessons, upload downloadable resources/links, and publish new assignments.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Form: Upload Video Lesson -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h4 class="font-bold text-gray-900 text-base mb-4 flex items-center gap-2">
+                            <i class="ph ph-video text-primary text-xl"></i> Add Video Lesson
+                        </h4>
+                        <form id="form-add-video" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Select Module</label>
+                                <select id="video-module-select" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"></select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Lesson Title</label>
+                                <input type="text" id="video-title-input" placeholder="e.g. 1.3 Kinetic Energy Equation" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Video Stream URL</label>
+                                <input type="url" id="video-url-input" placeholder="https://..." required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Duration (Minutes)</label>
+                                <input type="number" id="video-duration-input" value="15" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <button type="submit" class="w-full bg-primary hover:bg-violet-700 text-white font-bold py-2.5 rounded-xl text-sm transition-colors">
+                                Add Video Lesson
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Form: Add Resource or Link -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h4 class="font-bold text-gray-900 text-base mb-4 flex items-center gap-2">
+                            <i class="ph ph-file-text text-amber-500 text-xl"></i> Add Downloadable Resource / Link
+                        </h4>
+                        <form id="form-add-resource" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Select Course</label>
+                                <select id="resource-course-select" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"></select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Resource Title</label>
+                                <input type="text" id="resource-title-input" placeholder="e.g. Chapter 1 PDF Handout" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Resource Link / PDF URL</label>
+                                <input type="url" id="resource-url-input" placeholder="https://..." required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-xl text-sm transition-colors">
+                                Upload Resource
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Form: Create New Assignment -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm lg:col-span-2">
+                        <h4 class="font-bold text-gray-900 text-base mb-4 flex items-center gap-2">
+                            <i class="ph ph-notebook text-secondary text-xl"></i> Create Course Assignment
+                        </h4>
+                        <form id="form-add-assignment" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Select Course</label>
+                                <select id="assign-course-select" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"></select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Assignment Title</label>
+                                <input type="text" id="assign-title-input" placeholder="e.g. Assignment 2: Trigonometry Derivations" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Total Marks</label>
+                                <input type="number" id="assign-marks-input" value="50" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Assignment Instructions / Problem Description</label>
+                                <textarea id="assign-desc-input" rows="3" placeholder="Provide problem numbers, requirements, and submission instructions..." required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"></textarea>
+                            </div>
+                            <div class="md:col-span-2">
+                                <button type="submit" class="w-full bg-secondary hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-sm transition-colors">
+                                    Publish Assignment
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── 7. TEACHER SUBMISSIONS & GRADING ────────────────────────────── -->
+            <div id="section-teacher-grading" class="content-section hidden">
+                <div class="mb-6 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900">Student Assignment Submissions</h3>
+                        <p class="text-xs text-gray-500 mt-1">Review student answers, assign marks, provide feedback, and approve/reject submissions.</p>
+                    </div>
+                    <button onclick="loadTeacherSubmissions()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold px-3.5 py-2 rounded-xl flex items-center gap-1">
+                        <i class="ph ph-arrows-clockwise text-sm"></i> Refresh List
+                    </button>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" id="teacher-submissions-container">
+                    <div class="p-8 text-center text-gray-500">Loading student submissions...</div>
+                </div>
+            </div>
+
+            <!-- ─── 8. QUIZ BUILDER ─────────────────────────────────────────────── -->
+            <div id="section-quiz-builder" class="content-section hidden">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">Course Quiz Builder</h3>
+                    <p class="text-xs text-gray-500 mt-1">Create multiple-choice quizzes with custom question sets for your courses.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm max-w-3xl">
+                    <form id="form-create-quiz" class="space-y-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Course</label>
+                                <select id="quiz-course-select" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"></select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Passing Percentage (%)</label>
+                                <input type="number" id="quiz-pass-input" value="60" min="1" max="100" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Quiz Title</label>
+                            <input type="text" id="quiz-title-input" placeholder="e.g. Quiz 2: Vector Mathematics & Physics" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+
+                        <!-- Dynamic Questions Builder -->
+                        <div class="border-t border-gray-100 pt-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <h5 class="font-bold text-sm text-gray-900">Quiz Questions</h5>
+                                <button type="button" onclick="addQuestionField()" class="text-xs text-primary font-bold hover:underline flex items-center gap-1">
+                                    <i class="ph ph-plus"></i> Add Question
+                                </button>
+                            </div>
+                            <div id="questions-builder-list" class="space-y-4">
+                                <!-- First question block -->
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-primary hover:bg-violet-700 text-white font-bold py-3 rounded-xl text-sm transition-colors">
+                            Publish Quiz for Students
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ─── 9. ADMIN TEACHER ACTIVITY MONITOR ───────────────────────────── -->
+            <div id="section-admin-teachers" class="content-section hidden">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">Teacher Work & Content Activity Monitor</h3>
+                    <p class="text-xs text-gray-500 mt-1">Complete overview of teacher contributions: videos uploaded, resources, assignments, and quizzes published.</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" id="admin-teachers-container">
+                    <div class="p-8 text-center text-gray-500">Loading teacher activity data...</div>
+                </div>
+            </div>
+
+            <!-- ─── 10. ADMIN PLATFORM SUBMISSIONS LOG ──────────────────────────── -->
+            <div id="section-admin-submissions" class="content-section hidden">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">Platform-Wide Submissions Feed</h3>
+                    <p class="text-xs text-gray-500 mt-1">Real-time log of all assignment submissions and quiz attempts across all courses.</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" id="admin-submissions-container">
+                    <div class="p-8 text-center text-gray-500">Loading submission records...</div>
+                </div>
+            </div>
+
+            <!-- ─── 11. ADMIN USER ROLE MANAGEMENT ─────────────────────────────── -->
+            <div id="section-admin-users" class="content-section hidden">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">User Account Roles & Permissions</h3>
+                    <p class="text-xs text-gray-500 mt-1">Promote or manage user roles (Student, Teacher, Admin).</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 max-w-lg">
+                    <form id="form-user-role" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Target User ID or Email</label>
+                            <input type="text" id="role-user-id" placeholder="Enter User ID (e.g. 2)" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Assign Role</label>
+                            <select id="role-select" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                <option value="student">Student</option>
+                                <option value="teacher">Teacher</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-gray-900 hover:bg-primary text-white font-bold py-2.5 rounded-xl text-sm transition-colors">
+                            Update Role
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ─── 12. SETTINGS SECTION ────────────────────────────────────────── -->
             <div id="section-settings" class="content-section hidden">
-                <h3 class="text-2xl font-bold text-gray-900 mb-6">Settings</h3>
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-gray-500">
-                    Settings panel coming soon.
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">Account Settings</h3>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-gray-500 max-w-xl">
+                    <p class="text-sm">Manage your profile picture, email notifications, and password settings.</p>
+                </div>
+            </div>
+
+            <!-- ─── 13. TEACHER LIVE CLASSES ────────────────────────────────────── -->
+            <div id="section-teacher-live" class="content-section hidden">
+                <div class="mb-6 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900">Live Class Scheduler</h3>
+                        <p class="text-xs text-gray-500 mt-1">Schedule live classes, exams, and off days for your courses.</p>
+                    </div>
+                    <button onclick="loadTeacherLive()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold px-3.5 py-2 rounded-xl flex items-center gap-1">
+                        <i class="ph ph-arrows-clockwise text-sm"></i> Refresh
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Schedule Form -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h4 class="font-bold text-gray-900 text-base mb-4 flex items-center gap-2">
+                            <i class="ph ph-video-camera text-primary text-xl"></i> Schedule New Live Class
+                        </h4>
+                        <form id="form-schedule-live" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Select Course</label>
+                                <select id="live-course-select" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"></select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Class Title</label>
+                                <input type="text" id="live-title-input" placeholder="e.g. Chapter 3 — Vector Algebra Live" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Event Type</label>
+                                <select id="live-type-select" class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="live_class">Live Class</option>
+                                    <option value="exam">Exam</option>
+                                    <option value="off_day">Off Day</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Date</label>
+                                    <input type="date" id="live-date-input" class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Day of Week</label>
+                                    <select id="live-day-input" class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                        <option value="">-- Select Day --</option>
+                                        <option value="Sunday">Sunday</option>
+                                        <option value="Monday">Monday</option>
+                                        <option value="Tuesday">Tuesday</option>
+                                        <option value="Wednesday">Wednesday</option>
+                                        <option value="Thursday">Thursday</option>
+                                        <option value="Friday">Friday</option>
+                                        <option value="Saturday">Saturday</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Start Time</label>
+                                    <input type="time" id="live-start-input" class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">End Time</label>
+                                    <input type="time" id="live-end-input" class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Zoom / Google Meet Link</label>
+                                <input type="url" id="live-link-input" placeholder="https://meet.google.com/..." class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Description (Optional)</label>
+                                <textarea id="live-desc-input" rows="2" placeholder="Topics to be covered..." class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"></textarea>
+                            </div>
+                            <div id="live-form-msg" class="hidden text-xs font-medium text-center py-2 rounded-xl"></div>
+                            <button type="submit" class="w-full bg-primary hover:bg-violet-700 text-white font-bold py-2.5 rounded-xl text-sm transition-colors">
+                                Schedule Live Class
+                            </button>
+                        </form>
+                    </div>
+                    <!-- Scheduled Classes List -->
+                    <div>
+                        <h4 class="font-bold text-gray-900 text-base mb-4 flex items-center gap-2">
+                            <i class="ph ph-calendar-check text-secondary text-xl"></i> Scheduled Events
+                        </h4>
+                        <div id="teacher-routines-list" class="space-y-3">
+                            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center text-gray-400">Loading scheduled classes...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ─── 14. STUDENT LIVE CLASSES ─────────────────────────────────────── -->
+            <div id="section-student-live" class="content-section hidden">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900">Live Classes & Schedule</h3>
+                    <p class="text-xs text-gray-500 mt-1">Upcoming live sessions, exams, and scheduled events for your enrolled courses.</p>
+                </div>
+                <div id="student-live-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500 col-span-full">Loading live classes...</div>
+                </div>
+            </div>
+
+            <!-- ─── 15. ADMIN COURSES & TEACHER ASSIGNMENT ───────────────────────── -->
+            <div id="section-admin-courses" class="content-section hidden">
+                <div class="mb-6 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900">Course Management & Teacher Assignment</h3>
+                        <p class="text-xs text-gray-500 mt-1">View all courses and assign teachers. Use the dropdown on each course row to change the instructor.</p>
+                    </div>
+                    <button onclick="loadAdminCourses()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold px-3.5 py-2 rounded-xl flex items-center gap-1">
+                        <i class="ph ph-arrows-clockwise text-sm"></i> Refresh
+                    </button>
+                </div>
+                <div id="admin-courses-msg" class="hidden mb-4 text-xs font-medium text-center py-2 rounded-xl"></div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" id="admin-courses-container">
+                    <div class="p-8 text-center text-gray-500">Loading courses...</div>
+                </div>
+            </div>
+
+            <!-- ─── 16. ADMIN USER MANAGEMENT (Full List) ────────────────────────── -->
+            <div id="section-admin-users-list" class="content-section hidden">
+                <div class="mb-6 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900">User Management & Roles</h3>
+                        <p class="text-xs text-gray-500 mt-1">View all platform users, their roles, and promote or change roles.</p>
+                    </div>
+                    <button onclick="loadAdminUsersList()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold px-3.5 py-2 rounded-xl flex items-center gap-1">
+                        <i class="ph ph-arrows-clockwise text-sm"></i> Refresh
+                    </button>
+                </div>
+                <div id="admin-users-msg" class="hidden mb-4 text-xs font-medium text-center py-2 rounded-xl"></div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" id="admin-users-list-container">
+                    <div class="p-8 text-center text-gray-500">Loading users...</div>
                 </div>
             </div>
 
@@ -177,139 +511,340 @@
 
     </main>
 
+    <!-- ─── STUDENT QUIZ ATTEMPT MODAL ─────────────────────────────────────────── -->
+    <div id="quiz-attempt-modal" class="fixed inset-0 z-50 modal-backdrop hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-primary p-6 text-white flex items-center justify-between shrink-0">
+                <div>
+                    <span class="text-xs font-bold text-violet-200 uppercase tracking-wider">Course Quiz</span>
+                    <h3 class="text-lg font-bold" id="quiz-modal-title">Quiz Title</h3>
+                </div>
+                <button onclick="closeQuizModal()" class="text-white/70 hover:text-white"><i class="ph ph-x text-2xl"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1 space-y-6" id="quiz-modal-body">
+                <p class="text-gray-500 text-sm">Loading quiz questions...</p>
+            </div>
+            <div class="p-5 bg-gray-50 border-t border-gray-100 flex items-center justify-between shrink-0">
+                <button onclick="closeQuizModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-gray-500 hover:bg-gray-200">Cancel</button>
+                <button onclick="submitQuizAnswers()" class="bg-primary hover:bg-violet-700 text-white font-bold px-6 py-2.5 rounded-xl text-sm shadow-md transition-colors">
+                    Submit Answers
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── TEACHER GRADING MODAL ──────────────────────────────────────────────── -->
+    <div id="grade-modal" class="fixed inset-0 z-50 modal-backdrop hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+            <div class="bg-dark text-white p-5 flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-amber-400 font-bold uppercase">Evaluate Submission</span>
+                    <h4 class="font-bold text-base" id="grade-modal-student">Student Name</h4>
+                </div>
+                <button onclick="closeGradeModal()" class="text-gray-400 hover:text-white"><i class="ph ph-x text-xl"></i></button>
+            </div>
+            <form id="form-grade-submission" class="p-6 space-y-4">
+                <input type="hidden" id="grade-submission-id">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Student Answer Text:</label>
+                    <div id="grade-submission-text" class="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-700 whitespace-pre-wrap max-h-36 overflow-y-auto"></div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Marks Obtained (out of <span id="grade-total-marks">100</span>)</label>
+                    <input type="number" id="grade-marks-input" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Teacher Feedback</label>
+                    <textarea id="grade-feedback-input" rows="2" placeholder="Write feedback for the student..." class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Approval Decision</label>
+                    <select id="grade-status-select" class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        <option value="approved">Approve Assignment (Marks Verified)</option>
+                        <option value="rejected">Reject Submission (Needs Revision)</option>
+                    </select>
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="closeGradeModal()" class="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl bg-secondary hover:bg-emerald-600 text-white font-bold text-sm">Save Grade</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ─── Shared Frontend Dashboard Script ───────────────────────────────────── -->
     <script src="script.js"></script>
     <script>
-        // Auth guard — must be logged in to view dashboard
         if (!isLoggedIn()) {
             window.location.href = 'login.html';
         }
 
-        // Load dashboard data from API
+        let currentUser = getUser();
+        let currentQuizId = null;
+
+        // ── 1. SIDEBAR BUILDER ACCORDING TO ROLE ───────────────────────────────
+        function buildSidebarNav(role) {
+            const container = document.getElementById('sidebar-nav-links');
+            let links = [];
+
+            if (role === 'admin') {
+                links = [
+                    { id: 'dashboard', icon: 'ph-shield-check', label: 'Admin Overview' },
+                    { id: 'admin-courses', icon: 'ph-books', label: 'Courses & Teachers' },
+                    { id: 'admin-teachers', icon: 'ph-user-list', label: 'Teacher Activity Monitor' },
+                    { id: 'admin-submissions', icon: 'ph-file-text', label: 'Platform Submissions' },
+                    { id: 'admin-users-list', icon: 'ph-users-three', label: 'User Management' },
+                    { id: 'leaderboard', icon: 'ph-trophy', label: 'Leaderboard' },
+                    { id: 'settings', icon: 'ph-gear', label: 'Settings' }
+                ];
+            } else if (role === 'teacher') {
+                links = [
+                    { id: 'dashboard', icon: 'ph-chart-line-up', label: 'Teacher Overview' },
+                    { id: 'teacher-uploads', icon: 'ph-upload-simple', label: 'Work & Content Uploads' },
+                    { id: 'teacher-grading', icon: 'ph-checks', label: 'Student Submissions' },
+                    { id: 'quiz-builder', icon: 'ph-question', label: 'Quiz Builder' },
+                    { id: 'teacher-live', icon: 'ph-video-camera', label: 'Live Classes' },
+                    { id: 'my-courses', icon: 'ph-play-circle', label: 'My Taught Courses' },
+                    { id: 'settings', icon: 'ph-gear', label: 'Settings' }
+                ];
+            } else {
+                // Student
+                links = [
+                    { id: 'dashboard', icon: 'ph-squares-four', label: 'Dashboard' },
+                    { id: 'my-courses', icon: 'ph-play-circle', label: 'My Courses' },
+                    { id: 'exams', icon: 'ph-exam', label: 'Exams & Quizzes' },
+                    { id: 'student-live', icon: 'ph-video-camera', label: 'Live Classes' },
+                    { id: 'certificates', icon: 'ph-certificate', label: 'Certificates' },
+                    { id: 'leaderboard', icon: 'ph-trophy', label: 'Leaderboard' },
+                    { id: 'settings', icon: 'ph-gear', label: 'Settings' }
+                ];
+            }
+
+            container.innerHTML = links.map((link, idx) => `
+                <a href="#" class="sidebar-link ${idx === 0 ? 'active bg-white/10 text-primary' : 'text-gray-400 hover:bg-white/5 hover:text-white'} flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors" data-target="${link.id}">
+                    <i class="ph ${link.icon} text-xl"></i> ${link.label}
+                </a>
+            `).join('');
+
+            // Attach click listeners to newly rendered sidebar links
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.querySelectorAll('.sidebar-link').forEach(l => {
+                        l.classList.remove('bg-white/10', 'text-primary');
+                        l.classList.add('text-gray-400', 'hover:bg-white/5', 'hover:text-white');
+                    });
+                    document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
+
+                    link.classList.add('bg-white/10', 'text-primary');
+                    link.classList.remove('text-gray-400', 'hover:bg-white/5', 'hover:text-white');
+
+                    const target = link.getAttribute('data-target');
+                    const targetSec = document.getElementById(`section-${target}`);
+                    if (targetSec) targetSec.classList.remove('hidden');
+
+                    // Trigger section loader
+                    if (target === 'my-courses') loadMyCourses();
+                    if (target === 'exams') loadQuizzes();
+                    if (target === 'certificates') loadCertificates();
+                    if (target === 'leaderboard') loadLeaderboard();
+                    if (target === 'teacher-uploads') populateCourseSelects();
+                    if (target === 'teacher-grading') loadTeacherSubmissions();
+                    if (target === 'quiz-builder') populateCourseSelects();
+                    if (target === 'admin-teachers') loadAdminTeacherActivity();
+                    if (target === 'admin-submissions') loadAdminSubmissions();
+                    if (target === 'teacher-live') loadTeacherLive();
+                    if (target === 'student-live') loadStudentLive();
+                    if (target === 'admin-courses') loadAdminCourses();
+                    if (target === 'admin-users-list') loadAdminUsersList();
+                });
+            });
+        }
+
+        // ── 2. DASHBOARD DATA LOADER ───────────────────────────────────────────
         async function loadDashboard() {
             try {
-                const res = await authFetch(`${API_BASE}/dashboard/`);
+                const res = await authFetch(`${API_BASE}/auth/me/`);
+                if (res.status === 401) { clearAuth(); window.location.href = 'login.html'; return; }
+                const meData = await res.json();
+                currentUser = meData.user;
+                localStorage.setItem('user', JSON.stringify(currentUser));
 
-                if (res.status === 401) {
-                    clearAuth();
-                    window.location.href = 'login.html';
-                    return;
-                }
+                // Update Header
+                const role = currentUser.role || 'student';
+                document.getElementById('welcome-msg').textContent = `Welcome back, ${currentUser.full_name}!`;
+                document.getElementById('user-email-subtitle').textContent = `${currentUser.email} • ${role.toUpperCase()} Account`;
+                const badge = document.getElementById('role-badge');
+                badge.textContent = role.toUpperCase();
+                if (role === 'admin') badge.className = 'badge-role bg-red-100 text-red-800 px-2.5 py-0.5 rounded-full';
+                else if (role === 'teacher') badge.className = 'badge-role bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full';
+                else badge.className = 'badge-role bg-violet-100 text-violet-800 px-2.5 py-0.5 rounded-full';
 
-                const data = await res.json();
-
-                // Header
-                document.getElementById('welcome-msg').textContent = `Welcome back, ${data.user.full_name}!`;
                 const avatarEl = document.getElementById('avatar-placeholder');
-                if (data.user.profile_picture) {
-                    avatarEl.innerHTML = `<img src="${data.user.profile_picture}" class="w-full h-full rounded-full object-cover">`;
+                avatarEl.textContent = currentUser.avatar_initial || currentUser.full_name[0];
+
+                buildSidebarNav(role);
+
+                // Render Overview stats based on role
+                if (role === 'admin') {
+                    loadAdminOverviewStats();
+                } else if (role === 'teacher') {
+                    loadTeacherOverviewStats();
                 } else {
-                    avatarEl.textContent = data.user.avatar_initial || data.user.full_name[0];
+                    loadStudentOverviewStats();
                 }
 
-                // Stats
-                document.getElementById('stat-active').textContent = data.stats.active_courses;
-                document.getElementById('stat-completed').textContent = data.stats.completed_courses;
-                document.getElementById('stat-progress').textContent = `${data.stats.average_progress}%`;
-
-                // Continue Learning
-                const continueSection = document.getElementById('continue-learning-section');
-                if (data.continue_learning) {
-                    const c = data.continue_learning;
-                    const course = c.course;
-                    continueSection.innerHTML = `
-                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col md:flex-row items-center gap-6">
-                            <img src="${course.thumbnail_url || 'assets/course1.jpg'}" class="w-full md:w-48 h-32 object-cover rounded-xl" alt="${course.title}">
-                            <div class="flex-1 w-full">
-                                <span class="text-xs font-bold text-white ${course.badge_color || 'bg-primary'} px-2 py-1 rounded-md mb-2 inline-block">${course.badge_label || 'COURSE'}</span>
-                                <h4 class="text-xl font-bold text-gray-900 mb-2">${course.title}</h4>
-                                <div class="w-full bg-gray-100 rounded-full h-2.5 mb-2">
-                                    <div class="bg-primary h-2.5 rounded-full" style="width: ${c.progress}%"></div>
-                                </div>
-                                <p class="text-sm text-gray-500">${c.progress}% Completed</p>
-                            </div>
-                            <a href="course-player.html?course=${course.id}" class="bg-gray-900 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary transition-colors whitespace-nowrap">
-                                Resume Class
-                            </a>
-                        </div>`;
-                } else {
-                    continueSection.innerHTML = `
-                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center">
-                            <p class="text-gray-500 mb-4">You are not currently enrolled in any active courses.</p>
-                            <a href="courses.html" class="inline-block bg-primary hover:bg-violet-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors">Browse All Courses</a>
-                        </div>`;
-                }
             } catch (err) {
                 console.error(err);
-                // Show cached user data if API is down
-                const user = getUser();
-                if (user) {
-                    document.getElementById('welcome-msg').textContent = `Welcome back, ${user.full_name}!`;
-                    document.getElementById('avatar-placeholder').textContent = user.avatar_initial || user.full_name[0];
-                } else {
-                    clearAuth();
-                    window.location.href = 'login.html';
-                }
             }
         }
 
-        // Logout button — calls shared logout() from script.js
-        document.getElementById('logout-btn').addEventListener('click', (e) => {
-            e.preventDefault();
-            logout();
-        });
+        // ── STUDENT OVERVIEW ──────────────────────────────────────────────────
+        async function loadStudentOverviewStats() {
+            const grid = document.getElementById('overview-stats-grid');
+            const res = await authFetch(`${API_BASE}/dashboard/`);
+            const data = await res.json();
 
-        // Sidebar tab switching
-        const sidebarLinks = document.querySelectorAll('.sidebar-link');
-        const sections = document.querySelectorAll('.content-section');
+            grid.innerHTML = `
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 text-xl"><i class="ph-fill ph-book-open"></i></div>
+                    <div><p class="text-xs text-gray-500 font-medium">Active Courses</p><h3 class="text-xl font-bold text-gray-900">${data.stats.active_courses}</h3></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500 text-xl"><i class="ph-fill ph-check-circle"></i></div>
+                    <div><p class="text-xs text-gray-500 font-medium">Completed Courses</p><h3 class="text-xl font-bold text-gray-900">${data.stats.completed_courses}</h3></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500 text-xl"><i class="ph-fill ph-trophy"></i></div>
+                    <div><p class="text-xs text-gray-500 font-medium">Average Progress</p><h3 class="text-xl font-bold text-gray-900">${data.stats.average_progress}%</h3></div>
+                </div>
+            `;
 
-        sidebarLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                sidebarLinks.forEach(l => {
-                    l.classList.remove('bg-white/10', 'text-primary');
-                    l.classList.add('text-gray-400', 'hover:bg-white/5', 'hover:text-white');
-                });
-                sections.forEach(s => s.classList.add('hidden'));
+            const container = document.getElementById('continue-learning-section');
+            if (data.continue_learning) {
+                const c = data.continue_learning;
+                const course = c.course;
+                container.innerHTML = `
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col md:flex-row items-center gap-6">
+                        <img src="${course.thumbnail_url || 'assets/course1.jpg'}" class="w-full md:w-48 h-32 object-cover rounded-xl" alt="${course.title}">
+                        <div class="flex-1 w-full">
+                            <span class="text-xs font-bold text-white ${course.badge_color || 'bg-primary'} px-2 py-1 rounded-md mb-2 inline-block">${course.badge_label || 'COURSE'}</span>
+                            <h4 class="text-xl font-bold text-gray-900 mb-2">${course.title}</h4>
+                            <div class="w-full bg-gray-100 rounded-full h-2.5 mb-2"><div class="bg-primary h-2.5 rounded-full" style="width: ${c.progress}%"></div></div>
+                            <p class="text-xs text-gray-500">${c.progress}% Completed</p>
+                        </div>
+                        <a href="course-player.html?course=${course.id}" class="bg-gray-900 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary transition-colors whitespace-nowrap">Resume Class</a>
+                    </div>`;
+            } else {
+                container.innerHTML = `
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center">
+                        <p class="text-gray-500 mb-4 text-sm">You are not currently enrolled in active courses.</p>
+                        <a href="courses.html" class="inline-block bg-primary text-white font-semibold px-6 py-2.5 rounded-xl text-sm">Browse Courses</a>
+                    </div>`;
+            }
+        }
 
-                link.classList.add('bg-white/10', 'text-primary');
-                link.classList.remove('text-gray-400', 'hover:bg-white/5', 'hover:text-white');
+        // ── TEACHER OVERVIEW ──────────────────────────────────────────────────
+        async function loadTeacherOverviewStats() {
+            const grid = document.getElementById('overview-stats-grid');
+            const res = await authFetch(`${API_BASE}/teacher/dashboard/`);
+            const data = await res.json();
 
-                const target = link.getAttribute('data-target');
-                document.getElementById(`section-${target}`).classList.remove('hidden');
+            grid.innerHTML = `
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-violet-50 flex items-center justify-center text-primary text-xl"><i class="ph-fill ph-chalkboard-teacher"></i></div>
+                    <div><p class="text-xs text-gray-500 font-medium">Courses Taught</p><h3 class="text-xl font-bold text-gray-900">${data.stats.total_courses}</h3></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 text-xl"><i class="ph-fill ph-users"></i></div>
+                    <div><p class="text-xs text-gray-500 font-medium">Students Enrolled</p><h3 class="text-xl font-bold text-gray-900">${data.stats.total_students}</h3></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500 text-xl"><i class="ph-fill ph-clock"></i></div>
+                    <div><p class="text-xs text-gray-500 font-medium">Pending Grading</p><h3 class="text-xl font-bold text-amber-600">${data.stats.pending_grading}</h3></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500 text-xl"><i class="ph-fill ph-question"></i></div>
+                    <div><p class="text-xs text-gray-500 font-medium">Published Quizzes</p><h3 class="text-xl font-bold text-gray-900">${data.stats.total_quizzes}</h3></div>
+                </div>
+            `;
 
-                if (target === 'my-courses') loadMyCourses();
-            });
-        });
+            document.getElementById('continue-learning-section').innerHTML = `
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                    <h4 class="font-bold text-gray-900 mb-3 text-sm">Quick Teacher Actions</h4>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="document.querySelector('[data-target=teacher-uploads]').click()" class="bg-primary text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-violet-700">Add Video / Resource</button>
+                        <button onclick="document.querySelector('[data-target=teacher-grading]').click()" class="bg-amber-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-amber-600">Grade Student Submissions (${data.stats.pending_grading})</button>
+                        <button onclick="document.querySelector('[data-target=quiz-builder]').click()" class="bg-secondary text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-emerald-600">Create New Quiz</button>
+                    </div>
+                </div>`;
+        }
 
-        // Load enrolled courses
+        // ── ADMIN OVERVIEW ────────────────────────────────────────────────────
+        async function loadAdminOverviewStats() {
+            const grid = document.getElementById('overview-stats-grid');
+            const res = await authFetch(`${API_BASE}/admin/dashboard/`);
+            const data = await res.json();
+            const stats = data.stats || data;
+
+            grid.innerHTML = `
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500 text-xl"><i class="ph-fill ph-currency-dollar"></i></div>
+                    <div><p class="text-xs text-gray-500 font-medium">Total Platform Revenue</p><h3 class="text-xl font-bold text-emerald-600">৳${stats.total_revenue || 0}</h3></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 text-xl"><i class="ph-fill ph-student"></i></div>
+                    <div><p class="text-xs text-gray-500 font-medium">Total Students</p><h3 class="text-xl font-bold text-gray-900">${stats.total_students || 0}</h3></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-violet-50 flex items-center justify-center text-primary text-xl"><i class="ph-fill ph-chalkboard-teacher"></i></div>
+                    <div><p class="text-xs text-gray-500 font-medium">Total Teachers</p><h3 class="text-xl font-bold text-gray-900">${stats.total_teachers || 0}</h3></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500 text-xl"><i class="ph-fill ph-book-open"></i></div>
+                    <div><p class="text-xs text-gray-500 font-medium">Active Courses</p><h3 class="text-xl font-bold text-gray-900">${stats.total_courses || 0}</h3></div>
+                </div>
+            `;
+
+            document.getElementById('continue-learning-section').innerHTML = `
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                    <h4 class="font-bold text-gray-900 mb-3 text-sm">Admin Quick Actions</h4>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="document.querySelector('[data-target=admin-courses]').click()" class="bg-primary text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-violet-700">Manage Courses & Teachers</button>
+                        <button onclick="document.querySelector('[data-target=admin-teachers]').click()" class="bg-gray-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-primary">Monitor Teacher Activity</button>
+                        <button onclick="document.querySelector('[data-target=admin-submissions]').click()" class="bg-blue-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-blue-700">View Platform Submissions</button>
+                        <button onclick="document.querySelector('[data-target=admin-users-list]').click()" class="bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-emerald-700">Manage Users & Roles</button>
+                    </div>
+                </div>`;
+        }
+
+        // ── 3. MY COURSES LOADER ──────────────────────────────────────────────
         async function loadMyCourses() {
             const container = document.getElementById('my-courses-list');
-            container.innerHTML = `<div class="col-span-full text-center text-gray-400 py-8">Loading…</div>`;
+            container.innerHTML = `<div class="col-span-full text-center text-gray-400 py-8">Loading courses...</div>`;
             try {
-                const res = await authFetch(`${API_BASE}/enrollments/`);
+                const endpoint = currentUser.role === 'teacher' ? `${API_BASE}/teacher/courses/` : `${API_BASE}/enrollments/`;
+                const res = await authFetch(endpoint);
                 const data = await res.json();
 
                 if (!data || data.length === 0) {
-                    container.innerHTML = `
-                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500 col-span-full">
-                            You haven't enrolled in any courses yet.
-                            <br><a href="courses.html" class="mt-4 inline-block text-primary font-semibold hover:underline">Browse Courses →</a>
-                        </div>`;
+                    container.innerHTML = `<div class="bg-white rounded-2xl p-8 text-center text-gray-500 col-span-full">No courses found.</div>`;
                     return;
                 }
 
-                container.innerHTML = data.map(enrollment => {
-                    const course = enrollment.course;
+                container.innerHTML = data.map(item => {
+                    const course = item.course || item;
+                    const progress = item.progress || 0;
                     return `
                     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-all">
-                        <img src="${course.thumbnail_url || 'assets/course1.jpg'}" class="w-full h-40 object-cover" alt="${course.title}">
-                        <div class="p-6 flex-1 flex flex-col">
-                            <h4 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">${course.title}</h4>
+                        <img src="${course.thumbnail_url || 'assets/course1.jpg'}" class="w-full h-36 object-cover" alt="${course.title}">
+                        <div class="p-5 flex-1 flex flex-col">
+                            <h4 class="text-base font-bold text-gray-900 mb-2 line-clamp-2">${course.title}</h4>
                             <div class="w-full bg-gray-100 rounded-full h-2 mb-4 mt-auto">
-                                <div class="bg-primary h-2 rounded-full" style="width: ${enrollment.progress || 0}%"></div>
+                                <div class="bg-primary h-2 rounded-full" style="width: ${progress}%"></div>
                             </div>
-                            <a href="course-player.html?course=${course.id}" class="w-full bg-gray-900 hover:bg-primary text-white py-2.5 rounded-xl font-semibold transition-colors text-center block">
-                                Enter Course
+                            <a href="course-player.html?course=${course.id}" class="w-full bg-gray-900 hover:bg-primary text-white py-2 rounded-xl text-xs font-bold text-center block transition-colors">
+                                Enter Course Player
                             </a>
                         </div>
                     </div>`;
@@ -320,7 +855,819 @@
             }
         }
 
-        // Run dashboard on load (no DOMContentLoaded needed — script runs after DOM is ready)
+        // ── 4. EXAMS & QUIZZES LOADER ──────────────────────────────────────────
+        async function loadQuizzes() {
+            const container = document.getElementById('quizzes-container');
+            container.innerHTML = `<div class="col-span-full text-center text-gray-400 py-8">Loading course quizzes...</div>`;
+            try {
+                const res = await authFetch(`${API_BASE}/quizzes/`);
+                const quizzes = await res.json();
+
+                if (!quizzes || quizzes.length === 0) {
+                    container.innerHTML = `<div class="bg-white rounded-2xl p-8 text-center text-gray-500 col-span-full">No quizzes published yet.</div>`;
+                    return;
+                }
+
+                container.innerHTML = quizzes.map(q => {
+                    const statusBadge = q.is_submitted
+                        ? (q.student_passed ? `<span class="bg-emerald-50 text-emerald-600 border border-emerald-200 text-xs font-bold px-2.5 py-1 rounded-md">PASSED (${q.student_score}/${q.total_marks})</span>`
+                                            : `<span class="bg-red-50 text-red-600 border border-red-200 text-xs font-bold px-2.5 py-1 rounded-md">FAILED (${q.student_score}/${q.total_marks})</span>`)
+                        : `<span class="bg-amber-50 text-amber-600 border border-amber-200 text-xs font-bold px-2.5 py-1 rounded-md">NOT ATTEMPTED</span>`;
+
+                    return `
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-2">
+                                <span class="text-xs text-gray-400 font-bold uppercase">${q.course_title}</span>
+                                ${statusBadge}
+                            </div>
+                            <h4 class="font-bold text-gray-900 text-lg mb-1">${q.title}</h4>
+                            <p class="text-xs text-gray-500 mb-4">${q.description || 'Test your module knowledge and score points for the leaderboard.'}</p>
+                            <div class="flex items-center gap-4 text-xs text-gray-500 mb-4">
+                                <span><i class="ph ph-question text-primary mr-1"></i>${q.total_questions} Questions</span>
+                                <span><i class="ph ph-star text-amber-500 mr-1"></i>${q.total_marks} Total Marks</span>
+                                <span><i class="ph ph-check-circle text-emerald-500 mr-1"></i>Pass: ${q.passing_percentage}%</span>
+                            </div>
+                        </div>
+                        <button onclick="openQuizModal(${q.id}, '${q.title.replace(/'/g, "\\'")}')" class="w-full bg-primary hover:bg-violet-700 text-white font-bold py-2.5 rounded-xl text-xs transition-colors flex items-center justify-center gap-2">
+                            <i class="ph ph-play text-sm"></i> ${q.is_submitted ? 'Retake Quiz' : 'Start Quiz'}
+                        </button>
+                    </div>`;
+                }).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // ── 5. QUIZ ATTEMPT MODAL LOGIC ───────────────────────────────────────
+        async function openQuizModal(quizId, title) {
+            currentQuizId = quizId;
+            document.getElementById('quiz-modal-title').textContent = title;
+            const modal = document.getElementById('quiz-attempt-modal');
+            const body = document.getElementById('quiz-modal-body');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            body.innerHTML = `<div class="text-center py-8 text-gray-400">Loading questions...</div>`;
+
+            try {
+                const res = await authFetch(`${API_BASE}/quizzes/${quizId}/`);
+                const data = await res.json();
+                const questions = data.questions || [];
+
+                if (questions.length === 0) {
+                    body.innerHTML = `<div class="text-center py-8 text-gray-500">No questions available in this quiz.</div>`;
+                    return;
+                }
+
+                body.innerHTML = questions.map((q, idx) => `
+                    <div class="bg-gray-50 border border-gray-200 p-4 rounded-xl space-y-2">
+                        <p class="font-bold text-sm text-gray-900">${idx + 1}. ${q.question_text}</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pt-1 text-xs">
+                            <label class="flex items-center gap-2 bg-white p-2.5 rounded-lg border border-gray-200 cursor-pointer hover:border-primary">
+                                <input type="radio" name="q_${q.id}" value="A" class="accent-primary"> <span>A) ${q.option_a}</span>
+                            </label>
+                            <label class="flex items-center gap-2 bg-white p-2.5 rounded-lg border border-gray-200 cursor-pointer hover:border-primary">
+                                <input type="radio" name="q_${q.id}" value="B" class="accent-primary"> <span>B) ${q.option_b}</span>
+                            </label>
+                            <label class="flex items-center gap-2 bg-white p-2.5 rounded-lg border border-gray-200 cursor-pointer hover:border-primary">
+                                <input type="radio" name="q_${q.id}" value="C" class="accent-primary"> <span>C) ${q.option_c}</span>
+                            </label>
+                            <label class="flex items-center gap-2 bg-white p-2.5 rounded-lg border border-gray-200 cursor-pointer hover:border-primary">
+                                <input type="radio" name="q_${q.id}" value="D" class="accent-primary"> <span>D) ${q.option_d}</span>
+                            </label>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function closeQuizModal() {
+            const modal = document.getElementById('quiz-attempt-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function submitQuizAnswers() {
+            if (!currentQuizId) return;
+            const answers = {};
+            document.querySelectorAll('input[type=radio]:checked').forEach(radio => {
+                const qId = radio.name.replace('q_', '');
+                answers[qId] = radio.value;
+            });
+
+            try {
+                const res = await authFetch(`${API_BASE}/quizzes/${currentQuizId}/submit/`, {
+                    method: 'POST',
+                    body: JSON.stringify({ answers })
+                });
+                const result = await res.json();
+                closeQuizModal();
+                alert(`Quiz Results:\nScore: ${result.score}/${result.total_marks} (${result.percentage}%)\nStatus: ${result.passed ? 'PASSED 🎉' : 'FAILED'}\n${result.certificate_reason}`);
+                loadQuizzes();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // ── 6. CERTIFICATES LOADER ─────────────────────────────────────────────
+        async function loadCertificates() {
+            const container = document.getElementById('user-certificates-list');
+            container.innerHTML = `<div class="col-span-full text-center text-gray-400 py-8">Loading certificates...</div>`;
+            try {
+                const res = await authFetch(`${API_BASE}/certificates/`);
+                const certs = await res.json();
+
+                if (!certs || certs.length === 0) {
+                    container.innerHTML = `
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500 col-span-full">
+                            <i class="ph ph-lock-key text-4xl text-amber-500 mb-2"></i>
+                            <h4 class="font-bold text-gray-900 text-base mb-1">Certificates Locked</h4>
+                            <p class="text-xs text-gray-500">You must watch 100% of video lessons, get teacher approval on all assignments, and pass all quizzes to unlock your certificate.</p>
+                        </div>`;
+                    return;
+                }
+
+                container.innerHTML = certs.map(c => `
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between hover:shadow-md transition-all">
+                        <div class="flex items-start justify-between gap-4 mb-4">
+                            <div>
+                                <span class="bg-amber-50 text-amber-600 border border-amber-200 text-xs font-bold px-2.5 py-1 rounded-md mb-2 inline-block">
+                                    <i class="ph-fill ph-seal-check mr-1"></i> VERIFIED CERTIFICATE
+                                </span>
+                                <h4 class="text-lg font-bold text-gray-900 leading-snug">${c.course_title}</h4>
+                                <p class="text-xs text-gray-500 mt-1">Instructor: ${c.instructor_name || 'TutorBhaiya Lead'}</p>
+                            </div>
+                            <span class="text-xs font-mono font-bold text-primary bg-violet-50 px-2.5 py-1 rounded-lg shrink-0">${c.certificate_number}</span>
+                        </div>
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-100 mt-2">
+                            <span class="text-xs text-gray-400">Issued: ${new Date(c.issued_at).toLocaleDateString()}</span>
+                            <a href="certificate.html?id=${c.certificate_number}" target="_blank" class="bg-primary hover:bg-violet-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1">
+                                <i class="ph ph-eye text-sm"></i> View & Print
+                            </a>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // ── 7. LEADERBOARD LOADER ──────────────────────────────────────────────
+        async function loadLeaderboard() {
+            const container = document.getElementById('leaderboard-container');
+            container.innerHTML = `<div class="p-8 text-center text-gray-400">Loading student rankings...</div>`;
+            try {
+                const res = await authFetch(`${API_BASE}/leaderboard/`);
+                const list = await res.json();
+
+                if (!list || list.length === 0) {
+                    container.innerHTML = `<div class="p-8 text-center text-gray-500">No student activity recorded yet.</div>`;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-100 text-xs text-gray-400 font-bold uppercase">
+                                <th class="p-4">Rank</th>
+                                <th class="p-4">Student</th>
+                                <th class="p-4 text-center">Assignment Marks</th>
+                                <th class="p-4 text-center">Quiz Score</th>
+                                <th class="p-4 text-center">Certificates</th>
+                                <th class="p-4 text-right">Total Points</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 text-sm">
+                            ${list.map(s => {
+                                let badge = `<span class="font-bold text-gray-500">#${s.rank}</span>`;
+                                if (s.rank === 1) badge = `<span class="bg-amber-100 text-amber-800 font-extrabold px-2.5 py-1 rounded-full text-xs">🥇 1st</span>`;
+                                if (s.rank === 2) badge = `<span class="bg-slate-100 text-slate-700 font-extrabold px-2.5 py-1 rounded-full text-xs">🥈 2nd</span>`;
+                                if (s.rank === 3) badge = `<span class="bg-orange-100 text-amber-900 font-extrabold px-2.5 py-1 rounded-full text-xs">🥉 3rd</span>`;
+
+                                return `
+                                <tr class="hover:bg-gray-50">
+                                    <td class="p-4">${badge}</td>
+                                    <td class="p-4 font-semibold text-gray-900">${s.name} <span class="text-xs text-gray-400 font-normal">(${s.email})</span></td>
+                                    <td class="p-4 text-center font-mono">${s.assignment_points}</td>
+                                    <td class="p-4 text-center font-mono">${s.quiz_points}</td>
+                                    <td class="p-4 text-center font-bold text-amber-500">${s.certificates_earned}</td>
+                                    <td class="p-4 text-right font-extrabold text-primary">${s.total_points} pts</td>
+                                </tr>`;
+                            }).join('')}
+                        </tbody>
+                    </table>`;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // ── 8. TEACHER SUBMISSIONS & GRADING LOADER ────────────────────────────
+        async function loadTeacherSubmissions() {
+            const container = document.getElementById('teacher-submissions-container');
+            container.innerHTML = `<div class="p-8 text-center text-gray-400">Loading student submissions...</div>`;
+            try {
+                const res = await authFetch(`${API_BASE}/teacher/assignments/submissions/`);
+                const submissions = await res.json();
+
+                if (!submissions || submissions.length === 0) {
+                    container.innerHTML = `<div class="p-8 text-center text-gray-500">No student assignment submissions yet.</div>`;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-100 text-xs text-gray-400 font-bold uppercase">
+                                <th class="p-4">Student</th>
+                                <th class="p-4">Course & Assignment</th>
+                                <th class="p-4 text-center">Status</th>
+                                <th class="p-4 text-center">Marks</th>
+                                <th class="p-4 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 text-sm">
+                            ${submissions.map(s => {
+                                let stBadge = `<span class="bg-amber-50 text-amber-600 text-xs font-bold px-2 py-0.5 rounded-md">PENDING REVIEW</span>`;
+                                if (s.status === 'approved') stBadge = `<span class="bg-emerald-50 text-emerald-600 text-xs font-bold px-2 py-0.5 rounded-md">APPROVED</span>`;
+                                if (s.status === 'rejected') stBadge = `<span class="bg-red-50 text-red-600 text-xs font-bold px-2 py-0.5 rounded-md">REJECTED</span>`;
+
+                                return `
+                                <tr>
+                                    <td class="p-4"><p class="font-semibold text-gray-900">${s.student_name}</p><p class="text-xs text-gray-400">${s.student_email}</p></td>
+                                    <td class="p-4"><p class="font-semibold text-gray-900 text-xs">${s.course_title}</p><p class="text-xs text-gray-500">${s.assignment_title}</p></td>
+                                    <td class="p-4 text-center">${stBadge}</td>
+                                    <td class="p-4 text-center font-bold">${s.marks_obtained !== null ? `${s.marks_obtained}/${s.total_marks}` : '—'}</td>
+                                    <td class="p-4 text-right">
+                                        <button onclick="openGradeModal(${s.id}, '${s.student_name.replace(/'/g, "\\'")}', '${(s.submission_text || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', ${s.total_marks})" class="bg-primary hover:bg-violet-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">
+                                            Evaluate & Grade
+                                        </button>
+                                    </td>
+                                </tr>`;
+                            }).join('')}
+                        </tbody>
+                    </table>`;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function openGradeModal(id, studentName, text, totalMarks) {
+            document.getElementById('grade-submission-id').value = id;
+            document.getElementById('grade-modal-student').textContent = studentName;
+            document.getElementById('grade-submission-text').textContent = text || 'No answer text provided (file attached).';
+            document.getElementById('grade-total-marks').textContent = totalMarks;
+            document.getElementById('grade-marks-input').value = totalMarks;
+
+            const modal = document.getElementById('grade-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeGradeModal() {
+            const modal = document.getElementById('grade-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        document.getElementById('form-grade-submission').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const subId = document.getElementById('grade-submission-id').value;
+            const marks = document.getElementById('grade-marks-input').value;
+            const feedback = document.getElementById('grade-feedback-input').value;
+            const statusVal = document.getElementById('grade-status-select').value;
+
+            try {
+                const res = await authFetch(`${API_BASE}/teacher/assignments/grade/`, {
+                    method: 'POST',
+                    body: JSON.stringify({ submission_id: subId, marks_obtained: marks, feedback, status: statusVal })
+                });
+                const data = await res.json();
+                closeGradeModal();
+                alert(data.message);
+                loadTeacherSubmissions();
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        // ── 9. ADMIN TEACHER ACTIVITY LOADER ─────────────────────────────────
+        async function loadAdminTeacherActivity() {
+            const container = document.getElementById('admin-teachers-container');
+            container.innerHTML = `<div class="p-8 text-center text-gray-400">Loading teacher activity matrix...</div>`;
+            try {
+                const res = await authFetch(`${API_BASE}/admin/teachers/`);
+                const teachers = await res.json();
+
+                if (!teachers || teachers.length === 0) {
+                    container.innerHTML = `<div class="p-8 text-center text-gray-500">No teachers found in system.</div>`;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-100 text-xs text-gray-400 font-bold uppercase">
+                                <th class="p-4">Teacher</th>
+                                <th class="p-4 text-center">Courses</th>
+                                <th class="p-4 text-center">Videos Uploaded</th>
+                                <th class="p-4 text-center">Resources / Links</th>
+                                <th class="p-4 text-center">Assignments</th>
+                                <th class="p-4 text-center">Quizzes</th>
+                                <th class="p-4 text-center">Students</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 text-sm">
+                            ${teachers.map(t => `
+                                <tr>
+                                    <td class="p-4 font-semibold text-gray-900">${t.name} <p class="text-xs text-gray-400 font-normal">${t.email}</p></td>
+                                    <td class="p-4 text-center font-bold">${t.courses_count}</td>
+                                    <td class="p-4 text-center font-mono">${t.videos_count}</td>
+                                    <td class="p-4 text-center font-mono">${t.resources_count}</td>
+                                    <td class="p-4 text-center font-mono">${t.assignments_count}</td>
+                                    <td class="p-4 text-center font-mono">${t.quizzes_count}</td>
+                                    <td class="p-4 text-center font-bold text-primary">${t.students_count}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>`;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // ── 10. ADMIN SUBMISSIONS FEED ─────────────────────────────────────────
+        async function loadAdminSubmissions() {
+            const container = document.getElementById('admin-submissions-container');
+            container.innerHTML = `<div class="p-8 text-center text-gray-400">Loading submissions feed...</div>`;
+            try {
+                const res = await authFetch(`${API_BASE}/admin/submissions/`);
+                const data = await res.json();
+                const assigns = data.assignment_submissions || [];
+                const quizzes = data.quiz_submissions || [];
+
+                container.innerHTML = `
+                    <div class="p-4 bg-gray-50 border-b border-gray-100 font-bold text-sm text-gray-900">Assignment Submissions (${assigns.length})</div>
+                    <table class="w-full text-left border-collapse border-b border-gray-200 mb-6">
+                        <thead><tr class="bg-gray-50 text-xs text-gray-400 uppercase"><th class="p-3">Student</th><th class="p-3">Course / Task</th><th class="p-3 text-center">Status</th><th class="p-3 text-right">Marks</th></tr></thead>
+                        <tbody class="divide-y divide-gray-100 text-xs">
+                            ${assigns.map(a => `<tr><td class="p-3 font-semibold">${a.student_name}</td><td class="p-3">${a.course_title} - ${a.assignment_title}</td><td class="p-3 text-center">${a.status}</td><td class="p-3 text-right font-bold">${a.marks_obtained !== null ? a.marks_obtained : '—'}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                    <div class="p-4 bg-gray-50 border-b border-gray-100 font-bold text-sm text-gray-900">Quiz Submissions (${quizzes.length})</div>
+                    <table class="w-full text-left border-collapse">
+                        <thead><tr class="bg-gray-50 text-xs text-gray-400 uppercase"><th class="p-3">Student</th><th class="p-3">Course / Quiz</th><th class="p-3 text-center">Result</th><th class="p-3 text-right">Score</th></tr></thead>
+                        <tbody class="divide-y divide-gray-100 text-xs">
+                            ${quizzes.map(q => `<tr><td class="p-3 font-semibold">${q.student_name}</td><td class="p-3">${q.course_title} - ${q.quiz_title}</td><td class="p-3 text-center font-bold ${q.passed ? 'text-emerald-600' : 'text-red-500'}">${q.passed ? 'PASSED' : 'FAILED'}</td><td class="p-3 text-right font-bold">${q.score}/${q.total_marks}</td></tr>`).join('')}
+                        </tbody>
+                    </table>`;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // ── 11. FORM HELPERS FOR CONTENT CREATION ─────────────────────────────
+        async function populateCourseSelects() {
+            try {
+                const res = await authFetch(`${API_BASE}/courses/`);
+                const data = await res.json();
+                const courses = data.results || data;
+                const options = courses.map(c => `<option value="${c.id}">${c.title}</option>`).join('');
+
+                const sel1 = document.getElementById('resource-course-select');
+                const sel2 = document.getElementById('assign-course-select');
+                const sel3 = document.getElementById('quiz-course-select');
+                if (sel1) sel1.innerHTML = options;
+                if (sel2) sel2.innerHTML = options;
+                if (sel3) sel3.innerHTML = options;
+
+                // Load modules for video assignment
+                if (courses.length > 0) {
+                    const detailRes = await authFetch(`${API_BASE}/courses/${courses[0].slug}/`);
+                    const detailData = await detailRes.json();
+                    const modSel = document.getElementById('video-module-select');
+                    if (modSel && detailData.modules) {
+                        modSel.innerHTML = detailData.modules.map(m => `<option value="${m.id}">${m.title}</option>`).join('');
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Add Video Form Submit
+        document.getElementById('form-add-video').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const modId = document.getElementById('video-module-select').value;
+            const title = document.getElementById('video-title-input').value;
+            const url = document.getElementById('video-url-input').value;
+            const duration = document.getElementById('video-duration-input').value;
+
+            try {
+                const res = await authFetch(`${API_BASE}/teacher/content/video/`, {
+                    method: 'POST',
+                    body: JSON.stringify({ module: modId, title, video_url: url, duration_minutes: duration })
+                });
+                const data = await res.json();
+                alert(data.message || 'Video added successfully!');
+                document.getElementById('form-add-video').reset();
+            } catch (err) { console.error(err); }
+        });
+
+        // Add Resource Form Submit
+        document.getElementById('form-add-resource').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const courseId = document.getElementById('resource-course-select').value;
+            const title = document.getElementById('resource-title-input').value;
+            const url = document.getElementById('resource-url-input').value;
+
+            try {
+                const res = await authFetch(`${API_BASE}/teacher/content/resource/`, {
+                    method: 'POST',
+                    body: JSON.stringify({ course: courseId, title, url })
+                });
+                const data = await res.json();
+                alert(data.message || 'Resource added successfully!');
+                document.getElementById('form-add-resource').reset();
+            } catch (err) { console.error(err); }
+        });
+
+        // Add Assignment Form Submit
+        document.getElementById('form-add-assignment').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const courseId = document.getElementById('assign-course-select').value;
+            const title = document.getElementById('assign-title-input').value;
+            const marks = document.getElementById('assign-marks-input').value;
+            const desc = document.getElementById('assign-desc-input').value;
+
+            try {
+                const res = await authFetch(`${API_BASE}/teacher/content/assignment/`, {
+                    method: 'POST',
+                    body: JSON.stringify({ course: courseId, title, total_marks: marks, description: desc })
+                });
+                const data = await res.json();
+                alert(data.message || 'Assignment created successfully!');
+                document.getElementById('form-add-assignment').reset();
+            } catch (err) { console.error(err); }
+        });
+
+        // Question Builder logic for Quiz Builder
+        let questionCount = 0;
+        function addQuestionField() {
+            questionCount++;
+            const container = document.getElementById('questions-builder-list');
+            const div = document.createElement('div');
+            div.className = 'p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-3';
+            div.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <span class="font-bold text-xs text-primary">Question ${questionCount}</span>
+                    <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-xs text-red-500 hover:underline">Remove</button>
+                </div>
+                <input type="text" name="q_text" placeholder="Question prompt..." required class="w-full border border-gray-200 rounded-lg p-2 text-xs">
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <input type="text" name="opt_a" placeholder="Option A" required class="border border-gray-200 rounded-lg p-2">
+                    <input type="text" name="opt_b" placeholder="Option B" required class="border border-gray-200 rounded-lg p-2">
+                    <input type="text" name="opt_c" placeholder="Option C" required class="border border-gray-200 rounded-lg p-2">
+                    <input type="text" name="opt_d" placeholder="Option D" required class="border border-gray-200 rounded-lg p-2">
+                </div>
+                <div class="flex items-center gap-3 text-xs">
+                    <label class="font-semibold text-gray-700">Correct Option Key:</label>
+                    <select name="correct_opt" class="border border-gray-200 rounded-lg p-1.5">
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+                </div>`;
+            container.appendChild(div);
+        }
+
+        // Initialize with 1 question
+        addQuestionField();
+
+        // Create Quiz Form Submit
+        document.getElementById('form-create-quiz').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const courseId = document.getElementById('quiz-course-select').value;
+            const title = document.getElementById('quiz-title-input').value;
+            const passPct = document.getElementById('quiz-pass-input').value;
+
+            const questions = [];
+            document.querySelectorAll('#questions-builder-list > div').forEach(div => {
+                questions.push({
+                    question_text: div.querySelector('[name=q_text]').value,
+                    option_a: div.querySelector('[name=opt_a]').value,
+                    option_b: div.querySelector('[name=opt_b]').value,
+                    option_c: div.querySelector('[name=opt_c]').value,
+                    option_d: div.querySelector('[name=opt_d]').value,
+                    correct_option: div.querySelector('[name=correct_opt]').value,
+                    marks: 5
+                });
+            });
+
+            try {
+                const res = await authFetch(`${API_BASE}/quizzes/`, {
+                    method: 'POST',
+                    body: JSON.stringify({ course: courseId, title, passing_percentage: passPct, questions })
+                });
+                const data = await res.json();
+                alert('Quiz created successfully!');
+                document.getElementById('form-create-quiz').reset();
+            } catch (err) { console.error(err); }
+        });
+
+        // User Role Update Submit
+        document.getElementById('form-user-role').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userId = document.getElementById('role-user-id').value;
+            const role = document.getElementById('role-select').value;
+
+            try {
+                const res = await authFetch(`${API_BASE}/admin/users/role/`, {
+                    method: 'POST',
+                    body: JSON.stringify({ user_id: userId, role })
+                });
+                const data = await res.json();
+                alert(data.message || 'User role updated!');
+            } catch (err) { console.error(err); }
+        });
+
+
+        // ── TEACHER LIVE CLASS SCHEDULER ──────────────────────────────────────
+        async function loadTeacherLive() {
+            // Populate course select for the form
+            const courseSelect = document.getElementById('live-course-select');
+            try {
+                const res = await authFetch(`${API_BASE}/teacher/courses/`);
+                const courses = await res.json();
+                courseSelect.innerHTML = courses.map(c => `<option value="${c.id}">${c.title}</option>`).join('') || '<option>No courses assigned</option>';
+            } catch (e) { courseSelect.innerHTML = '<option>Error loading courses</option>'; }
+
+            // Load scheduled routines
+            const list = document.getElementById('teacher-routines-list');
+            list.innerHTML = `<div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center text-gray-400">Loading...</div>`;
+            try {
+                const res = await authFetch(`${API_BASE}/teacher/routines/`);
+                const routines = await res.json();
+                if (!routines.length) {
+                    list.innerHTML = `<div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center text-gray-400 text-sm">No classes scheduled yet. Use the form to add one.</div>`;
+                    return;
+                }
+                list.innerHTML = routines.map(r => {
+                    const typeColors = { live_class: 'bg-primary text-white', exam: 'bg-red-500 text-white', off_day: 'bg-gray-400 text-white' };
+                    const color = typeColors[r.event_type] || 'bg-gray-200 text-gray-700';
+                    return `
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-start justify-between gap-3">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-xs font-bold px-2 py-0.5 rounded-md ${color}">${r.event_type_display}</span>
+                                <span class="text-xs text-gray-400 font-medium truncate">${r.course_title}</span>
+                            </div>
+                            <p class="font-semibold text-gray-900 text-sm">${r.title}</p>
+                            <p class="text-xs text-gray-500 mt-0.5">${r.date || r.day_of_week || ''} ${r.start_time ? '· ' + r.start_time : ''} ${r.end_time ? '– ' + r.end_time : ''}</p>
+                            ${r.live_link ? `<a href="${r.live_link}" target="_blank" class="inline-flex items-center gap-1 mt-1 text-xs text-primary font-semibold hover:underline"><i class="ph ph-video-camera"></i> Join Link</a>` : ''}
+                        </div>
+                        <button onclick="deleteRoutine(${r.id})" class="text-gray-300 hover:text-red-400 transition-colors shrink-0 mt-1"><i class="ph ph-trash text-lg"></i></button>
+                    </div>`;
+                }).join('');
+            } catch (e) { list.innerHTML = `<div class="p-4 text-red-400 text-sm">Failed to load routines.</div>`; }
+        }
+
+        async function deleteRoutine(id) {
+            if (!confirm('Delete this scheduled event?')) return;
+            try {
+                await authFetch(`${API_BASE}/teacher/routines/${id}/`, { method: 'DELETE' });
+                loadTeacherLive();
+            } catch (e) { alert('Failed to delete.'); }
+        }
+
+        document.getElementById('form-schedule-live').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msg = document.getElementById('live-form-msg');
+            msg.className = 'text-xs font-medium text-center py-2 rounded-xl bg-gray-100 text-gray-600';
+            msg.textContent = 'Scheduling...';
+            msg.classList.remove('hidden');
+            try {
+                const res = await authFetch(`${API_BASE}/teacher/routines/`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        course_id: document.getElementById('live-course-select').value,
+                        title: document.getElementById('live-title-input').value,
+                        event_type: document.getElementById('live-type-select').value,
+                        date: document.getElementById('live-date-input').value || null,
+                        day_of_week: document.getElementById('live-day-input').value,
+                        start_time: document.getElementById('live-start-input').value || null,
+                        end_time: document.getElementById('live-end-input').value || null,
+                        live_link: document.getElementById('live-link-input').value,
+                        description: document.getElementById('live-desc-input').value,
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    msg.className = 'text-xs font-medium text-center py-2 rounded-xl bg-emerald-50 text-emerald-600';
+                    msg.textContent = data.message || 'Live class scheduled!';
+                    e.target.reset();
+                    loadTeacherLive();
+                } else {
+                    msg.className = 'text-xs font-medium text-center py-2 rounded-xl bg-red-50 text-red-600';
+                    msg.textContent = JSON.stringify(data);
+                }
+            } catch (err) {
+                msg.className = 'text-xs font-medium text-center py-2 rounded-xl bg-red-50 text-red-600';
+                msg.textContent = 'Server error. Try again.';
+            }
+        });
+
+        // ── STUDENT LIVE CLASSES ──────────────────────────────────────────────
+        async function loadStudentLive() {
+            const container = document.getElementById('student-live-container');
+            container.innerHTML = `<div class="col-span-full text-center text-gray-400 py-8">Loading live classes...</div>`;
+            try {
+                const res = await authFetch(`${API_BASE}/routines/`);
+                const routines = await res.json();
+                if (!routines.length) {
+                    container.innerHTML = `<div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center text-gray-500 col-span-full"><i class="ph ph-video-camera text-4xl text-gray-200 block mb-2"></i>No live classes scheduled yet for your courses.</div>`;
+                    return;
+                }
+                const typeConfig = {
+                    live_class: { color: 'bg-primary', icon: 'ph-video-camera', label: 'LIVE CLASS' },
+                    exam: { color: 'bg-red-500', icon: 'ph-exam', label: 'EXAM' },
+                    off_day: { color: 'bg-gray-400', icon: 'ph-calendar-x', label: 'OFF DAY' },
+                };
+                container.innerHTML = routines.map(r => {
+                    const cfg = typeConfig[r.event_type] || typeConfig.live_class;
+                    return `
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col gap-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-white ${cfg.color} px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                <i class="ph ${cfg.icon}"></i> ${cfg.label}
+                            </span>
+                            <span class="text-xs text-gray-400 font-medium">${r.course_title}</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-900">${r.title}</h4>
+                            <p class="text-xs text-gray-500 mt-1">${r.date || r.day_of_week || 'TBD'} ${r.start_time ? '· ' + r.start_time : ''} ${r.end_time ? '– ' + r.end_time : ''}</p>
+                            ${r.description ? `<p class="text-xs text-gray-600 mt-1">${r.description}</p>` : ''}
+                        </div>
+                        ${r.live_link && r.event_type === 'live_class'
+                            ? `<a href="${r.live_link}" target="_blank" rel="noopener" class="mt-auto w-full bg-primary hover:bg-violet-700 text-white font-bold py-2.5 rounded-xl text-xs text-center flex items-center justify-center gap-2 transition-colors">
+                                <i class="ph ph-video-camera"></i> Join Live Class
+                               </a>`
+                            : `<div class="mt-auto w-full bg-gray-100 text-gray-400 font-bold py-2.5 rounded-xl text-xs text-center">${r.event_type === 'off_day' ? 'No Class Today' : 'Link not available yet'}</div>`
+                        }
+                    </div>`;
+                }).join('');
+            } catch (err) {
+                container.innerHTML = `<div class="col-span-full text-center text-red-400 py-8">Failed to load live classes.</div>`;
+            }
+        }
+
+        // ── ADMIN COURSES & TEACHER ASSIGNMENT ────────────────────────────────
+        let _adminTeachersList = [];
+        async function loadAdminCourses() {
+            const container = document.getElementById('admin-courses-container');
+            container.innerHTML = `<div class="p-8 text-center text-gray-400">Loading courses...</div>`;
+            try {
+                const res = await authFetch(`${API_BASE}/admin/courses/`);
+                const data = await res.json();
+                _adminTeachersList = data.teachers || [];
+                const courses = data.courses || [];
+
+                if (!courses.length) {
+                    container.innerHTML = `<div class="p-8 text-center text-gray-500">No courses found.</div>`;
+                    return;
+                }
+                const teacherOptions = _adminTeachersList.map(t => `<option value="${t.id}">${t.name} (${t.email})</option>`).join('');
+                container.innerHTML = `
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-100 text-xs text-gray-400 font-bold uppercase">
+                                <th class="p-4">Course</th>
+                                <th class="p-4">Category</th>
+                                <th class="p-4 text-center">Students</th>
+                                <th class="p-4">Current Instructor</th>
+                                <th class="p-4">Assign Teacher</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 text-sm">
+                            ${courses.map(c => `
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-4">
+                                    <p class="font-semibold text-gray-900">${c.title}</p>
+                                    <span class="text-xs ${c.is_active ? 'text-emerald-500' : 'text-red-400'}">${c.is_active ? '● Active' : '● Inactive'}</span>
+                                </td>
+                                <td class="p-4 text-xs text-gray-500">${c.category || '—'}</td>
+                                <td class="p-4 text-center font-bold text-gray-900">${c.enrollment_count}</td>
+                                <td class="p-4 text-xs text-gray-700">${c.instructor ? `${c.instructor.name}<br><span class="text-gray-400">${c.instructor.email}</span>` : '<span class="text-gray-400">Unassigned</span>'}</td>
+                                <td class="p-4">
+                                    <div class="flex items-center gap-2">
+                                        <select id="course-teacher-select-${c.id}" class="border border-gray-200 rounded-xl p-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary flex-1">
+                                            <option value="">-- Select Teacher --</option>
+                                            ${teacherOptions}
+                                        </select>
+                                        <button onclick="assignTeacher(${c.id})" class="bg-primary hover:bg-violet-700 text-white text-xs font-bold px-3 py-2 rounded-xl transition-colors shrink-0">Assign</button>
+                                    </div>
+                                </td>
+                            </tr>`).join('')}
+                        </tbody>
+                    </table>`;
+            } catch (err) {
+                container.innerHTML = `<div class="p-8 text-center text-red-400">Failed to load courses.</div>`;
+            }
+        }
+
+        async function assignTeacher(courseId) {
+            const select = document.getElementById(`course-teacher-select-${courseId}`);
+            const teacherId = select.value;
+            if (!teacherId) { alert('Please select a teacher first.'); return; }
+            const msg = document.getElementById('admin-courses-msg');
+            try {
+                const res = await authFetch(`${API_BASE}/admin/courses/${courseId}/assign-teacher/`, {
+                    method: 'POST',
+                    body: JSON.stringify({ teacher_id: teacherId })
+                });
+                const data = await res.json();
+                msg.className = `mb-4 text-xs font-medium text-center py-2 rounded-xl ${res.ok ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`;
+                msg.textContent = data.message || data.error;
+                msg.classList.remove('hidden');
+                if (res.ok) loadAdminCourses();
+                setTimeout(() => msg.classList.add('hidden'), 4000);
+            } catch (e) { alert('Assignment failed.'); }
+        }
+
+        // ── ADMIN USERS LIST ──────────────────────────────────────────────────
+        async function loadAdminUsersList() {
+            const container = document.getElementById('admin-users-list-container');
+            container.innerHTML = `<div class="p-8 text-center text-gray-400">Loading users...</div>`;
+            try {
+                const res = await authFetch(`${API_BASE}/admin/users/`);
+                const users = await res.json();
+                if (!users.length) {
+                    container.innerHTML = `<div class="p-8 text-center text-gray-500">No users found.</div>`;
+                    return;
+                }
+                const roleBadge = (role) => {
+                    if (role === 'admin') return '<span class="bg-red-100 text-red-700 text-xs font-bold px-2.5 py-0.5 rounded-full">ADMIN</span>';
+                    if (role === 'teacher') return '<span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-0.5 rounded-full">TEACHER</span>';
+                    return '<span class="bg-violet-100 text-violet-700 text-xs font-bold px-2.5 py-0.5 rounded-full">STUDENT</span>';
+                };
+                container.innerHTML = `
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-100 text-xs text-gray-400 font-bold uppercase">
+                                <th class="p-4">User</th>
+                                <th class="p-4 text-center">Role</th>
+                                <th class="p-4">Joined</th>
+                                <th class="p-4">Change Role</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 text-sm">
+                            ${users.map(u => `
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-4">
+                                    <p class="font-semibold text-gray-900">${u.name}</p>
+                                    <p class="text-xs text-gray-400">${u.email}</p>
+                                </td>
+                                <td class="p-4 text-center">${roleBadge(u.role)}</td>
+                                <td class="p-4 text-xs text-gray-500">${new Date(u.date_joined).toLocaleDateString()}</td>
+                                <td class="p-4">
+                                    <div class="flex items-center gap-2">
+                                        <select id="user-role-select-${u.id}" class="border border-gray-200 rounded-xl p-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary">
+                                            <option value="student" ${u.role === 'student' ? 'selected' : ''}>Student</option>
+                                            <option value="teacher" ${u.role === 'teacher' ? 'selected' : ''}>Teacher</option>
+                                            <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+                                        </select>
+                                        <button onclick="updateUserRole(${u.id})" class="bg-gray-900 hover:bg-primary text-white text-xs font-bold px-3 py-2 rounded-xl transition-colors shrink-0">Update</button>
+                                    </div>
+                                </td>
+                            </tr>`).join('')}
+                        </tbody>
+                    </table>`;
+            } catch (err) {
+                container.innerHTML = `<div class="p-8 text-center text-red-400">Failed to load users.</div>`;
+            }
+        }
+
+        async function updateUserRole(userId) {
+            const select = document.getElementById(`user-role-select-${userId}`);
+            const role = select.value;
+            const msg = document.getElementById('admin-users-msg');
+            try {
+                const res = await authFetch(`${API_BASE}/admin/users/role/`, {
+                    method: 'POST',
+                    body: JSON.stringify({ user_id: userId, role })
+                });
+                const data = await res.json();
+                msg.className = `mb-4 text-xs font-medium text-center py-2 rounded-xl ${res.ok ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`;
+                msg.textContent = data.message || data.error;
+                msg.classList.remove('hidden');
+                if (res.ok) loadAdminUsersList();
+                setTimeout(() => msg.classList.add('hidden'), 4000);
+            } catch (e) { alert('Role update failed.'); }
+        }
+
+        // Load dashboard data on ready
         loadDashboard();
     </script>
 </body>

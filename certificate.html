@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Certificate - TutorBhaiya</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Pinyon+Script&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#090d16',
+                        light: '#F9FAFB',
+                        primary: '#8B5CF6',
+                        secondary: '#10B981',
+                        accent1: '#F59E0B',
+                        accent2: '#38BDF8'
+                    },
+                    fontFamily: {
+                        serif: ['Cinzel', 'serif'],
+                        signature: ['Pinyon Script', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @media print {
+            body { background: white !important; }
+            nav, footer, .no-print { display: none !important; }
+            .certificate-frame { border-width: 12px !important; box-shadow: none !important; }
+        }
+    </style>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="font-sans antialiased text-gray-800 bg-gray-100 flex flex-col min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 text-slate-800 shadow-sm no-print" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="index.html" class="flex-shrink-0 flex items-center gap-2">
+                    <img src="assets/logo.png" alt="TutorBhaiya" class="h-10 w-auto object-contain">
+                    <span class="font-bold text-xl text-slate-900 tracking-tight">TutorBhaiya</span>
+                </a>
+
+                <div class="hidden md:flex items-center space-x-6 text-sm font-semibold">
+                    <a href="index.html" class="nav-link hover:text-primary transition-colors">Home</a>
+                    <a href="courses.html" class="nav-link hover:text-primary transition-colors">Courses</a>
+                    
+                    <div class="relative group cursor-pointer py-7">
+                        <span class="nav-link flex items-center gap-1 text-primary border-b-2 border-primary">
+                            More <i class="ph ph-caret-down text-xs"></i>
+                        </span>
+                        <div class="absolute left-0 top-full w-56 rounded-2xl bg-white text-slate-800 shadow-2xl border border-slate-100 py-3 hidden group-hover:block z-50">
+                            <a href="books.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary text-sm font-medium">Books</a>
+                            <a href="courses.html?filter=spoken-english" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary text-sm font-medium">Spoken English</a>
+                            <a href="courses.html?filter=english-foundation" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary text-sm font-medium">English Foundation</a>
+                            <a href="careers.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary text-sm font-medium">Career</a>
+                            <a href="certificate.html" class="block px-5 py-2.5 bg-violet-50 text-primary font-semibold text-sm">Certificate</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="dashboard.html" class="text-sm font-semibold hover:text-primary transition-colors nav-link">Dashboard</a>
+                    <a href="login.html" class="bg-secondary hover:bg-emerald-600 text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-md">
+                        Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Certificate Section -->
+    <main class="flex-1 max-w-5xl w-full mx-auto px-4 pt-28 pb-16 flex flex-col items-center justify-center">
+        
+        <!-- Controls Header -->
+        <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 no-print">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Verified Course Certificate</h1>
+                <p class="text-xs text-gray-500">Official certificate issued by TutorBhaiya Learning Platform</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="window.print()" class="bg-primary hover:bg-violet-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md transition-all flex items-center gap-2">
+                    <i class="ph ph-printer text-lg"></i> Print / Save PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- Certificate Frame Container -->
+        <div id="certificate-wrapper" class="w-full bg-white rounded-2xl shadow-2xl p-6 md:p-12 border-8 border-slate-800 relative overflow-hidden certificate-frame">
+            <!-- Decorative Inner Border -->
+            <div class="border-4 border-amber-500/40 p-8 md:p-12 relative flex flex-col items-center text-center bg-gradient-to-b from-amber-50/30 to-white">
+                
+                <!-- Corner Flourishes -->
+                <div class="absolute top-4 left-4 w-12 h-12 border-t-2 border-l-2 border-amber-500"></div>
+                <div class="absolute top-4 right-4 w-12 h-12 border-t-2 border-r-2 border-amber-500"></div>
+                <div class="absolute bottom-4 left-4 w-12 h-12 border-b-2 border-l-2 border-amber-500"></div>
+                <div class="absolute bottom-4 right-4 w-12 h-12 border-b-2 border-r-2 border-amber-500"></div>
+
+                <!-- Logo Header -->
+                <div class="flex items-center gap-3 mb-6">
+                    <img src="assets/logo.png" alt="TutorBhaiya" class="h-14 w-auto object-contain">
+                    <span class="font-bold text-2xl text-slate-900 tracking-tight">TutorBhaiya</span>
+                </div>
+
+                <h2 class="font-serif text-xs md:text-sm tracking-[0.3em] font-bold text-amber-600 uppercase mb-2">Certificate of Completion</h2>
+                <h3 class="font-serif text-2xl md:text-4xl font-extrabold text-slate-900 mb-6 tracking-wide">PROUDLY PRESENTED TO</h3>
+
+                <!-- Student Name -->
+                <div class="relative mb-6">
+                    <h4 id="cert-student-name" class="font-serif text-3xl md:text-5xl font-bold text-primary border-b-2 border-amber-400 pb-2 inline-block px-8">
+                        Sheikh Sayed
+                    </h4>
+                </div>
+
+                <p class="text-sm md:text-base text-gray-600 max-w-2xl mx-auto mb-6 leading-relaxed">
+                    has successfully completed all lectures, problem sets, and assessments required for the comprehensive course
+                </p>
+
+                <!-- Course Title -->
+                <h5 id="cert-course-title" class="font-bold text-xl md:text-3xl text-slate-900 mb-8 max-w-3xl">
+                    SSC Physics Masterclass — Complete Board Syllabus
+                </h5>
+
+                <!-- Bottom Signatures & Seal -->
+                <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-8 items-end border-t border-gray-200 pt-8 mt-4">
+                    <!-- Issued Date -->
+                    <div class="text-center md:text-left space-y-1">
+                        <p class="text-xs text-gray-400 font-semibold uppercase">Date Issued</p>
+                        <p id="cert-date" class="font-semibold text-slate-800 text-sm">August 28, 2026</p>
+                        <p class="text-xs text-gray-400 mt-2">Verification ID: <strong id="cert-id" class="text-slate-700">TB-001-DEMO77</strong></p>
+                    </div>
+
+                    <!-- Seal / Badge -->
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="w-20 h-20 rounded-full bg-amber-500/10 border-4 border-amber-500 flex items-center justify-center text-amber-500 shadow-inner">
+                            <i class="ph-fill ph-seal-check text-4xl"></i>
+                        </div>
+                        <span class="text-[10px] font-bold text-amber-600 uppercase tracking-widest mt-2">VERIFIED ACADEMIC CREDENTIAL</span>
+                    </div>
+
+                    <!-- Signature -->
+                    <div class="text-center md:text-right space-y-1">
+                        <div class="font-signature text-3xl text-slate-900 h-10 flex items-center justify-center md:justify-end" id="cert-signature">
+                            Sheikh Sayed
+                        </div>
+                        <div class="border-t border-gray-300 pt-1">
+                            <p id="cert-instructor" class="font-bold text-slate-800 text-sm">Sheikh Sayed</p>
+                            <p class="text-xs text-gray-500">Lead Academic Educator</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Earned Certificates List (If user has multiple) -->
+        <div class="w-full mt-12 bg-white rounded-2xl p-6 border border-gray-200 shadow-sm no-print">
+            <h3 class="font-bold text-lg text-gray-900 mb-4 flex items-center gap-2">
+                <i class="ph ph-certificate text-primary text-xl"></i> Your Earned Certificates
+            </h3>
+            <div id="certificates-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <p class="text-sm text-gray-400 col-span-full">Loading your earned certificates...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-gray-400 py-8 border-t border-gray-800 text-center text-xs mt-auto no-print">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>© 2026 TutorBhaiya. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetCertId = urlParams.get('id');
+
+        async function loadCertificates() {
+            const listContainer = document.getElementById('certificates-list');
+            try {
+                // If a specific cert ID is passed in URL
+                if (targetCertId) {
+                    const res = await fetch(`${API_BASE}/certificates/${targetCertId}/`);
+                    if (res.ok) {
+                        const cert = await res.json();
+                        renderCertificateDetails(cert);
+                    }
+                }
+
+                // If logged in, fetch user's certificates
+                if (isLoggedIn()) {
+                    const res = await authFetch(`${API_BASE}/certificates/`);
+                    if (res.ok) {
+                        const certs = await res.json();
+                        if (certs && certs.length > 0) {
+                            if (!targetCertId) renderCertificateDetails(certs[0]);
+                            listContainer.innerHTML = certs.map(c => `
+                                <div onclick="renderCertificateDetailsById('${c.certificate_number}')"
+                                    class="p-4 rounded-xl border border-gray-200 hover:border-primary cursor-pointer transition-all flex items-center justify-between bg-gray-50 hover:bg-violet-50/50">
+                                    <div>
+                                        <h4 class="font-bold text-gray-900 text-sm">${c.course_title}</h4>
+                                        <p class="text-xs text-gray-500">Issued: ${new Date(c.issued_at).toLocaleDateString()}</p>
+                                    </div>
+                                    <span class="text-xs font-bold text-primary bg-violet-100 px-3 py-1 rounded-full">${c.certificate_number}</span>
+                                </div>
+                            `).join('');
+                            return;
+                        }
+                    }
+                }
+
+                listContainer.innerHTML = `<p class="text-xs text-gray-500 col-span-full">No certificates earned yet. Complete 100% of a course to unlock your certificate!</p>`;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function renderCertificateDetails(cert) {
+            document.getElementById('cert-student-name').textContent = cert.student_name || 'Student';
+            document.getElementById('cert-course-title').textContent = cert.course_title || 'Course Certificate';
+            document.getElementById('cert-id').textContent = cert.certificate_number || 'TB-000-DEMO';
+            document.getElementById('cert-instructor').textContent = cert.instructor_name || 'TutorBhaiya Lead';
+            document.getElementById('cert-signature').textContent = cert.instructor_name || 'Sheikh Sayed';
+            if (cert.issued_at) {
+                document.getElementById('cert-date').textContent = new Date(cert.issued_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            }
+        }
+
+        async function renderCertificateDetailsById(certNum) {
+            try {
+                const res = await fetch(`${API_BASE}/certificates/${certNum}/`);
+                if (res.ok) {
+                    const cert = await res.json();
+                    renderCertificateDetails(cert);
+                    window.scrollTo({ top: 200, behavior: 'smooth' });
+                }
+            } catch(e) {}
+        }
+
+        loadCertificates();
+    </script>
+</body>
+</html>

@@ -69,24 +69,30 @@ function updateNavbarAuth() {
     const user = getUser();
     const loggedIn = isLoggedIn();
 
-    // Desktop navbar: login button → user avatar + Dashboard, or keep Login
-    // Desktop navbar: login button → user avatar + Profile, or keep Login
-    const loginBtn = document.querySelector('a[href="login.html"].bg-secondary, a[href="login.html"].bg-primary');
+    // Select the auth button (could be login.html link or profile.html button)
+    const authBtn = document.getElementById('user-avatar-btn') || 
+                    document.querySelector('a[href="login.html"].bg-secondary, a[href="login.html"].bg-primary');
     const dashboardLink = document.querySelector('a[href="dashboard.html"].nav-link');
 
     if (loggedIn && user) {
         const initial = user.avatar_initial || (user.full_name ? user.full_name.charAt(0).toUpperCase() : 'U');
+        const displayName = user.full_name ? user.full_name.split(' ')[0] : 'Profile';
+        
+        let avatarHtml = `<div class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">${initial}</div>`;
+        if (user.profile_picture) {
+            avatarHtml = `<img src="${user.profile_picture}" class="w-6 h-6 rounded-full object-cover flex-shrink-0">`;
+        }
 
-        // Replace login button with user avatar pill
-        if (loginBtn) {
-            loginBtn.href = 'profile.html';
-            loginBtn.innerHTML = `
+        if (authBtn) {
+            authBtn.id = 'user-avatar-btn';
+            authBtn.href = 'profile.html';
+            authBtn.innerHTML = `
                 <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">${initial}</div>
-                    <span>${user.full_name ? user.full_name.split(' ')[0] : 'Profile'}</span>
+                    ${avatarHtml}
+                    <span>${displayName}</span>
                 </div>`;
-            loginBtn.classList.remove('bg-secondary', 'hover:bg-emerald-600', 'shadow-secondary/30', 'hover:shadow-secondary/50');
-            loginBtn.classList.add('bg-primary', 'hover:bg-violet-700');
+            authBtn.classList.remove('bg-secondary', 'hover:bg-emerald-600', 'shadow-secondary/30', 'hover:shadow-secondary/50');
+            authBtn.classList.add('bg-primary', 'hover:bg-violet-700');
         }
 
         // Show Dashboard nav link
@@ -106,6 +112,14 @@ function updateNavbarAuth() {
     } else {
         // Not logged in: hide Dashboard link
         if (dashboardLink) dashboardLink.style.display = 'none';
+        
+        // If we have an avatar button but are not logged in, reset to login
+        if (authBtn && authBtn.id === 'user-avatar-btn') {
+            authBtn.href = 'login.html';
+            authBtn.innerHTML = `Login`;
+            authBtn.classList.remove('bg-primary', 'hover:bg-violet-700');
+            authBtn.classList.add('bg-secondary', 'hover:bg-emerald-600');
+        }
     }
 }
 
