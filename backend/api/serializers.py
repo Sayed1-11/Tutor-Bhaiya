@@ -6,7 +6,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from .models import (
     Category, Course, Enrollment, ContactMessage,
-    Module, Video, Resource, Assignment, StudentAssignment, Payment
+    Module, Video, Resource, Assignment, StudentAssignment, Payment,
+    CourseRoutine, Certificate, Book, JobPosting, JobApplication,
+    Quiz, QuizQuestion, StudentQuiz
 )
 
 User = get_user_model()
@@ -209,11 +211,64 @@ class ModuleSerializer(serializers.ModelSerializer):
 class StudentAssignmentSerializer(serializers.ModelSerializer):
     assignment_title = serializers.CharField(source='assignment.title', read_only=True)
     student_name = serializers.CharField(source='student.get_full_name', read_only=True)
+    student_email = serializers.CharField(source='student.email', read_only=True)
+    course_title = serializers.CharField(source='assignment.course.title', read_only=True)
+    total_marks = serializers.IntegerField(source='assignment.total_marks', read_only=True)
 
     class Meta:
         model = StudentAssignment
         fields = '__all__'
-        read_only_fields = ('submitted_at', 'marks_obtained', 'feedback')
+        read_only_fields = ('submitted_at',)
+
+
+# ─── Quizzes ──────────────────────────────────────────────────────────────────
+
+class QuizQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuizQuestion
+        fields = '__all__'
+
+
+class QuizQuestionStudentSerializer(serializers.ModelSerializer):
+    """Omits correct_option for student quiz attempts."""
+    class Meta:
+        model = QuizQuestion
+        fields = ('id', 'quiz', 'question_text', 'option_a', 'option_b', 'option_c', 'option_d', 'marks')
+
+
+class QuizSerializer(serializers.ModelSerializer):
+    course_title = serializers.CharField(source='course.title', read_only=True)
+    total_questions = serializers.IntegerField(read_only=True)
+    total_marks = serializers.IntegerField(read_only=True)
+    is_submitted = serializers.BooleanField(read_only=True, default=False)
+    student_score = serializers.IntegerField(read_only=True, default=None)
+    student_passed = serializers.BooleanField(read_only=True, default=False)
+
+    class Meta:
+        model = Quiz
+        fields = '__all__'
+
+
+class QuizDetailSerializer(serializers.ModelSerializer):
+    course_title = serializers.CharField(source='course.title', read_only=True)
+    questions = QuizQuestionSerializer(many=True, read_only=True)
+    total_questions = serializers.IntegerField(read_only=True)
+    total_marks = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Quiz
+        fields = '__all__'
+
+
+class StudentQuizSerializer(serializers.ModelSerializer):
+    quiz_title = serializers.CharField(source='quiz.title', read_only=True)
+    course_title = serializers.CharField(source='quiz.course.title', read_only=True)
+    student_name = serializers.CharField(source='student.get_full_name', read_only=True)
+    student_email = serializers.CharField(source='student.email', read_only=True)
+
+    class Meta:
+        model = StudentQuiz
+        fields = '__all__'
 
 
 # ─── Accounting ──────────────────────────────────────────────────────────────
@@ -228,9 +283,60 @@ class PaymentSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at', 'status')
 
 
+class CourseRoutineSerializer(serializers.ModelSerializer):
+    event_type_display = serializers.CharField(source='get_event_type_display', read_only=True)
+
+    class Meta:
+        model = CourseRoutine
+        fields = '__all__'
+
+
+class CertificateSerializer(serializers.ModelSerializer):
+    student_name = serializers.CharField(source='user.full_name', read_only=True)
+    course_title = serializers.CharField(source='course.title', read_only=True)
+    instructor_name = serializers.CharField(source='course.instructor.get_full_name', read_only=True)
+
+    class Meta:
+        model = Certificate
+        fields = (
+            'id', 'certificate_number', 'student_name', 'course_title',
+            'instructor_name', 'issued_at'
+        )
+
+
+class BookSerializer(serializers.ModelSerializer):
+    category_name = serializers.CharField(source='category.name', read_only=True)
+
+    class Meta:
+        model = Book
+        fields = '__all__'
+
+
+class JobPostingSerializer(serializers.ModelSerializer):
+    applications_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = JobPosting
+        fields = '__all__'
+
+    def get_applications_count(self, obj):
+        return obj.applications.count()
+
+
+class JobApplicationSerializer(serializers.ModelSerializer):
+    job_title = serializers.CharField(source='job_posting.title', read_only=True)
+
+    class Meta:
+        model = JobApplication
+        fields = '__all__'
+        read_only_fields = ('applied_at',)
+
+
 class CoursePlayerSerializer(CourseDetailSerializer):
-    """Full course details including all nested modules and videos."""
+    """Full course details including all nested modules, videos, and routines."""
     modules = ModuleSerializer(many=True, read_only=True)
+    routines = CourseRoutineSerializer(many=True, read_only=True)
 
     class Meta(CourseDetailSerializer.Meta):
-        fields = CourseDetailSerializer.Meta.fields + ('modules',)
+        fields = CourseDetailSerializer.Meta.fields + ('modules', 'routines')
+

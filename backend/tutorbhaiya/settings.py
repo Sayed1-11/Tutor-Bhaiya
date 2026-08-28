@@ -114,6 +114,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost',
     'http://127.0.0.1',
     'http://localhost:8000',
+    'http://127.0.0.1:8000',   # ← added: port required in Django 4+
     'http://127.0.0.1:5500',
     'http://localhost:5500',
     'http://127.0.0.1:5501',
@@ -121,8 +122,17 @@ CSRF_TRUSTED_ORIGINS = [
     'https://tutor-bhaiya.onrender.com',
 ]
 
-SESSION_COOKIE_SAMESITE = 'None'
-SESSION_COOKIE_SECURE = True
+# ─── Session & CSRF cookies ───────────────────────────────────────────────────
+# Set to False for local HTTP development — True requires HTTPS and breaks
+# the Django admin login on http://127.0.0.1:8000
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SECURE = False      # ← was True → blocked admin on HTTP
 
-CSRF_COOKIE_SAMESITE = 'None'
-CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SECURE = False         # ← was True → blocked admin on HTTP
+
+# ─── Authentication Backends ──────────────────────────────────────────────────
+# Ensures Django admin can authenticate using email (USERNAME_FIELD = 'email')
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]

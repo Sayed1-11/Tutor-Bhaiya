@@ -15,7 +15,9 @@ from rest_framework.authtoken.models import Token
 
 from .models import (
     Category, Course, Enrollment, ContactMessage,
-    Module, Video, Resource, Assignment, StudentAssignment, Payment
+    Module, Video, Resource, Assignment, StudentAssignment, Payment,
+    CourseRoutine, Certificate, Book, JobPosting, JobApplication,
+    Quiz, QuizQuestion, StudentQuiz
 )
 from .permissions import IsAdmin, IsTeacher, IsStudent
 from .serializers import (
@@ -34,6 +36,16 @@ from .serializers import (
     StudentAssignmentSerializer,
     PaymentSerializer,
     CoursePlayerSerializer,
+    CourseRoutineSerializer,
+    CertificateSerializer,
+    BookSerializer,
+    JobPostingSerializer,
+    JobApplicationSerializer,
+    QuizSerializer,
+    QuizDetailSerializer,
+    QuizQuestionSerializer,
+    QuizQuestionStudentSerializer,
+    StudentQuizSerializer,
 )
 
 User = get_user_model()
@@ -138,13 +150,49 @@ class MeView(APIView):
         return Response({'authenticated': True, 'user': serializer.data})
 
     def patch(self, request):
-        """Update profile fields."""
+        """Update profile fields. If old_password + new_password are sent, change password."""
+        user = request.user
+
+        # ── Password change ───────────────────────────────────────────────────
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+
+        if old_password or new_password:
+            if not old_password or not new_password:
+                return Response(
+                    {'error': 'Both old_password and new_password are required to change your password.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            if not user.check_password(old_password):
+                return Response(
+                    {'error': 'Your current password is incorrect.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            if len(new_password) < 8:
+                return Response(
+                    {'error': 'New password must be at least 8 characters long.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            user.set_password(new_password)
+            user.save()
+            # Re-issue token so the user stays logged in after password change
+            from rest_framework.authtoken.models import Token
+            Token.objects.filter(user=user).delete()
+            token, _ = Token.objects.get_or_create(user=user)
+            profile = UserProfileSerializer(user, context={'request': request})
+            return Response({
+                'message': 'Password changed successfully!',
+                'user': profile.data,
+                'token': token.key,
+            })
+
+        # ── Profile fields update ─────────────────────────────────────────────
         serializer = UserUpdateSerializer(
-            request.user, data=request.data, partial=True
+            user, data=request.data, partial=True
         )
         if serializer.is_valid():
             serializer.save()
-            profile = UserProfileSerializer(request.user, context={'request': request})
+            profile = UserProfileSerializer(user, context={'request': request})
             return Response(profile.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -233,6 +281,77 @@ class CoursePlayerView(APIView):
             'completed_video_ids': completed_ids
         })
 
+def check_and_issue_certificate(user, course):
+    """
+    Evaluates whether the student has met all conditions to earn a certificate:
+    1. Video completion progress is 100%.
+    2. All assignments in the course are submitted AND approved by the teacher.
+    3. All quizzes in the course are passed.
+    """
+    enrollment = Enrollment.objects.filter(user=user, course=course).first()
+    if not enrollment:
+        return None, {'eligible': False, 'reason': 'User is not enrolled in this course.'}
+
+    # 1. Check video lessons completion
+    total_videos = Video.objects.filter(module__course=course).count()
+    completed_videos = enrollment.completed_videos.count()
+    if total_videos > 0 and completed_videos < total_videos:
+        return None, {
+            'eligible': False,
+            'reason': f"Incomplete video lessons ({completed_videos}/{total_videos} watched)."
+        }
+
+    # 2. Check assignments (only those that belong to a module)
+    course_assignments = Assignment.objects.filter(course=course, module__isnull=False)
+    pending_list = []
+    for assign in course_assignments:
+        sub = StudentAssignment.objects.filter(assignment=assign, student=user).first()
+        if not sub:
+            pending_list.append(f"'{assign.title}' not submitted")
+        elif sub.status != 'approved':
+            status_disp = sub.get_status_display()
+            pending_list.append(f"'{assign.title}' status is '{status_disp}'")
+
+    if pending_list:
+        return None, {
+            'eligible': False,
+            'reason': f"Assignments pending teacher approval: {'; '.join(pending_list)}"
+        }
+
+    # 3. Check quizzes (only those that belong to a module)
+    course_quizzes = Quiz.objects.filter(course=course, module__isnull=False)
+    unpassed_list = []
+    for q in course_quizzes:
+        qsub = StudentQuiz.objects.filter(quiz=q, student=user).first()
+        if not qsub:
+            unpassed_list.append(f"Quiz '{q.title}' not submitted")
+        elif not qsub.passed:
+            unpassed_list.append(f"Quiz '{q.title}' failed ({qsub.score}/{qsub.total_marks})")
+
+    if unpassed_list:
+        return None, {
+            'eligible': False,
+            'reason': f"Quizzes not passed: {'; '.join(unpassed_list)}"
+        }
+
+    # All criteria met! Mark completed and issue certificate.
+    enrollment.is_completed = True
+    enrollment.save()
+
+    cert = Certificate.objects.filter(enrollment=enrollment).first()
+    if not cert:
+        import uuid
+        cert_num = f"TB-{course.id:03d}-{uuid.uuid4().hex[:6].upper()}"
+        cert = Certificate.objects.create(
+            enrollment=enrollment,
+            user=user,
+            course=course,
+            certificate_number=cert_num
+        )
+
+    return cert, {'eligible': True, 'reason': 'Certificate issued successfully!'}
+
+
 class MarkVideoCompleteView(APIView):
     """POST /api/enrollments/complete-video/ — Mark a video as completed and update progress."""
     permission_classes = [permissions.IsAuthenticated]
@@ -258,14 +377,18 @@ class MarkVideoCompleteView(APIView):
         
         if total_videos > 0:
             enrollment.progress = int((completed / total_videos) * 100)
-            if enrollment.progress >= 100:
-                enrollment.is_completed = True
             enrollment.save()
+            
+        cert, status_info = check_and_issue_certificate(request.user, enrollment.course)
             
         return Response({
             'message': 'Video marked as complete',
             'progress': enrollment.progress,
-            'completed_video_id': video.id
+            'completed_video_id': video.id,
+            'is_completed': enrollment.is_completed,
+            'certificate_number': cert.certificate_number if cert else None,
+            'certificate_eligible': status_info['eligible'],
+            'certificate_reason': status_info['reason'],
         })
 
 
@@ -303,7 +426,7 @@ class EnrollmentDetailView(generics.RetrieveUpdateAPIView):
 class SubmitAssignmentView(APIView):
     """
     GET  /api/assignments/<id>/submit/ — Check if student already submitted.
-    POST /api/assignments/<id>/submit/ — Submit assignment answer text.
+    POST /api/assignments/<id>/submit/ — Submit assignment answer text/file.
     """
     permission_classes = [permissions.IsAuthenticated]
 
@@ -325,6 +448,8 @@ class SubmitAssignmentView(APIView):
                 'submitted_at': submission.submitted_at,
                 'marks_obtained': submission.marks_obtained,
                 'feedback': submission.feedback,
+                'status': submission.status,
+                'status_display': submission.get_status_display(),
             })
         return Response({'submitted': False})
 
@@ -343,10 +468,11 @@ class SubmitAssignmentView(APIView):
         submission, created = StudentAssignment.objects.get_or_create(
             assignment=assignment,
             student=request.user,
-            defaults={'submission_text': submission_text}
+            defaults={'submission_text': submission_text, 'status': 'pending'}
         )
         if not created:
             submission.submission_text = submission_text
+            submission.status = 'pending'  # Resubmission resets to pending review
         
         if submission_file:
             submission.submission_file = submission_file
@@ -468,13 +594,689 @@ class AdminDashboardView(APIView):
         total_courses = Course.objects.count()
         total_students = User.objects.filter(role='student').count()
         total_teachers = User.objects.filter(role='teacher').count()
-        
+
         from django.db.models import Sum
         total_revenue = Payment.objects.aggregate(Sum('amount'))['amount__sum'] or 0
+        total_enrollments = Enrollment.objects.count()
 
         return Response({
-            'total_courses': total_courses,
-            'total_students': total_students,
-            'total_teachers': total_teachers,
-            'total_revenue': total_revenue,
+            'stats': {
+                'total_courses': total_courses,
+                'total_students': total_students,
+                'total_teachers': total_teachers,
+                'total_revenue': total_revenue,
+                'total_enrollments': total_enrollments,
+            }
         })
+
+
+# ─── Certificates ────────────────────────────────────────────────────────────
+
+class CertificateListView(generics.ListAPIView):
+    """GET /api/certificates/ — List certificates earned by current user."""
+    serializer_class = CertificateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Certificate.objects.filter(user=self.request.user).select_related('user', 'course', 'course__instructor')
+
+
+class CertificateDetailView(APIView):
+    """GET /api/certificates/<cert_number>/ — Retrieve certificate details."""
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, certificate_number):
+        try:
+            cert = Certificate.objects.select_related('user', 'course', 'course__instructor').get(certificate_number=certificate_number)
+        except Certificate.DoesNotExist:
+            return Response({'error': 'Certificate not found.'}, status=404)
+
+        serializer = CertificateSerializer(cert)
+        return Response(serializer.data)
+
+
+# ─── Books ───────────────────────────────────────────────────────────────────
+
+class BookListView(generics.ListAPIView):
+    """
+    GET /api/books/ — List sample textbooks & guides.
+    Query params: ?category=<slug>&search=<query>
+    """
+    serializer_class = BookSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        qs = Book.objects.select_related('category')
+        category = self.request.query_params.get('category')
+        if category:
+            qs = qs.filter(category__slug=category)
+        search = self.request.query_params.get('search')
+        if search:
+            qs = qs.filter(title__icontains=search) | qs.filter(author__icontains=search)
+        return qs
+
+
+# ─── Careers ─────────────────────────────────────────────────────────────────
+
+class JobPostingListView(generics.ListAPIView):
+    """GET /api/careers/ — List active job postings."""
+    serializer_class = JobPostingSerializer
+    permission_classes = [permissions.AllowAny]
+    queryset = JobPosting.objects.filter(is_active=True)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class JobApplicationCreateView(APIView):
+    """POST /api/careers/<id>/apply/ — Submit application for a job posting."""
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, pk):
+        try:
+            job = JobPosting.objects.get(pk=pk, is_active=True)
+        except JobPosting.DoesNotExist:
+            return Response({'error': 'Job posting not found or no longer active.'}, status=404)
+
+        data = request.data.copy()
+        data['job_posting'] = job.id
+
+        serializer = JobApplicationSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save(job_posting=job)
+            return Response({'message': 'Your job application has been submitted successfully!'}, status=201)
+        return Response(serializer.errors, status=400)
+
+
+# ─── Teacher Work & Dashboard Endpoints ─────────────────────────────────────
+
+class TeacherDashboardView(APIView):
+    """GET /api/teacher/dashboard/ — Teacher overview metrics & pending grading tasks."""
+    permission_classes = [permissions.IsAuthenticated, IsTeacher]
+
+    def get(self, request):
+        teacher = request.user
+        courses = Course.objects.filter(instructor=teacher) if teacher.role == 'teacher' else Course.objects.all()
+        total_courses = courses.count()
+        total_students = Enrollment.objects.filter(course__in=courses).values('user').distinct().count()
+        
+        pending_assignments = StudentAssignment.objects.filter(
+            assignment__course__in=courses, status='pending'
+        ).count()
+        
+        total_quizzes = Quiz.objects.filter(course__in=courses).count()
+        total_resources = Resource.objects.filter(course__in=courses).count()
+
+        return Response({
+            'stats': {
+                'total_courses': total_courses,
+                'total_students': total_students,
+                'pending_grading': pending_assignments,
+                'total_quizzes': total_quizzes,
+                'total_resources': total_resources,
+            }
+        })
+
+
+class TeacherAssignmentGradingView(APIView):
+    """
+    GET  /api/teacher/assignments/submissions/ — List submissions for teacher's courses.
+    POST /api/teacher/assignments/grade/ — Grade & approve/reject a student submission.
+    """
+    permission_classes = [permissions.IsAuthenticated, IsTeacher]
+
+    def get(self, request):
+        courses = Course.objects.filter(instructor=request.user) if request.user.role == 'teacher' else Course.objects.all()
+        submissions = StudentAssignment.objects.filter(
+            assignment__course__in=courses
+        ).select_related('assignment', 'assignment__course', 'student').order_by('-submitted_at')
+        
+        status_filter = request.query_params.get('status')
+        if status_filter:
+            submissions = submissions.filter(status=status_filter)
+            
+        serializer = StudentAssignmentSerializer(submissions, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        submission_id = request.data.get('submission_id')
+        marks = request.data.get('marks_obtained')
+        feedback = request.data.get('feedback', '')
+        status_val = request.data.get('status', 'approved')
+
+        if not submission_id or marks is None:
+            return Response({'error': 'submission_id and marks_obtained are required.'}, status=400)
+
+        try:
+            sub = StudentAssignment.objects.get(pk=submission_id)
+        except StudentAssignment.DoesNotExist:
+            return Response({'error': 'Submission not found.'}, status=404)
+
+        sub.marks_obtained = int(marks)
+        sub.feedback = feedback
+        sub.status = status_val
+        sub.is_passed = (status_val == 'approved')
+        sub.save()
+
+        # Re-evaluate certificate eligibility for this student!
+        check_and_issue_certificate(sub.student, sub.assignment.course)
+
+        return Response({
+            'message': f"Submission successfully {status_val}!",
+            'submission': StudentAssignmentSerializer(sub).data
+        })
+
+
+class TeacherContentManageView(APIView):
+    """
+    POST /api/teacher/content/<target_type>/ — Add module, video, resource, or assignment.
+    """
+    permission_classes = [permissions.IsAuthenticated, IsTeacher]
+
+    def post(self, request, target_type):
+        data = request.data
+        if target_type == 'module':
+            serializer = ModuleSerializer(data=data)
+        elif target_type == 'video':
+            serializer = VideoSerializer(data=data)
+        elif target_type == 'resource':
+            serializer = ResourceSerializer(data=data)
+        elif target_type == 'assignment':
+            serializer = AssignmentSerializer(data=data)
+        else:
+            return Response({'error': 'Invalid content type.'}, status=400)
+
+        if serializer.is_valid():
+            instance = serializer.save()
+            return Response({'message': f"{target_type.capitalize()} created successfully!", 'data': serializer.data}, status=201)
+        return Response(serializer.errors, status=400)
+
+
+# ─── Quiz APIs ────────────────────────────────────────────────────────────────
+
+class QuizListCreateView(APIView):
+    """
+    GET  /api/quizzes/ — List quizzes (filtered by ?course_id=<id>).
+    POST /api/quizzes/ — Create quiz with questions (Teacher/Admin).
+    """
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [permissions.IsAuthenticated(), IsTeacher()]
+        return [permissions.AllowAny()]
+
+    def get(self, request):
+        course_id = request.query_params.get('course_id')
+        qs = Quiz.objects.all()
+        if course_id:
+            qs = qs.filter(course_id=course_id)
+
+        data = []
+        for q in qs:
+            item = QuizSerializer(q).data
+            if request.user.is_authenticated:
+                sub = StudentQuiz.objects.filter(quiz=q, student=request.user).first()
+                item['is_submitted'] = bool(sub)
+                item['student_score'] = sub.score if sub else None
+                item['student_passed'] = sub.passed if sub else False
+            data.append(item)
+        return Response(data)
+
+    def post(self, request):
+        serializer = QuizSerializer(data=request.data)
+        if serializer.is_valid():
+            quiz = serializer.save()
+            questions_data = request.data.get('questions', [])
+            for q in questions_data:
+                QuizQuestion.objects.create(
+                    quiz=quiz,
+                    question_text=q.get('question_text'),
+                    option_a=q.get('option_a'),
+                    option_b=q.get('option_b'),
+                    option_c=q.get('option_c'),
+                    option_d=q.get('option_d'),
+                    correct_option=q.get('correct_option', 'A'),
+                    marks=q.get('marks', 1)
+                )
+            course = quiz.course
+            course.quizzes_count = course.quizzes.count()
+            course.save()
+            return Response(QuizDetailSerializer(quiz).data, status=201)
+        return Response(serializer.errors, status=400)
+
+
+class QuizDetailView(APIView):
+    """
+    GET /api/quizzes/<id>/ — Retrieve a single quiz with questions.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+        try:
+            quiz = Quiz.objects.get(pk=pk)
+        except Quiz.DoesNotExist:
+            return Response({'error': 'Quiz not found.'}, status=404)
+
+        if request.user.role in ['teacher', 'admin']:
+            serializer = QuizDetailSerializer(quiz)
+            return Response(serializer.data)
+        else:
+            data = QuizSerializer(quiz).data
+            questions = QuizQuestionStudentSerializer(quiz.questions.all(), many=True).data
+            data['questions'] = questions
+            sub = StudentQuiz.objects.filter(quiz=quiz, student=request.user).first()
+            data['submission'] = StudentQuizSerializer(sub).data if sub else None
+            return Response(data)
+
+
+class QuizSubmitView(APIView):
+    """
+    POST /api/quizzes/<id>/submit/ — Evaluate and save student quiz answers.
+    Body format: { "answers": { "<question_id>": "A", "<question_id_2>": "C" } }
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            quiz = Quiz.objects.get(pk=pk)
+        except Quiz.DoesNotExist:
+            return Response({'error': 'Quiz not found.'}, status=404)
+
+        user_answers = request.data.get('answers', {})
+        questions = quiz.questions.all()
+
+        score = 0
+        total_marks = 0
+        results_breakdown = []
+
+        for q in questions:
+            total_marks += q.marks
+            chosen = str(user_answers.get(str(q.id)) or user_answers.get(q.id) or '').upper()
+            is_correct = (chosen == q.correct_option)
+            if is_correct:
+                score += q.marks
+            results_breakdown.append({
+                'question_id': q.id,
+                'question_text': q.question_text,
+                'chosen_option': chosen,
+                'correct_option': q.correct_option,
+                'is_correct': is_correct,
+                'marks': q.marks if is_correct else 0
+            })
+
+        passing_pct = quiz.passing_percentage
+        earned_pct = (score / total_marks * 100) if total_marks > 0 else 0
+        passed = (earned_pct >= passing_pct)
+
+        sub, created = StudentQuiz.objects.get_or_create(
+            quiz=quiz,
+            student=request.user,
+            defaults={
+                'score': score,
+                'total_marks': total_marks,
+                'passed': passed,
+                'answers': user_answers,
+            }
+        )
+        if not created:
+            sub.score = score
+            sub.total_marks = total_marks
+            sub.passed = passed
+            sub.answers = user_answers
+            sub.save()
+
+        # Re-evaluate certificate eligibility for this student!
+        cert, status_info = check_and_issue_certificate(request.user, quiz.course)
+
+        return Response({
+            'message': 'Quiz evaluated successfully!',
+            'score': score,
+            'total_marks': total_marks,
+            'percentage': round(earned_pct, 1),
+            'passed': passed,
+            'certificate_unlocked': bool(cert),
+            'certificate_number': cert.certificate_number if cert else None,
+            'certificate_reason': status_info['reason'],
+            'results': results_breakdown
+        })
+
+
+# ─── Admin Oversight & Leaderboards ──────────────────────────────────────────
+
+class AdminTeacherActivityView(APIView):
+    """
+    GET /api/admin/teachers/ — Detailed work activity matrix for all teachers.
+    Admin can monitor who is creating videos, uploading resources/links, setting assignments & quizzes.
+    """
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        teachers = User.objects.filter(role='teacher')
+        data = []
+        for t in teachers:
+            courses = Course.objects.filter(instructor=t)
+            videos_count = Video.objects.filter(module__course__in=courses).count()
+            resources_count = Resource.objects.filter(course__in=courses).count()
+            assignments_count = Assignment.objects.filter(course__in=courses).count()
+            quizzes_count = Quiz.objects.filter(course__in=courses).count()
+            routines_count = CourseRoutine.objects.filter(course__in=courses).count()
+            students_count = Enrollment.objects.filter(course__in=courses).values('user').distinct().count()
+
+            data.append({
+                'id': t.id,
+                'name': t.get_full_name() or t.username,
+                'email': t.email,
+                'avatar': request.build_absolute_uri(t.profile_picture.url) if t.profile_picture else None,
+                'courses_count': courses.count(),
+                'videos_count': videos_count,
+                'resources_count': resources_count,
+                'assignments_count': assignments_count,
+                'quizzes_count': quizzes_count,
+                'routines_count': routines_count,
+                'students_count': students_count,
+            })
+        return Response(data)
+
+
+class AdminSubmissionsView(APIView):
+    """
+    GET /api/admin/submissions/ — All student assignment and quiz submissions platform-wide.
+    """
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        assignments = StudentAssignment.objects.select_related('assignment', 'assignment__course', 'student').order_by('-submitted_at')[:50]
+        quizzes = StudentQuiz.objects.select_related('quiz', 'quiz__course', 'student').order_by('-submitted_at')[:50]
+
+        assignments_data = StudentAssignmentSerializer(assignments, many=True).data
+        quizzes_data = StudentQuizSerializer(quizzes, many=True).data
+
+        return Response({
+            'assignment_submissions': assignments_data,
+            'quiz_submissions': quizzes_data,
+        })
+
+
+class LeaderboardView(APIView):
+    """
+    GET /api/leaderboard/ — Platform-wide student leaderboard ranking.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        students = User.objects.filter(role='student')
+        leaderboard = []
+
+        from django.db.models import Sum
+
+        for student in students:
+            assignment_points = StudentAssignment.objects.filter(
+                student=student, status='approved'
+            ).aggregate(Sum('marks_obtained'))['marks_obtained__sum'] or 0
+
+            quiz_points = StudentQuiz.objects.filter(
+                student=student, passed=True
+            ).aggregate(Sum('score'))['score__sum'] or 0
+
+            total_points = assignment_points + quiz_points
+            completed_courses = Enrollment.objects.filter(user=student, is_completed=True).count()
+            certificates_earned = Certificate.objects.filter(user=student).count()
+
+            leaderboard.append({
+                'id': student.id,
+                'name': student.get_full_name() or student.username,
+                'email': student.email,
+                'total_points': total_points,
+                'assignment_points': assignment_points,
+                'quiz_points': quiz_points,
+                'completed_courses': completed_courses,
+                'certificates_earned': certificates_earned,
+            })
+
+        leaderboard.sort(key=lambda x: x['total_points'], reverse=True)
+
+        for idx, item in enumerate(leaderboard):
+            item['rank'] = idx + 1
+
+        return Response(leaderboard[:20])
+
+
+class AdminUserRoleView(APIView):
+    """
+    POST /api/admin/users/role/ — Update a user role ('student', 'teacher', 'admin').
+    """
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def post(self, request):
+        user_id = request.data.get('user_id')
+        new_role = request.data.get('role')
+
+        if not user_id or new_role not in ['student', 'teacher', 'admin']:
+            return Response({'error': 'Valid user_id and role (student, teacher, admin) required.'}, status=400)
+
+        try:
+            target_user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=404)
+
+        target_user.role = new_role
+        if new_role == 'admin':
+            target_user.is_staff = True
+        target_user.save()
+
+        return Response({
+            'message': f"Role for {target_user.email} updated to '{new_role}'.",
+            'user': UserProfileSerializer(target_user).data
+        })
+
+
+# ─── Admin: Course & Teacher Assignment ──────────────────────────────────────
+
+class AdminCourseManageView(APIView):
+    """
+    GET  /api/admin/courses/         — List all courses with instructor info.
+    POST /api/admin/courses/<id>/assign-teacher/ — Assign a teacher to a course.
+    """
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        courses = Course.objects.select_related('instructor', 'category').all()
+        data = []
+        for c in courses:
+            data.append({
+                'id': c.id,
+                'title': c.title,
+                'slug': c.slug,
+                'category': c.category.name if c.category else None,
+                'is_active': c.is_active,
+                'enrollment_count': c.enrollments.count(),
+                'instructor': {
+                    'id': c.instructor.id,
+                    'name': c.instructor.get_full_name() or c.instructor.email,
+                    'email': c.instructor.email,
+                } if c.instructor else None,
+            })
+        # Also return list of available teachers for the dropdown
+        teachers = User.objects.filter(role='teacher').values('id', 'first_name', 'last_name', 'email')
+        teachers_list = [
+            {'id': t['id'], 'name': f"{t['first_name']} {t['last_name']}".strip() or t['email'], 'email': t['email']}
+            for t in teachers
+        ]
+        return Response({'courses': data, 'teachers': teachers_list})
+
+
+class AdminCourseAssignTeacherView(APIView):
+    """
+    POST /api/admin/courses/<id>/assign-teacher/
+    Body: { "teacher_id": <int> }
+    """
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def post(self, request, pk):
+        teacher_id = request.data.get('teacher_id')
+        if not teacher_id:
+            return Response({'error': 'teacher_id is required.'}, status=400)
+        try:
+            course = Course.objects.get(pk=pk)
+        except Course.DoesNotExist:
+            return Response({'error': 'Course not found.'}, status=404)
+        try:
+            teacher = User.objects.get(pk=teacher_id, role='teacher')
+        except User.DoesNotExist:
+            return Response({'error': 'Teacher not found or user is not a teacher.'}, status=404)
+
+        course.instructor = teacher
+        course.save()
+        return Response({
+            'message': f"'{teacher.get_full_name() or teacher.email}' assigned to '{course.title}'.",
+            'course_id': course.id,
+            'instructor_id': teacher.id,
+        })
+
+
+# ─── Admin: Users List ────────────────────────────────────────────────────────
+
+class AdminUsersListView(APIView):
+    """
+    GET  /api/admin/users/      — List all users with roles.
+    """
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        users = User.objects.all().order_by('-date_joined')
+        data = []
+        for u in users:
+            data.append({
+                'id': u.id,
+                'name': u.get_full_name() or u.username,
+                'email': u.email,
+                'role': u.role,
+                'date_joined': u.date_joined,
+                'is_active': u.is_active,
+            })
+        return Response(data)
+
+
+# ─── Teacher: Live Class Routine Management ───────────────────────────────────
+
+class TeacherRoutineView(APIView):
+    """
+    GET  /api/teacher/routines/  — List all routines for teacher's courses.
+    POST /api/teacher/routines/  — Create a new live class / routine event.
+    Body: { course_id, title, event_type, day_of_week, date, start_time, end_time, description, live_link }
+    """
+    permission_classes = [permissions.IsAuthenticated, IsTeacher]
+
+    def get(self, request):
+        if request.user.role == 'admin':
+            courses = Course.objects.all()
+        else:
+            courses = Course.objects.filter(instructor=request.user)
+        routines = CourseRoutine.objects.filter(course__in=courses).select_related('course').order_by('date', 'start_time')
+        data = []
+        for r in routines:
+            data.append({
+                'id': r.id,
+                'course_id': r.course.id,
+                'course_title': r.course.title,
+                'title': r.title,
+                'event_type': r.event_type,
+                'event_type_display': r.get_event_type_display(),
+                'day_of_week': r.day_of_week,
+                'date': r.date,
+                'start_time': r.start_time,
+                'end_time': r.end_time,
+                'description': r.description,
+                'live_link': r.live_link,
+            })
+        return Response(data)
+
+    def post(self, request):
+        course_id = request.data.get('course_id')
+        if not course_id:
+            return Response({'error': 'course_id is required.'}, status=400)
+        try:
+            if request.user.role == 'admin':
+                course = Course.objects.get(pk=course_id)
+            else:
+                course = Course.objects.get(pk=course_id, instructor=request.user)
+        except Course.DoesNotExist:
+            return Response({'error': 'Course not found or you are not the instructor.'}, status=404)
+
+        routine = CourseRoutine.objects.create(
+            course=course,
+            title=request.data.get('title', 'Live Class'),
+            event_type=request.data.get('event_type', 'live_class'),
+            day_of_week=request.data.get('day_of_week', ''),
+            date=request.data.get('date') or None,
+            start_time=request.data.get('start_time') or None,
+            end_time=request.data.get('end_time') or None,
+            description=request.data.get('description', ''),
+            live_link=request.data.get('live_link', ''),
+        )
+        return Response({
+            'message': 'Live class scheduled successfully!',
+            'routine': {
+                'id': routine.id,
+                'course_title': routine.course.title,
+                'title': routine.title,
+                'event_type': routine.event_type,
+                'date': routine.date,
+                'start_time': routine.start_time,
+                'live_link': routine.live_link,
+            }
+        }, status=201)
+
+    def delete(self, request, pk=None):
+        """DELETE /api/teacher/routines/<id>/ — Remove a routine."""
+        try:
+            if request.user.role == 'admin':
+                routine = CourseRoutine.objects.get(pk=pk)
+            else:
+                routine = CourseRoutine.objects.get(pk=pk, course__instructor=request.user)
+        except CourseRoutine.DoesNotExist:
+            return Response({'error': 'Routine not found.'}, status=404)
+        routine.delete()
+        return Response({'message': 'Routine deleted.'})
+
+
+# ─── Student: View Live Class Routines ────────────────────────────────────────
+
+class StudentRoutineView(APIView):
+    """
+    GET /api/routines/  — Returns upcoming live classes for all enrolled courses.
+    Query params: ?course_id=<id>  (optional — filter by course)
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        # Students see routines for their enrolled courses; teachers/admins see all
+        if request.user.role == 'student':
+            enrolled_courses = Enrollment.objects.filter(user=request.user).values_list('course_id', flat=True)
+            qs = CourseRoutine.objects.filter(course_id__in=enrolled_courses)
+        elif request.user.role == 'teacher':
+            qs = CourseRoutine.objects.filter(course__instructor=request.user)
+        else:
+            qs = CourseRoutine.objects.all()
+
+        course_id = request.query_params.get('course_id')
+        if course_id:
+            qs = qs.filter(course_id=course_id)
+
+        qs = qs.select_related('course').order_by('date', 'start_time')
+
+        data = []
+        for r in qs:
+            data.append({
+                'id': r.id,
+                'course_id': r.course.id,
+                'course_title': r.course.title,
+                'title': r.title,
+                'event_type': r.event_type,
+                'event_type_display': r.get_event_type_display(),
+                'day_of_week': r.day_of_week,
+                'date': r.date,
+                'start_time': r.start_time,
+                'end_time': r.end_time,
+                'description': r.description,
+                'live_link': r.live_link,
+            })
+        return Response(data)

@@ -15,16 +15,36 @@ admin.site.index_title = "Platform Management"
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    list_display = ('email', 'get_full_name', 'phone', 'is_active', 'date_joined')
-    list_filter = ('is_active', 'is_staff', 'date_joined')
+    # ── List view ─────────────────────────────────────────────────────────────
+    list_display  = ('email', 'get_full_name', 'role', 'phone', 'is_active', 'is_staff', 'date_joined')
+    list_filter   = ('role', 'is_active', 'is_staff', 'date_joined')
+    list_editable = ('role',)          # ← change role directly from the list
     search_fields = ('email', 'first_name', 'last_name', 'phone')
-    ordering = ('-date_joined',)
+    ordering      = ('-date_joined',)
 
-    fieldsets = BaseUserAdmin.fieldsets + (
-        ('Profile', {'fields': ('phone', 'bio', 'profile_picture')}),
+    # ── Change / edit form ────────────────────────────────────────────────────
+    fieldsets = (
+        (None, {
+            'fields': ('email', 'username', 'password')
+        }),
+        ('Personal Info', {
+            'fields': ('first_name', 'last_name', 'phone', 'bio', 'profile_picture')
+        }),
+        ('Role & Permissions', {
+            'fields': ('role', 'is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
+            'classes': ('wide',),
+        }),
+        ('Important dates', {
+            'fields': ('last_login', 'date_joined')
+        }),
     )
-    add_fieldsets = BaseUserAdmin.add_fieldsets + (
-        ('Profile', {'fields': ('email', 'first_name', 'last_name', 'phone')}),
+
+    # ── Add new user form ─────────────────────────────────────────────────────
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'username', 'first_name', 'last_name', 'phone', 'role', 'password1', 'password2'),
+        }),
     )
 
 
@@ -100,7 +120,38 @@ class ContactMessageAdmin(admin.ModelAdmin):
 
 # ─── Course Contents ─────────────────────────────────────────────────────────
 
-from .models import Module, Video, Resource, Assignment, StudentAssignment, Payment
+from .models import Module, Video, Resource, Assignment, StudentAssignment, Payment, CourseRoutine, Certificate, Book, JobPosting, JobApplication
+
+@admin.register(CourseRoutine)
+class CourseRoutineAdmin(admin.ModelAdmin):
+    list_display = ('title', 'course', 'event_type', 'day_of_week', 'start_time', 'end_time')
+    list_filter = ('course', 'event_type', 'day_of_week')
+    search_fields = ('title', 'course__title')
+
+@admin.register(Certificate)
+class CertificateAdmin(admin.ModelAdmin):
+    list_display = ('certificate_number', 'user', 'course', 'issued_at')
+    search_fields = ('certificate_number', 'user__email', 'course__title')
+    readonly_fields = ('issued_at',)
+
+@admin.register(Book)
+class BookAdmin(admin.ModelAdmin):
+    list_display = ('title', 'author', 'category', 'price', 'is_featured')
+    list_filter = ('category', 'is_featured')
+    search_fields = ('title', 'author')
+    prepopulated_fields = {'slug': ('title',)}
+
+@admin.register(JobPosting)
+class JobPostingAdmin(admin.ModelAdmin):
+    list_display = ('title', 'department', 'location', 'job_type', 'is_active', 'posted_at')
+    list_filter = ('is_active', 'department', 'job_type')
+    search_fields = ('title', 'department', 'description')
+
+@admin.register(JobApplication)
+class JobApplicationAdmin(admin.ModelAdmin):
+    list_display = ('applicant_name', 'applicant_email', 'phone', 'job_posting', 'applied_at')
+    list_filter = ('job_posting', 'applied_at')
+    search_fields = ('applicant_name', 'applicant_email', 'phone')
 
 @admin.register(Module)
 class ModuleAdmin(admin.ModelAdmin):
@@ -142,3 +193,4 @@ class PaymentAdmin(admin.ModelAdmin):
     list_filter = ('status', 'created_at')
     search_fields = ('user__email', 'course__title', 'transaction_id')
     ordering = ('-created_at',)
+

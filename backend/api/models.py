@@ -243,6 +243,12 @@ class Assignment(models.Model):
 
 class StudentAssignment(models.Model):
     """A student's submission for an assignment."""
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
     assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='submissions')
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='assignments_submitted')
     submission_text = models.TextField(blank=True)
@@ -250,12 +256,82 @@ class StudentAssignment(models.Model):
     submitted_at = models.DateTimeField(auto_now_add=True)
     marks_obtained = models.PositiveIntegerField(null=True, blank=True)
     feedback = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    is_passed = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('assignment', 'student')
 
     def __str__(self):
-        return f"{self.student.email} - {self.assignment.title}"
+        return f"{self.student.email} - {self.assignment.title} ({self.status})"
+
+
+# ─── Quizzes ──────────────────────────────────────────────────────────────────
+
+class Quiz(models.Model):
+    """A quiz created for a course or module."""
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='quizzes')
+    module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='quizzes', null=True, blank=True)
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    passing_percentage = models.PositiveIntegerField(default=60, help_text="Required score % to pass")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = 'Quizzes'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.course.title} - {self.title}"
+
+    @property
+    def total_questions(self):
+        return self.questions.count()
+
+    @property
+    def total_marks(self):
+        return sum(q.marks for q in self.questions.all())
+
+
+class QuizQuestion(models.Model):
+    """Multiple choice question in a quiz."""
+    CORRECT_CHOICES = [
+        ('A', 'Option A'),
+        ('B', 'Option B'),
+        ('C', 'Option C'),
+        ('D', 'Option D'),
+    ]
+
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
+    question_text = models.TextField()
+    option_a = models.CharField(max_length=255)
+    option_b = models.CharField(max_length=255)
+    option_c = models.CharField(max_length=255)
+    option_d = models.CharField(max_length=255)
+    correct_option = models.CharField(max_length=1, choices=CORRECT_CHOICES, default='A')
+    marks = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.quiz.title} - Q: {self.question_text[:30]}"
+
+
+class StudentQuiz(models.Model):
+    """A student's submission for a quiz."""
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='submissions')
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quiz_submissions')
+    score = models.PositiveIntegerField(default=0)
+    total_marks = models.PositiveIntegerField(default=0)
+    passed = models.BooleanField(default=False)
+    answers = models.JSONField(default=dict, blank=True, help_text="Dictionary of question_id -> chosen option")
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('quiz', 'student')
+        ordering = ['-submitted_at']
+
+    def __str__(self):
+        return f"{self.student.email} - {self.quiz.title}: {self.score}/{self.total_marks} ({'Passed' if self.passed else 'Failed'})"
+
 
 
 # ─── Accounting ──────────────────────────────────────────────────────────────
@@ -275,4 +351,117 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.amount} for {self.course.title if self.course else 'Deleted Course'}"
+
+
+# ─── Course Routine ─────────────────────────────────────────────────────────
+
+class CourseRoutine(models.Model):
+    """Schedules for Live Classes, Exams, and Off Days for a course."""
+    EVENT_TYPE_CHOICES = [
+        ('live_class', 'Live Class'),
+        ('exam', 'Exam'),
+        ('off_day', 'Off Day'),
+    ]
+
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='routines')
+    title = models.CharField(max_length=200)
+    event_type = models.CharField(max_length=30, choices=EVENT_TYPE_CHOICES, default='live_class')
+    day_of_week = models.CharField(max_length=20, blank=True, help_text="e.g. Sunday, Tuesday, Friday")
+    date = models.DateField(null=True, blank=True)
+    start_time = models.TimeField(null=True, blank=True)
+    end_time = models.TimeField(null=True, blank=True)
+    description = models.TextField(blank=True)
+    live_link = models.URLField(max_length=500, blank=True)
+
+    class Meta:
+        ordering = ['date', 'start_time']
+
+    def __str__(self):
+        return f"{self.course.title} - {self.title} ({self.get_event_type_display()})"
+
+
+# ─── Certificates ───────────────────────────────────────────────────────────
+
+class Certificate(models.Model):
+    """Course completion certificate for a student."""
+    enrollment = models.OneToOneField(Enrollment, on_delete=models.CASCADE, related_name='certificate')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='certificates')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='certificates')
+    certificate_number = models.CharField(max_length=50, unique=True)
+    issued_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-issued_at']
+
+    def __str__(self):
+        return f"Certificate {self.certificate_number} — {self.user.full_name} ({self.course.title})"
+
+
+# ─── Books ─────────────────────────────────────────────────────────────────
+
+class Book(models.Model):
+    """Sample textbooks and formula guides."""
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200, unique=True)
+    author = models.CharField(max_length=150)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='books')
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    cover_image = models.ImageField(upload_to='book_covers/', null=True, blank=True)
+    cover_url = models.CharField(max_length=500, blank=True)
+    description = models.TextField(blank=True)
+    sample_pdf_url = models.CharField(max_length=500, blank=True)
+    is_featured = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-is_featured', '-created_at']
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
+
+
+# ─── Careers & Job Applications ───────────────────────────────────────────────
+
+class JobPosting(models.Model):
+    """Open job positions at TutorBhaiya."""
+    title = models.CharField(max_length=200)
+    department = models.CharField(max_length=100)
+    location = models.CharField(max_length=100, default='Dhaka, Bangladesh')
+    job_type = models.CharField(max_length=50, default='Full-Time')
+    experience_level = models.CharField(max_length=50, default='1-3 years')
+    description = models.TextField()
+    requirements = models.JSONField(default=list, blank=True)
+    benefits = models.JSONField(default=list, blank=True)
+    is_active = models.BooleanField(default=True)
+    posted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-posted_at']
+
+    def __str__(self):
+        return f"{self.title} ({self.department})"
+
+
+class JobApplication(models.Model):
+    """Job application submitted by a candidate."""
+    job_posting = models.ForeignKey(JobPosting, on_delete=models.CASCADE, related_name='applications')
+    applicant_name = models.CharField(max_length=150)
+    applicant_email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    portfolio_url = models.URLField(blank=True)
+    cover_note = models.TextField(blank=True)
+    resume_file = models.FileField(upload_to='resumes/', null=True, blank=True)
+    applied_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-applied_at']
+
+    def __str__(self):
+        return f"{self.applicant_name} -> {self.job_posting.title}"
+
 
