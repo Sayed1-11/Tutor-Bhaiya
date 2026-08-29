@@ -100,6 +100,40 @@ class CategorySerializer(serializers.ModelSerializer):
         return obj.courses.filter(is_active=True).count()
 
 
+# ─── Course Contents ─────────────────────────────────────────────────────────
+
+class VideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Video
+        fields = '__all__'
+
+
+class ResourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Resource
+        fields = '__all__'
+
+
+class AssignmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Assignment
+        fields = '__all__'
+
+
+class ModuleSerializer(serializers.ModelSerializer):
+    videos = VideoSerializer(many=True, read_only=True)
+    resources = ResourceSerializer(many=True, read_only=True)
+    assignments = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Module
+        fields = '__all__'
+
+    def get_assignments(self, obj):
+        qs = obj.assignments.all()
+        return AssignmentSerializer(qs, many=True).data
+
+
 # ─── Course ──────────────────────────────────────────────────────────────────
 
 class CourseListSerializer(serializers.ModelSerializer):
@@ -129,11 +163,13 @@ class CourseListSerializer(serializers.ModelSerializer):
 
 
 class CourseDetailSerializer(CourseListSerializer):
-    """Full course detail including description, outline, roadmap, and counts."""
+    """Full course detail including description, outline, roadmap, counts, and modules."""
+    modules = ModuleSerializer(many=True, read_only=True)
+
     class Meta(CourseListSerializer.Meta):
         fields = CourseListSerializer.Meta.fields + (
             'description', 'created_at', 'outline', 'roadmap',
-            'assignments_count', 'exams_count', 'quizzes_count'
+            'assignments_count', 'exams_count', 'quizzes_count', 'modules'
         )
 
 
@@ -184,38 +220,7 @@ class ContactMessageSerializer(serializers.ModelSerializer):
         read_only_fields = ('submitted_at',)
 
 
-# ─── Course Contents ─────────────────────────────────────────────────────────
 
-class VideoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Video
-        fields = '__all__'
-
-
-class ResourceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Resource
-        fields = '__all__'
-
-
-class AssignmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Assignment
-        fields = '__all__'
-
-
-class ModuleSerializer(serializers.ModelSerializer):
-    videos = VideoSerializer(many=True, read_only=True)
-    resources = ResourceSerializer(many=True, read_only=True)
-    assignments = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Module
-        fields = '__all__'
-
-    def get_assignments(self, obj):
-        qs = obj.assignments.all()
-        return AssignmentSerializer(qs, many=True).data
 
 
 class StudentAssignmentSerializer(serializers.ModelSerializer):

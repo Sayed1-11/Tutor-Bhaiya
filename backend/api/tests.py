@@ -161,3 +161,66 @@ class TutorBhaiyaAPITests(APITestCase):
         self.assertEqual(dash_response.status_code, status.HTTP_200_OK)
         self.assertEqual(float(dash_response.data['stats']['total_revenue']), float(self.course.price))
 
+    def test_admin_dashboard_extended_data(self):
+        """Test that AdminDashboardView returns recent payments and top courses."""
+        admin_user = User.objects.create_superuser(
+            username='admin_test_ext',
+            email='admin_ext@example.com',
+            password='adminpassword123'
+        )
+        self.client.force_authenticate(user=admin_user)
+        
+        # Enrolling a user creates payment
+        student = User.objects.create_user(
+            username='stud_ext',
+            email='stud_ext@example.com',
+            password='password123',
+            role='student'
+        )
+        Payment.objects.create(
+            user=student,
+            course=self.course,
+            amount=self.course.price,
+            status='completed',
+            payment_method='bkash',
+            transaction_id='TXN12345'
+        )
+
+        url = reverse('admin-dashboard')
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn('recent_payments', res.data)
+        self.assertIn('top_courses', res.data)
+        self.assertEqual(len(res.data['recent_payments']), 1)
+        self.assertEqual(len(res.data['top_courses']), 1)
+        self.assertEqual(res.data['recent_payments'][0]['transaction_id'], 'TXN12345')
+        self.assertEqual(float(res.data['top_courses'][0]['revenue']), float(self.course.price))
+
+    def test_admin_create_course(self):
+        """Test that AdminCourseManageView POST creates a new course."""
+        admin_user = User.objects.create_superuser(
+            username='admin_test_create',
+            email='admin_create@example.com',
+            password='adminpassword123'
+        )
+        self.client.force_authenticate(user=admin_user)
+
+        url = reverse('admin-courses')
+        payload = {
+            'title': 'New Test Course from Admin',
+            'price': 4500,
+            'duration_hours': 50,
+            'description': 'A fantastic new course'
+        }
+        res = self.client.post(url, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertIn('course_id', res.data)
+        
+        # Verify it exists in db
+        from api.models import Course
+        course_obj = Course.objects.get(id=res.data['course_id'])
+        self.assertEqual(course_obj.title, 'New Test Course from Admin')
+        self.assertEqual(float(course_obj.price), 4500.0)
+        self.assertEqual(course_obj.slug, 'new-test-course-from-admin')
+
+

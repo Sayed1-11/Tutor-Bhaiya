@@ -152,25 +152,41 @@
                 </div>
             </div>
 
-            <!-- ─── 5. LEADERBOARD SECTION ──────────────────────────────────────── -->
-            <div id="section-leaderboard" class="content-section hidden">
-                <div class="mb-6">
-                    <h3 class="text-2xl font-bold text-gray-900">Student Leaderboard</h3>
-                    <p class="text-xs text-gray-500 mt-1">Top performers ranked by approved assignment marks and quiz scores across TutorBhaiya.</p>
-                </div>
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" id="leaderboard-container">
-                    <div class="p-8 text-center text-gray-500">Loading leaderboard...</div>
-                </div>
-            </div>
-
+            <!-- ─── 5. LEADERBOARD SECTION ─────────────────────────
             <!-- ─── 6. TEACHER CONTENT UPLOADS ──────────────────────────────────── -->
             <div id="section-teacher-uploads" class="content-section hidden">
                 <div class="mb-6">
-                    <h3 class="text-2xl font-bold text-gray-900">Manage Course Work & Content</h3>
-                    <p class="text-xs text-gray-500 mt-1">Add video lessons, upload downloadable resources/links, and publish new assignments.</p>
+                    <h3 class="text-2xl font-bold text-gray-900">Manage Course Work &amp; Content</h3>
+                    <p class="text-xs text-gray-500 mt-1">Add modules, video lessons, downloadable resources, and publish assignments for your assigned courses.</p>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Form: Create Course Module -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h4 class="font-bold text-gray-900 text-base mb-4 flex items-center gap-2">
+                            <i class="ph ph-folder-plus text-violet-500 text-xl"></i> Create Course Module
+                        </h4>
+                        <form id="form-add-module" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Select Course</label>
+                                <select id="module-course-select" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="">-- Select Your Course --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Module Title</label>
+                                <input type="text" id="module-title-input" placeholder="e.g. Chapter 3: Advanced Physics" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Order / Position</label>
+                                <input type="number" id="module-order-input" value="1" min="1" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <button type="submit" class="w-full bg-violet-600 hover:bg-violet-700 text-white font-bold py-2.5 rounded-xl text-sm transition-colors">
+                                Create Module
+                            </button>
+                        </form>
+                    </div>
+
                     <!-- Form: Upload Video Lesson -->
                     <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                         <h4 class="font-bold text-gray-900 text-base mb-4 flex items-center gap-2">
@@ -178,8 +194,16 @@
                         </h4>
                         <form id="form-add-video" class="space-y-4">
                             <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Select Course</label>
+                                <select id="video-course-select" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="">-- Select Your Course --</option>
+                                </select>
+                            </div>
+                            <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Select Module</label>
-                                <select id="video-module-select" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"></select>
+                                <select id="video-module-select" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="">-- Select a Course First --</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Lesson Title</label>
@@ -207,7 +231,9 @@
                         <form id="form-add-resource" class="space-y-4">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Select Course</label>
-                                <select id="resource-course-select" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"></select>
+                                <select id="resource-course-select" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="">-- Select Your Course --</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Resource Title</label>
@@ -224,14 +250,16 @@
                     </div>
 
                     <!-- Form: Create New Assignment -->
-                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm lg:col-span-2">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                         <h4 class="font-bold text-gray-900 text-base mb-4 flex items-center gap-2">
                             <i class="ph ph-notebook text-secondary text-xl"></i> Create Course Assignment
                         </h4>
-                        <form id="form-add-assignment" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <form id="form-add-assignment" class="space-y-4">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Select Course</label>
-                                <select id="assign-course-select" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"></select>
+                                <select id="assign-course-select" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="">-- Select Your Course --</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Assignment Title</label>
@@ -241,8 +269,8 @@
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Total Marks</label>
                                 <input type="number" id="assign-marks-input" value="50" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                             </div>
-                            <div class="md:col-span-2">
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">Assignment Instructions / Problem Description</label>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Assignment Instructions</label>
                                 <textarea id="assign-desc-input" rows="3" placeholder="Provide problem numbers, requirements, and submission instructions..." required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"></textarea>
                             </div>
                             <div class="md:col-span-2">
@@ -473,24 +501,67 @@
                 </div>
             </div>
 
-            <!-- ─── 15. ADMIN COURSES & TEACHER ASSIGNMENT ───────────────────────── -->
+                        <!-- ─── 15. ADMIN COURSES & TEACHER ASSIGNMENT ─────────────────────── -->
             <div id="section-admin-courses" class="content-section hidden">
                 <div class="mb-6 flex items-center justify-between">
                     <div>
-                        <h3 class="text-2xl font-bold text-gray-900">Course Management & Teacher Assignment</h3>
-                        <p class="text-xs text-gray-500 mt-1">View all courses and assign teachers. Use the dropdown on each course row to change the instructor.</p>
+                        <h3 class="text-2xl font-bold text-gray-900">Course Management &amp; Teacher Assignment</h3>
+                        <p class="text-xs text-gray-500 mt-1">View all courses with pricing, assign teachers, and create new courses.</p>
                     </div>
                     <button onclick="loadAdminCourses()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold px-3.5 py-2 rounded-xl flex items-center gap-1">
                         <i class="ph ph-arrows-clockwise text-sm"></i> Refresh
                     </button>
                 </div>
                 <div id="admin-courses-msg" class="hidden mb-4 text-xs font-medium text-center py-2 rounded-xl"></div>
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" id="admin-courses-container">
-                    <div class="p-8 text-center text-gray-500">Loading courses...</div>
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                    <div class="xl:col-span-2">
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" id="admin-courses-container">
+                            <div class="p-8 text-center text-gray-500">Loading courses...</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 self-start">
+                        <h4 class="font-bold text-gray-900 text-base mb-4 flex items-center gap-2">
+                            <i class="ph ph-plus-circle text-primary text-xl"></i> Create New Course
+                        </h4>
+                        <div id="admin-create-course-msg" class="hidden mb-3 text-xs font-medium text-center py-2 rounded-xl"></div>
+                        <form id="form-admin-create-course" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Course Title <span class="text-red-400">*</span></label>
+                                <input type="text" id="admin-course-title" placeholder="e.g. SSC Physics Complete Batch" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Price (৳) <span class="text-red-400">*</span></label>
+                                <input type="number" id="admin-course-price" placeholder="3000" min="0" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Category</label>
+                                <select id="admin-course-category" class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="">-- Select Category --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Assign Teacher</label>
+                                <select id="admin-course-teacher" class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="">-- Select Teacher --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Duration (hours)</label>
+                                <input type="number" id="admin-course-duration" value="40" min="0" class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Description</label>
+                                <textarea id="admin-course-desc" rows="2" placeholder="Course overview..." class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-primary hover:bg-violet-700 text-white font-bold py-2.5 rounded-xl text-sm transition-colors flex items-center justify-center gap-2">
+                                <i class="ph ph-plus"></i> Create Course
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
 
-            <!-- ─── 16. ADMIN USER MANAGEMENT (Full List) ────────────────────────── -->
+<!-- ─── 16. ADMIN USER MANAGEMENT (Full List) ────────────────────────── -->
             <div id="section-admin-users-list" class="content-section hidden">
                 <div class="mb-6 flex items-center justify-between">
                     <div>
@@ -786,38 +857,101 @@
             const res = await authFetch(`${API_BASE}/admin/dashboard/`);
             const data = await res.json();
             const stats = data.stats || data;
+            const recentPayments = data.recent_payments || [];
+            const topCourses = data.top_courses || [];
 
             grid.innerHTML = `
-                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500 text-xl"><i class="ph-fill ph-currency-dollar"></i></div>
-                    <div><p class="text-xs text-gray-500 font-medium">Total Platform Revenue</p><h3 class="text-xl font-bold text-emerald-600">৳${stats.total_revenue || 0}</h3></div>
+                <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 p-6 rounded-2xl shadow-sm flex items-center gap-4 text-white">
+                    <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl"><i class="ph-fill ph-currency-dollar"></i></div>
+                    <div><p class="text-xs text-emerald-100 font-medium">Total Platform Revenue</p><h3 class="text-2xl font-black">৳${Number(stats.total_revenue || 0).toLocaleString()}</h3></div>
+                </div>
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 p-6 rounded-2xl shadow-sm flex items-center gap-4 text-white">
+                    <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl"><i class="ph-fill ph-student"></i></div>
+                    <div><p class="text-xs text-blue-100 font-medium">Total Students</p><h3 class="text-2xl font-black">${stats.total_students || 0}</h3></div>
+                </div>
+                <div class="bg-gradient-to-br from-violet-500 to-violet-600 p-6 rounded-2xl shadow-sm flex items-center gap-4 text-white">
+                    <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl"><i class="ph-fill ph-chalkboard-teacher"></i></div>
+                    <div><p class="text-xs text-violet-100 font-medium">Total Teachers</p><h3 class="text-2xl font-black">${stats.total_teachers || 0}</h3></div>
+                </div>
+                <div class="bg-gradient-to-br from-amber-500 to-orange-500 p-6 rounded-2xl shadow-sm flex items-center gap-4 text-white">
+                    <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl"><i class="ph-fill ph-book-open"></i></div>
+                    <div><p class="text-xs text-amber-100 font-medium">Active Courses</p><h3 class="text-2xl font-black">${stats.total_courses || 0}</h3></div>
                 </div>
                 <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 text-xl"><i class="ph-fill ph-student"></i></div>
-                    <div><p class="text-xs text-gray-500 font-medium">Total Students</p><h3 class="text-xl font-bold text-gray-900">${stats.total_students || 0}</h3></div>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-violet-50 flex items-center justify-center text-primary text-xl"><i class="ph-fill ph-chalkboard-teacher"></i></div>
-                    <div><p class="text-xs text-gray-500 font-medium">Total Teachers</p><h3 class="text-xl font-bold text-gray-900">${stats.total_teachers || 0}</h3></div>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500 text-xl"><i class="ph-fill ph-book-open"></i></div>
-                    <div><p class="text-xs text-gray-500 font-medium">Active Courses</p><h3 class="text-xl font-bold text-gray-900">${stats.total_courses || 0}</h3></div>
+                    <div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-gray-600 text-xl"><i class="ph-fill ph-users-three"></i></div>
+                    <div><p class="text-xs text-gray-500 font-medium">Total Enrollments</p><h3 class="text-xl font-bold text-gray-900">${stats.total_enrollments || 0}</h3></div>
                 </div>
             `;
 
+            // Recent transactions table
+            const recentHtml = recentPayments.length ? `
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+                        <h4 class="font-bold text-gray-900 text-sm flex items-center gap-2"><i class="ph ph-receipt text-emerald-500"></i> Recent Transactions</h4>
+                        <span class="text-xs text-gray-400">${recentPayments.length} latest</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead><tr class="bg-gray-50 text-gray-400 uppercase font-bold">
+                                <th class="p-3">Student</th>
+                                <th class="p-3">Course</th>
+                                <th class="p-3">Amount</th>
+                                <th class="p-3">Date</th>
+                                <th class="p-3 text-center">Status</th>
+                            </tr></thead>
+                            <tbody class="divide-y divide-gray-100">
+                                ${recentPayments.map(p => `<tr class="hover:bg-gray-50">
+                                    <td class="p-3 font-semibold text-gray-900">${p.student_name}<br><span class="text-gray-400 font-normal">${p.student_email}</span></td>
+                                    <td class="p-3 text-gray-700">${p.course_title}</td>
+                                    <td class="p-3 font-bold text-emerald-600">৳${Number(p.amount).toLocaleString()}</td>
+                                    <td class="p-3 text-gray-500">${p.date}</td>
+                                    <td class="p-3 text-center"><span class="px-2 py-0.5 rounded-full text-xs font-bold ${p.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${p.status}</span></td>
+                                </tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>` : '';
+
+            // Top courses by revenue
+            const topRevenueMax = topCourses.length ? Math.max(...topCourses.map(c => Number(c.revenue))) : 1;
+            const topCoursesHtml = topCourses.length ? `
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                    <h4 class="font-bold text-gray-900 text-sm mb-4 flex items-center gap-2"><i class="ph ph-trend-up text-violet-500"></i> Top Courses by Revenue</h4>
+                    <div class="space-y-3">
+                        ${topCourses.map((c, i) => {
+                            const pct = Math.round((Number(c.revenue) / topRevenueMax) * 100);
+                            return `<div>
+                                <div class="flex items-center justify-between text-xs mb-1">
+                                    <span class="font-semibold text-gray-800 truncate max-w-[65%]">${c.course_title}</span>
+                                    <span class="font-bold text-emerald-600">৳${Number(c.revenue).toLocaleString()}</span>
+                                </div>
+                                <div class="h-2 rounded-full bg-gray-100 overflow-hidden">
+                                    <div class="h-full rounded-full ${i === 0 ? 'bg-emerald-500' : i === 1 ? 'bg-violet-500' : i === 2 ? 'bg-blue-500' : 'bg-amber-400'}" style="width:${pct}%"></div>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-0.5">${c.enrollments} enrollment${c.enrollments !== 1 ? 's' : ''}</p>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>` : '';
+
             document.getElementById('continue-learning-section').innerHTML = `
-                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                    <h4 class="font-bold text-gray-900 mb-3 text-sm">Admin Quick Actions</h4>
-                    <div class="flex flex-wrap gap-3">
-                        <button onclick="document.querySelector('[data-target=admin-courses]').click()" class="bg-primary text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-violet-700">Manage Courses & Teachers</button>
-                        <button onclick="document.querySelector('[data-target=admin-teachers]').click()" class="bg-gray-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-primary">Monitor Teacher Activity</button>
-                        <button onclick="document.querySelector('[data-target=admin-submissions]').click()" class="bg-blue-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-blue-700">View Platform Submissions</button>
-                        <button onclick="document.querySelector('[data-target=admin-users-list]').click()" class="bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-emerald-700">Manage Users & Roles</button>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    ${recentHtml}
+                    <div class="space-y-4">
+                        ${topCoursesHtml}
+                        <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                            <h4 class="font-bold text-gray-900 mb-3 text-sm">Quick Actions</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="document.querySelector('[data-target=admin-courses]').click()" class="bg-primary text-white text-xs font-bold px-3.5 py-2 rounded-xl hover:bg-violet-700">Manage Courses</button>
+                                <button onclick="document.querySelector('[data-target=admin-teachers]').click()" class="bg-gray-900 text-white text-xs font-bold px-3.5 py-2 rounded-xl hover:bg-primary">Teachers</button>
+                                <button onclick="document.querySelector('[data-target=admin-submissions]').click()" class="bg-blue-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl hover:bg-blue-700">Submissions</button>
+                                <button onclick="document.querySelector('[data-target=admin-users-list]').click()" class="bg-emerald-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl hover:bg-emerald-700">Users</button>
+                            </div>
+                        </div>
                     </div>
                 </div>`;
         }
-
+        
         // ── 3. MY COURSES LOADER ──────────────────────────────────────────────
         async function loadMyCourses() {
             const container = document.getElementById('my-courses-list');
@@ -1228,41 +1362,85 @@
         }
 
         // ── 11. FORM HELPERS FOR CONTENT CREATION ─────────────────────────────
+        let _teacherCourses = []; // cache teacher's courses
+
         async function populateCourseSelects() {
             try {
-                const res = await authFetch(`${API_BASE}/courses/`);
+                // Use teacher's own courses only
+                const res = await authFetch(`${API_BASE}/teacher/courses/`);
                 const data = await res.json();
-                const courses = data.results || data;
-                const options = courses.map(c => `<option value="${c.id}">${c.title}</option>`).join('');
+                _teacherCourses = data.results || data;
 
-                const sel1 = document.getElementById('resource-course-select');
-                const sel2 = document.getElementById('assign-course-select');
-                const sel3 = document.getElementById('quiz-course-select');
-                if (sel1) sel1.innerHTML = options;
-                if (sel2) sel2.innerHTML = options;
-                if (sel3) sel3.innerHTML = options;
+                const defaultOpt = '<option value="">-- Select Your Course --</option>';
+                const options = defaultOpt + _teacherCourses.map(c => `<option value="${c.id}" data-slug="${c.slug}">${c.title}</option>`).join('');
 
-                // Load modules for video assignment
-                if (courses.length > 0) {
-                    const detailRes = await authFetch(`${API_BASE}/courses/${courses[0].slug}/`);
-                    const detailData = await detailRes.json();
-                    const modSel = document.getElementById('video-module-select');
-                    if (modSel && detailData.modules) {
-                        modSel.innerHTML = detailData.modules.map(m => `<option value="${m.id}">${m.title}</option>`).join('');
-                    }
+                ['video-course-select', 'module-course-select', 'resource-course-select', 'assign-course-select', 'quiz-course-select'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerHTML = options;
+                });
+
+                // When video course changes, reload modules
+                const vcSel = document.getElementById('video-course-select');
+                if (vcSel) {
+                    vcSel.onchange = () => loadModulesForCourse(vcSel.value, 'video-module-select');
                 }
             } catch (err) {
                 console.error(err);
             }
         }
 
+        async function loadModulesForCourse(courseId, targetSelectId) {
+            const modSel = document.getElementById(targetSelectId);
+            if (!modSel || !courseId) {
+                if (modSel) modSel.innerHTML = '<option value="">-- Select a Course First --</option>';
+                return;
+            }
+            modSel.innerHTML = '<option value="">Loading modules...</option>';
+            try {
+                // Find slug from cached list
+                const course = _teacherCourses.find(c => String(c.id) === String(courseId));
+                if (!course) return;
+                const res = await authFetch(`${API_BASE}/courses/${course.slug}/`);
+                const data = await res.json();
+                const modules = data.modules || [];
+                if (!modules.length) {
+                    modSel.innerHTML = '<option value="">No modules yet — create one first</option>';
+                } else {
+                    modSel.innerHTML = '<option value="">-- Select Module --</option>' + modules.map(m => `<option value="${m.id}">${m.title}</option>`).join('');
+                }
+            } catch (err) {
+                modSel.innerHTML = '<option value="">Failed to load modules</option>';
+            }
+        }
+
+        // Create Module Form Submit
+        document.getElementById('form-add-module')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const courseId = document.getElementById('module-course-select').value;
+            const title = document.getElementById('module-title-input').value;
+            const order = document.getElementById('module-order-input').value;
+            if (!courseId) { alert('Please select a course first.'); return; }
+            try {
+                const res = await authFetch(`${API_BASE}/teacher/content/module/`, {
+                    method: 'POST',
+                    body: JSON.stringify({ course: courseId, title, order })
+                });
+                const data = await res.json();
+                alert(data.message || 'Module created successfully!');
+                document.getElementById('form-add-module').reset();
+            } catch (err) { console.error(err); }
+        });
+
         // Add Video Form Submit
         document.getElementById('form-add-video').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const courseId = document.getElementById('video-course-select').value;
             const modId = document.getElementById('video-module-select').value;
             const title = document.getElementById('video-title-input').value;
             const url = document.getElementById('video-url-input').value;
             const duration = document.getElementById('video-duration-input').value;
+            if (!courseId) { alert('Please select a course.'); return; }
+            if (!modId) { alert('Please select a module. Create a module first if none exist.'); return; }
 
             try {
                 const res = await authFetch(`${API_BASE}/teacher/content/video/`, {
@@ -1533,6 +1711,17 @@
                 const data = await res.json();
                 _adminTeachersList = data.teachers || [];
                 const courses = data.courses || [];
+                const categories = data.categories || [];
+
+                // Populate create-course form dropdowns
+                const catSel = document.getElementById('admin-course-category');
+                if (catSel) {
+                    catSel.innerHTML = '<option value="">-- Select Category --</option>' + categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                }
+                const teacherSel = document.getElementById('admin-course-teacher');
+                if (teacherSel) {
+                    teacherSel.innerHTML = '<option value="">-- Select Teacher --</option>' + _adminTeachersList.map(t => `<option value="${t.id}">${t.name} (${t.email})</option>`).join('');
+                }
 
                 if (!courses.length) {
                     container.innerHTML = `<div class="p-8 text-center text-gray-500">No courses found.</div>`;
@@ -1540,27 +1729,30 @@
                 }
                 const teacherOptions = _adminTeachersList.map(t => `<option value="${t.id}">${t.name} (${t.email})</option>`).join('');
                 container.innerHTML = `
+                    <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-gray-50 border-b border-gray-100 text-xs text-gray-400 font-bold uppercase">
                                 <th class="p-4">Course</th>
                                 <th class="p-4">Category</th>
+                                <th class="p-4 text-right">Price</th>
                                 <th class="p-4 text-center">Students</th>
-                                <th class="p-4">Current Instructor</th>
+                                <th class="p-4">Instructor</th>
                                 <th class="p-4">Assign Teacher</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 text-sm">
                             ${courses.map(c => `
                             <tr class="hover:bg-gray-50">
-                                <td class="p-4">
+                                <td class="p-4 min-w-[160px]">
                                     <p class="font-semibold text-gray-900">${c.title}</p>
                                     <span class="text-xs ${c.is_active ? 'text-emerald-500' : 'text-red-400'}">${c.is_active ? '● Active' : '● Inactive'}</span>
                                 </td>
                                 <td class="p-4 text-xs text-gray-500">${c.category || '—'}</td>
+                                <td class="p-4 text-right font-bold text-emerald-600">৳${Number(c.price || 0).toLocaleString()}</td>
                                 <td class="p-4 text-center font-bold text-gray-900">${c.enrollment_count}</td>
                                 <td class="p-4 text-xs text-gray-700">${c.instructor ? `${c.instructor.name}<br><span class="text-gray-400">${c.instructor.email}</span>` : '<span class="text-gray-400">Unassigned</span>'}</td>
-                                <td class="p-4">
+                                <td class="p-4 min-w-[200px]">
                                     <div class="flex items-center gap-2">
                                         <select id="course-teacher-select-${c.id}" class="border border-gray-200 rounded-xl p-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary flex-1">
                                             <option value="">-- Select Teacher --</option>
@@ -1571,11 +1763,48 @@
                                 </td>
                             </tr>`).join('')}
                         </tbody>
-                    </table>`;
+                    </table>
+                    </div>`;
             } catch (err) {
                 container.innerHTML = `<div class="p-8 text-center text-red-400">Failed to load courses.</div>`;
             }
         }
+
+        // Create Course form submit (admin)
+        document.getElementById('form-admin-create-course')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msgEl = document.getElementById('admin-create-course-msg');
+            const title = document.getElementById('admin-course-title').value.trim();
+            const price = document.getElementById('admin-course-price').value;
+            const categoryId = document.getElementById('admin-course-category').value;
+            const teacherId = document.getElementById('admin-course-teacher').value;
+            const duration = document.getElementById('admin-course-duration').value;
+            const desc = document.getElementById('admin-course-desc').value;
+
+            msgEl.className = 'mb-3 text-xs font-medium text-center py-2 rounded-xl bg-blue-50 text-blue-700';
+            msgEl.textContent = 'Creating course...';
+            msgEl.classList.remove('hidden');
+
+            try {
+                const res = await authFetch(`${API_BASE}/admin/courses/`, {
+                    method: 'POST',
+                    body: JSON.stringify({ title, price, category_id: categoryId || null, teacher_id: teacherId || null, duration_hours: duration, description: desc })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    msgEl.className = 'mb-3 text-xs font-medium text-center py-2 rounded-xl bg-emerald-50 text-emerald-700';
+                    msgEl.textContent = data.message || 'Course created successfully!';
+                    document.getElementById('form-admin-create-course').reset();
+                    loadAdminCourses(); // refresh the list
+                } else {
+                    msgEl.className = 'mb-3 text-xs font-medium text-center py-2 rounded-xl bg-red-50 text-red-600';
+                    msgEl.textContent = data.error || 'Failed to create course.';
+                }
+            } catch (err) {
+                msgEl.className = 'mb-3 text-xs font-medium text-center py-2 rounded-xl bg-red-50 text-red-600';
+                msgEl.textContent = 'Network error.';
+            }
+        });
 
         async function assignTeacher(courseId) {
             const select = document.getElementById(`course-teacher-select-${courseId}`);

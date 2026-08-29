@@ -595,9 +595,40 @@ class AdminDashboardView(APIView):
         total_students = User.objects.filter(role='student').count()
         total_teachers = User.objects.filter(role='teacher').count()
 
-        from django.db.models import Sum
+        from django.db.models import Sum, Count
         total_revenue = Payment.objects.aggregate(Sum('amount'))['amount__sum'] or 0
         total_enrollments = Enrollment.objects.count()
+
+        # Recent 10 payments for transaction feed
+        recent_payments = []
+        for p in Payment.objects.select_related('user', 'course').order_by('-created_at')[:10]:
+            recent_payments.append({
+                'student_name': p.user.get_full_name() or p.user.email,
+                'student_email': p.user.email,
+                'course_title': p.course.title if p.course else 'Deleted Course',
+                'amount': str(p.amount),
+                'payment_method': p.payment_method,
+                'transaction_id': p.transaction_id,
+                'status': p.status,
+                'date': p.created_at.strftime('%b %d, %Y'),
+            })
+
+        # Top courses by revenue
+        top_courses = []
+        courses_revenue = (
+            Payment.objects
+            .filter(course__isnull=False)
+            .values('course__id', 'course__title')
+            .annotate(revenue=Sum('amount'), enrollments=Count('id'))
+            .order_by('-revenue')[:5]
+        )
+        for c in courses_revenue:
+            top_courses.append({
+                'course_id': c['course__id'],
+                'course_title': c['course__title'],
+                'revenue': str(c['revenue']),
+                'enrollments': c['enrollments'],
+            })
 
         return Response({
             'stats': {
@@ -606,7 +637,9 @@ class AdminDashboardView(APIView):
                 'total_teachers': total_teachers,
                 'total_revenue': total_revenue,
                 'total_enrollments': total_enrollments,
-            }
+            },
+            'recent_payments': recent_payments,
+            'top_courses': top_courses,
         })
 
 
@@ -1072,8 +1105,8 @@ class AdminUserRoleView(APIView):
 
 class AdminCourseManageView(APIView):
     """
-    GET  /api/admin/courses/         — List all courses with instructor info.
-    POST /api/admin/courses/<id>/assign-teacher/ — Assign a teacher to a course.
+    GET  /api/admin/courses/  — List all courses with instructor info, price, and categories.
+    POST /api/admin/courses/  — Create a new course.
     """
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
 
@@ -1086,7 +1119,9 @@ class AdminCourseManageView(APIView):
                 'title': c.title,
                 'slug': c.slug,
                 'category': c.category.name if c.category else None,
+                'category_id': c.category.id if c.category else None,
                 'is_active': c.is_active,
+                'price': str(c.price),
                 'enrollment_count': c.enrollments.count(),
                 'instructor': {
                     'id': c.instructor.id,
@@ -1094,13 +1129,64 @@ class AdminCourseManageView(APIView):
                     'email': c.instructor.email,
                 } if c.instructor else None,
             })
-        # Also return list of available teachers for the dropdown
+        # Return list of available teachers for the dropdown
         teachers = User.objects.filter(role='teacher').values('id', 'first_name', 'last_name', 'email')
         teachers_list = [
             {'id': t['id'], 'name': f"{t['first_name']} {t['last_name']}".strip() or t['email'], 'email': t['email']}
             for t in teachers
         ]
-        return Response({'courses': data, 'teachers': teachers_list})
+        # Return list of categories for new course form
+        categories_list = list(Category.objects.values('id', 'name'))
+        return Response({'courses': data, 'teachers': teachers_list, 'categories': categories_list})
+
+    def post(self, request):
+        """Create a new course from the admin panel."""
+        import re
+        title = request.data.get('title', '').strip()
+        price = request.data.get('price', 0)
+        category_id = request.data.get('category_id')
+        teacher_id = request.data.get('teacher_id')
+        description = request.data.get('description', '')
+        duration_hours = request.data.get('duration_hours', 0)
+
+        if not title:
+            return Response({'error': 'Course title is required.'}, status=400)
+
+        # Auto-generate unique slug
+        base_slug = re.sub(r'[^a-z0-9]+', '-', title.lower()).strip('-')
+        slug = base_slug
+        counter = 1
+        while Course.objects.filter(slug=slug).exists():
+            slug = f"{base_slug}-{counter}"
+            counter += 1
+
+        category = None
+        if category_id:
+            try:
+                category = Category.objects.get(pk=category_id)
+            except Category.DoesNotExist:
+                pass
+
+        instructor = None
+        if teacher_id:
+            try:
+                instructor = User.objects.get(pk=teacher_id, role='teacher')
+            except User.DoesNotExist:
+                pass
+
+        course = Course.objects.create(
+            title=title,
+            slug=slug,
+            price=price,
+            category=category,
+            instructor=instructor,
+            description=description,
+            duration_hours=duration_hours,
+            is_active=True,
+        )
+        return Response({'message': f'Course "{course.title}" created successfully!', 'course_id': course.id, 'slug': course.slug}, status=201)
+
+
 
 
 class AdminCourseAssignTeacherView(APIView):
