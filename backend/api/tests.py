@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.test import APITestCase
-from .models import Category, Course, Enrollment, Assignment, StudentAssignment, Quiz, QuizQuestion, StudentQuiz
+from .models import Category, Course, Enrollment, Assignment, StudentAssignment, Quiz, QuizQuestion, StudentQuiz, Payment
 
 User = get_user_model()
 
@@ -128,4 +128,36 @@ class TutorBhaiyaAPITests(APITestCase):
         url = reverse('leaderboard')
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_enrollment_creates_payment(self):
+        """Test that enrolling in a course creates a payment record and updates admin dashboard revenue."""
+        student = User.objects.create_user(
+            username='student_test',
+            email='student_test@example.com',
+            password='studentpassword123',
+            role='student'
+        )
+        self.client.force_authenticate(user=student)
+
+        # Post to enrollment endpoint
+        enroll_url = reverse('enrollments')
+        response = self.client.post(enroll_url, {'course_id': self.course.id}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Verify payment was created
+        self.assertEqual(Payment.objects.filter(user=student, course=self.course).count(), 1)
+        payment = Payment.objects.get(user=student, course=self.course)
+        self.assertEqual(float(payment.amount), float(self.course.price))
+
+        # Verify admin dashboard shows the revenue
+        admin_user = User.objects.create_superuser(
+            username='admin_test',
+            email='admin_test@example.com',
+            password='adminpassword123'
+        )
+        self.client.force_authenticate(user=admin_user)
+        dashboard_url = reverse('admin-dashboard')
+        dash_response = self.client.get(dashboard_url)
+        self.assertEqual(dash_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(float(dash_response.data['stats']['total_revenue']), float(self.course.price))
 

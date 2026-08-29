@@ -162,6 +162,16 @@ class EnrollmentSerializer(serializers.ModelSerializer):
         enrollment, created = Enrollment.objects.get_or_create(
             user=user, course=course
         )
+        if created:
+            import uuid
+            Payment.objects.create(
+                user=user,
+                course=course,
+                amount=course.price if course else 0.00,
+                payment_method='bkash',
+                transaction_id=f"BKX{uuid.uuid4().hex[:8].upper()}",
+                status='completed'
+            )
         return enrollment
 
 
