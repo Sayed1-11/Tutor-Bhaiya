@@ -31,119 +31,75 @@
 <body class="font-sans antialiased text-gray-800 bg-light selection:bg-primary selection:text-white">
 
     <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/50 shadow-sm text-slate-700 transition-all duration-300"
-        id="navbar">
+    <nav class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/50 shadow-sm text-slate-700 transition-all duration-300" id="navbar">
+
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <!-- Logo -->
                 <a href="index.html" class="flex-shrink-0 flex items-center gap-2 cursor-pointer">
                     <img src="assets/logo.png" alt="TutorBhaiya" class="h-10 w-auto object-contain" id="navbar-logo">
-                    <span class="font-bold text-xl text-slate-900 tracking-tight transition-colors duration-300"
-                        id="logo-text">TutorBhaiya</span>
+                    <span class="font-bold text-xl text-slate-900 tracking-tight transition-colors duration-300" id="logo-text">TutorBhaiya</span>
                 </a>
 
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-6 text-sm font-semibold">
-                    <a href="index.html" class="nav-link hover:text-primary transition-colors duration-300">Home</a>
-
+                    <a href="index.html" style="padding-top:1.5rem;" class="nav-link hover:text-primary transition-colors duration-300">Home</a>
+                    
                     <!-- Dropdown: English Version -->
-                    <div class="relative group cursor-pointer">
-                        <span
-                            class="nav-link flex items-center gap-1 hover:text-primary transition-colors duration-300">
+                    <div class="relative group cursor-pointer" style="padding-top:1.5rem;">
+                        <span class="nav-link flex items-center gap-1 hover:text-primary transition-colors duration-300">
                             English Version <i class="ph ph-caret-down text-xs"></i>
                         </span>
-                        <div
-                            class="absolute left-0 top-full w-56 rounded-2xl bg-white text-slate-800 shadow-2xl border border-slate-100 py-3 hidden group-hover:block z-50 transform origin-top transition-all duration-200">
-                            <a href="courses.html?filter=class-5"
-                                class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class
-                                5</a>
-                            <a href="courses.html?filter=class-6"
-                                class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class
-                                6</a>
-                            <a href="courses.html?filter=class-7"
-                                class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class
-                                7</a>
-                            <a href="courses.html?filter=class-8"
-                                class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class
-                                8</a>
-                            <a href="courses.html?filter=class-9"
-                                class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class
-                                9</a>
-                            <a href="courses.html?filter=ssc-batch"
-                                class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">SSC
-                                Batch</a>
-                            <a href="courses.html?filter=hsc-batch"
-                                class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">HSC
-                                Batch</a>
+                        <div class="absolute left-0 top-full w-56 rounded-2xl bg-white text-slate-800 shadow-2xl border border-slate-100 py-3 hidden group-hover:block z-50 transform origin-top transition-all duration-200">
+                            <a href="courses.html?filter=class-5" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class 5</a>
+                            <a href="courses.html?filter=class-6" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class 6</a>
+                            <a href="courses.html?filter=class-7" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class 7</a>
+                            <a href="courses.html?filter=class-8" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class 8</a>
+                            <a href="courses.html?filter=class-9" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Class 9</a>
+                            <a href="courses.html?filter=ssc-batch" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">SSC Batch</a>
+                            <a href="courses.html?filter=hsc-batch" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">HSC Batch</a>
                         </div>
                     </div>
 
-                    <a href="courses.html" class="nav-link text-primary border-b-2 border-primary py-7">Courses</a>
-
+                    <a href="courses.html" style="padding-top:1.5rem;" class="nav-link text-primary border-b-2 border-primary">Courses</a>
+                    
                     <!-- Dropdown: English Medium -->
-                    <div class="relative group cursor-pointer">
-                        <span
-                            class="nav-link flex items-center gap-1 hover:text-primary transition-colors duration-300">
+                    <div class="relative group cursor-pointer" style="padding-top:1.5rem;">
+                        <span class="nav-link flex items-center gap-1 hover:text-primary transition-colors duration-300">
                             English Medium <i class="ph ph-caret-down text-xs"></i>
                         </span>
-                        <div
-                            class="absolute left-0 top-full w-56 rounded-2xl bg-white text-slate-800 shadow-2xl border border-slate-100 py-3 hidden group-hover:block z-50 transform origin-top transition-all duration-200">
-                            <a href="courses.html?filter=standard-5"
-                                class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Standard
-                                5</a>
-                            <a href="courses.html?filter=standard-6"
-                                class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Standard
-                                6</a>
-                            <a href="courses.html?filter=standard-7"
-                                class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Standard
-                                7</a>
-                            <a href="courses.html?filter=standard-8"
-                                class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Standard
-                                8</a>
-                            <a href="courses.html?filter=o-level"
-                                class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">O
-                                Level</a>
-                            <a href="courses.html?filter=a-level"
-                                class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">A
-                                Level</a>
+                        <div class="absolute left-0 top-full w-56 rounded-2xl bg-white text-slate-800 shadow-2xl border border-slate-100 py-3 hidden group-hover:block z-50 transform origin-top transition-all duration-200">
+                            <a href="courses.html?filter=standard-5" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Standard 5</a>
+                            <a href="courses.html?filter=standard-6" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Standard 6</a>
+                            <a href="courses.html?filter=standard-7" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Standard 7</a>
+                            <a href="courses.html?filter=standard-8" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Standard 8</a>
+                            <a href="courses.html?filter=o-level" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">O Level</a>
+                            <a href="courses.html?filter=a-level" class="block px-5 py-2 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">A Level</a>
                         </div>
                     </div>
 
                     <!-- Dropdown: More -->
-                    <div class="relative group cursor-pointer">
-                        <span
-                            class="nav-link flex items-center gap-1 hover:text-primary transition-colors duration-300">
+                    <div class="relative group cursor-pointer" style="padding-top:1.5rem;">
+                        <span class="nav-link flex items-center gap-1 hover:text-primary transition-colors duration-300">
                             More <i class="ph ph-caret-down text-xs"></i>
                         </span>
-                        <div
-                            class="absolute left-0 top-full w-56 rounded-2xl bg-white text-slate-800 shadow-2xl border border-slate-100 py-3 hidden group-hover:block z-50 transform origin-top transition-all duration-200">
-                            <a href="books.html"
-                                class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Books</a>
-                            <a href="courses.html?filter=spoken-english"
-                                class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Spoken
-                                English</a>
-                            <a href="courses.html?filter=english-foundation"
-                                class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">English
-                                Foundation</a>
-                            <a href="careers.html"
-                                class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Career</a>
-                            <a href="certificate.html"
-                                class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Certificate</a>
+                        <div class="absolute left-0 top-full w-56 rounded-2xl bg-white text-slate-800 shadow-2xl border border-slate-100 py-3 hidden group-hover:block z-50 transform origin-top transition-all duration-200">
+                            <a href="books.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Books</a>
+                            <a href="courses.html?filter=spoken-english" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Spoken English</a>
+                            <a href="courses.html?filter=english-foundation" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">English Foundation</a>
+                            <a href="careers.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Career</a>
+                            <a href="certificate.html" class="block px-5 py-2.5 hover:bg-violet-50 hover:text-primary transition-colors text-sm font-medium">Certificate</a>
                         </div>
                     </div>
                 </div>
 
                 <!-- Actions -->
-                <div class="hidden md:flex items-center space-x-4">
-                    <button
-                        class="flex items-center gap-2 text-sm font-semibold hover:text-primary transition-colors duration-300 nav-link"
-                        id="lang-btn">
+                <div class="hidden md:flex items-center space-x-4" style="padding-top:1.5rem;">
+                    <button class="flex items-center gap-2 text-sm font-semibold hover:text-primary transition-colors duration-300 nav-link" id="lang-btn">
                         <i class="ph ph-globe text-lg"></i> বাংলা
                     </button>
-                    <a href="dashboard.html"
-                        class="text-sm font-semibold hover:text-primary transition-colors duration-300 nav-link">Dashboard</a>
-                    <a href="login.html"
-                        class="bg-secondary hover:bg-emerald-600 text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg shadow-secondary/30 hover:shadow-secondary/50">
+                    <a href="dashboard.html" class="text-sm font-semibold hover:text-primary transition-colors duration-300 nav-link">Dashboard</a>
+                    <a href="login.html" class="bg-secondary hover:bg-emerald-600 text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg shadow-secondary/30 hover:shadow-secondary/50">
                         Login
                     </a>
                 </div>
@@ -161,33 +117,25 @@
         <div class="hidden md:hidden bg-white border-b border-slate-200 px-4 py-4 space-y-4 shadow-xl" id="mobile-menu">
             <a href="index.html" class="block text-slate-700 hover:text-primary py-1 font-semibold">Home</a>
             <div class="py-1">
-                <span class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">English
-                    Version</span>
+                <span class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">English Version</span>
                 <div class="grid grid-cols-2 gap-2 pl-2">
                     <a href="courses.html?filter=class-5" class="text-slate-600 hover:text-primary text-sm">Class 5</a>
                     <a href="courses.html?filter=class-6" class="text-slate-600 hover:text-primary text-sm">Class 6</a>
                     <a href="courses.html?filter=class-7" class="text-slate-600 hover:text-primary text-sm">Class 7</a>
                     <a href="courses.html?filter=class-8" class="text-slate-600 hover:text-primary text-sm">Class 8</a>
                     <a href="courses.html?filter=class-9" class="text-slate-600 hover:text-primary text-sm">Class 9</a>
-                    <a href="courses.html?filter=ssc-batch" class="text-slate-600 hover:text-primary text-sm">SSC
-                        Batch</a>
-                    <a href="courses.html?filter=hsc-batch" class="text-slate-600 hover:text-primary text-sm">HSC
-                        Batch</a>
+                    <a href="courses.html?filter=ssc-batch" class="text-slate-600 hover:text-primary text-sm">SSC Batch</a>
+                    <a href="courses.html?filter=hsc-batch" class="text-slate-600 hover:text-primary text-sm">HSC Batch</a>
                 </div>
             </div>
             <a href="courses.html" class="block text-slate-700 hover:text-primary py-1 font-semibold">Courses</a>
             <div class="py-1">
-                <span class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">English
-                    Medium</span>
+                <span class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">English Medium</span>
                 <div class="grid grid-cols-2 gap-2 pl-2">
-                    <a href="courses.html?filter=standard-5" class="text-slate-600 hover:text-primary text-sm">Standard
-                        5</a>
-                    <a href="courses.html?filter=standard-6" class="text-slate-600 hover:text-primary text-sm">Standard
-                        6</a>
-                    <a href="courses.html?filter=standard-7" class="text-slate-600 hover:text-primary text-sm">Standard
-                        7</a>
-                    <a href="courses.html?filter=standard-8" class="text-slate-600 hover:text-primary text-sm">Standard
-                        8</a>
+                    <a href="courses.html?filter=standard-5" class="text-slate-600 hover:text-primary text-sm">Standard 5</a>
+                    <a href="courses.html?filter=standard-6" class="text-slate-600 hover:text-primary text-sm">Standard 6</a>
+                    <a href="courses.html?filter=standard-7" class="text-slate-600 hover:text-primary text-sm">Standard 7</a>
+                    <a href="courses.html?filter=standard-8" class="text-slate-600 hover:text-primary text-sm">Standard 8</a>
                     <a href="courses.html?filter=o-level" class="text-slate-600 hover:text-primary text-sm">O Level</a>
                     <a href="courses.html?filter=a-level" class="text-slate-600 hover:text-primary text-sm">A Level</a>
                 </div>
@@ -196,21 +144,19 @@
                 <span class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">More</span>
                 <div class="grid grid-cols-2 gap-2 pl-2">
                     <a href="books.html" class="text-slate-600 hover:text-primary text-sm">Books</a>
-                    <a href="courses.html?filter=spoken-english"
-                        class="text-slate-600 hover:text-primary text-sm">Spoken English</a>
-                    <a href="courses.html?filter=english-foundation"
-                        class="text-slate-600 hover:text-primary text-sm">English Foundation</a>
+                    <a href="courses.html?filter=spoken-english" class="text-slate-600 hover:text-primary text-sm">Spoken English</a>
+                    <a href="courses.html?filter=english-foundation" class="text-slate-600 hover:text-primary text-sm">English Foundation</a>
                     <a href="careers.html" class="text-slate-600 hover:text-primary text-sm">Career</a>
                     <a href="certificate.html" class="text-slate-600 hover:text-primary text-sm">Certificate</a>
                 </div>
             </div>
             <div class="pt-3 border-t border-slate-200 flex justify-between items-center">
                 <a href="dashboard.html" class="text-slate-600 hover:text-primary text-sm font-semibold">Dashboard</a>
-                <a href="login.html"
-                    class="bg-secondary hover:bg-emerald-600 text-white px-5 py-2 rounded-full text-xs font-bold text-center">Login</a>
+                <a href="login.html" class="bg-secondary hover:bg-emerald-600 text-white px-5 py-2 rounded-full text-xs font-bold text-center">Login</a>
             </div>
         </div>
-    </nav>
+    
+</nav>
 
     <!-- Page Header -->
     <div class="pt-32 pb-12 bg-dark relative overflow-hidden border-b border-gray-800">
