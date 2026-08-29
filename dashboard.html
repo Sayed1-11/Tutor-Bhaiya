@@ -401,6 +401,19 @@
                 </div>
             </div>
 
+            <!-- ─── 16. LEADERBOARD SECTION ────────────────────────────────────── -->
+            <div id="section-leaderboard" class="content-section hidden">
+                <div class="mb-6 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900">Leaderboard Rankings</h3>
+                        <p class="text-xs text-gray-500 mt-1">Platform-wide student rankings based on quiz and assignment points.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" id="leaderboard-container">
+                    <!-- Loaded dynamically via loadLeaderboard() -->
+                </div>
+            </div>
+
             <!-- ─── 13. TEACHER LIVE CLASSES ────────────────────────────────────── -->
             <div id="section-teacher-live" class="content-section hidden">
                 <div class="mb-6 flex items-center justify-between">
@@ -665,8 +678,7 @@
                     { id: 'admin-teachers', icon: 'ph-user-list', label: 'Teacher Activity Monitor' },
                     { id: 'admin-submissions', icon: 'ph-file-text', label: 'Platform Submissions' },
                     { id: 'admin-users-list', icon: 'ph-users-three', label: 'User Management' },
-                    { id: 'leaderboard', icon: 'ph-trophy', label: 'Leaderboard' },
-                    { id: 'settings', icon: 'ph-gear', label: 'Settings' }
+                    { id: 'leaderboard', icon: 'ph-trophy', label: 'Leaderboard' }
                 ];
             } else if (role === 'teacher') {
                 links = [
@@ -676,7 +688,7 @@
                     { id: 'quiz-builder', icon: 'ph-question', label: 'Quiz Builder' },
                     { id: 'teacher-live', icon: 'ph-video-camera', label: 'Live Classes' },
                     { id: 'my-courses', icon: 'ph-play-circle', label: 'My Taught Courses' },
-                    { id: 'settings', icon: 'ph-gear', label: 'Settings' }
+                    { id: 'leaderboard', icon: 'ph-trophy', label: 'Leaderboard' }
                 ];
             } else {
                 // Student
@@ -686,8 +698,7 @@
                     { id: 'exams', icon: 'ph-exam', label: 'Exams & Quizzes' },
                     { id: 'student-live', icon: 'ph-video-camera', label: 'Live Classes' },
                     { id: 'certificates', icon: 'ph-certificate', label: 'Certificates' },
-                    { id: 'leaderboard', icon: 'ph-trophy', label: 'Leaderboard' },
-                    { id: 'settings', icon: 'ph-gear', label: 'Settings' }
+                    { id: 'leaderboard', icon: 'ph-trophy', label: 'Leaderboard' }
                 ];
             }
 
