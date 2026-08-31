@@ -126,9 +126,19 @@ class ResourceSerializer(serializers.ModelSerializer):
 
 
 class AssignmentSerializer(serializers.ModelSerializer):
+    attachment_file_url = serializers.SerializerMethodField()
+
     class Meta:
         model = Assignment
         fields = '__all__'
+
+    def get_attachment_file_url(self, obj):
+        if obj.attachment_file:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.attachment_file.url)
+            return obj.attachment_file.url
+        return None
 
 
 class ModuleSerializer(serializers.ModelSerializer):
@@ -262,23 +272,6 @@ class NotificationSerializer(serializers.ModelSerializer):
         model = Notification
         fields = '__all__'
         read_only_fields = ('created_at',)
-
-
-
-
-
-
-class StudentAssignmentSerializer(serializers.ModelSerializer):
-    assignment_title = serializers.CharField(source='assignment.title', read_only=True)
-    student_name = serializers.CharField(source='student.get_full_name', read_only=True)
-    student_email = serializers.CharField(source='student.email', read_only=True)
-    course_title = serializers.CharField(source='assignment.course.title', read_only=True)
-    total_marks = serializers.IntegerField(source='assignment.total_marks', read_only=True)
-
-    class Meta:
-        model = StudentAssignment
-        fields = '__all__'
-        read_only_fields = ('submitted_at',)
 
 
 # ─── Quizzes ──────────────────────────────────────────────────────────────────

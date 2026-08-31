@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework import status
 from rest_framework.test import APITestCase
 from .models import Category, Course, Enrollment, Assignment, StudentAssignment, Quiz, QuizQuestion, StudentQuiz, Payment
@@ -271,6 +272,66 @@ class TutorBhaiyaAPITests(APITestCase):
         student_notif = Notification.objects.filter(user=student, notification_type='assignment_graded').first()
         self.assertIsNotNone(student_notif)
         self.assertIn('Excellent work!', student_notif.message)
+
+    def test_teacher_assignment_attachment_and_student_submission_file_visibility(self):
+        """Teachers can attach files to assignments and graders can view the student's uploaded file."""
+        student = User.objects.create_user(username='student_file', email='student_file@example.com', password='password123', role='student')
+
+        self.client.force_authenticate(user=self.teacher)
+        create_url = reverse('teacher-content-manage', kwargs={'target_type': 'assignment'})
+        attachment = SimpleUploadedFile('teacher-brief.pdf', b'pdf-content', content_type='application/pdf')
+        create_response = self.client.post(create_url, {
+            'course': self.course.id,
+            'title': 'Upload File Assignment',
+            'description': 'Read the attached file and answer.',
+            'total_marks': 100,
+            'attachment_file': attachment,
+        }, format='multipart')
+        self.assertEqual(create_response.status_code, status.HTTP_201_CREATED)
+        assignment = Assignment.objects.get(id=create_response.data['data']['id'])
+        self.assertTrue(bool(assignment.attachment_file))
+
+        self.client.force_authenticate(user=student)
+        submit_url = reverse('submit-assignment', kwargs={'pk': assignment.pk})
+        student_file = SimpleUploadedFile('student-solution.pdf', b'student-solution', content_type='application/pdf')
+        submit_response = self.client.post(submit_url, {
+            'submission_text': 'Attached solution',
+            'submission_file': student_file,
+        }, format='multipart')
+        self.assertEqual(submit_response.status_code, status.HTTP_201_CREATED)
+
+        self.client.force_authenticate(user=self.teacher)
+        grading_response = self.client.get(reverse('teacher-submissions'))
+        self.assertEqual(grading_response.status_code, status.HTTP_200_OK)
+        self.assertTrue(len(grading_response.data) >= 1)
+        self.assertIn('submission_file_url', grading_response.data[0])
+        self.assertTrue(bool(grading_response.data[0]['submission_file_url']))
+
+    def test_teacher_can_edit_and_delete_assignment(self):
+        """Teachers can edit and delete their own assignments."""
+        self.client.force_authenticate(user=self.teacher)
+        create_url = reverse('teacher-content-manage', kwargs={'target_type': 'assignment'})
+        create_resp = self.client.post(create_url, {
+            'course': self.course.id,
+            'title': 'Draft Assignment',
+            'description': 'Initial instructions',
+            'total_marks': 25,
+        }, format='json')
+        self.assertEqual(create_resp.status_code, status.HTTP_201_CREATED)
+        assignment_id = create_resp.data['data']['id']
+
+        edit_url = reverse('teacher-content-manage-item', kwargs={'target_type': 'assignment', 'pk': assignment_id})
+        edit_resp = self.client.patch(edit_url, {
+            'title': 'Updated Assignment',
+            'description': 'Revised instructions',
+            'total_marks': 35,
+        }, format='json')
+        self.assertEqual(edit_resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(edit_resp.data['title'], 'Updated Assignment')
+
+        delete_resp = self.client.delete(edit_url)
+        self.assertEqual(delete_resp.status_code, status.HTTP_200_OK)
+        self.assertFalse(Assignment.objects.filter(pk=assignment_id).exists())
 
     def test_teacher_course_player_access(self):
         """Test that teachers can access CoursePlayerView without prior enrollment."""

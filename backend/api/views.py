@@ -896,6 +896,96 @@ class TeacherContentManageView(APIView):
         return Response(serializer.errors, status=400)
 
 
+class TeacherContentItemManageView(APIView):
+    """
+    GET/PATCH/DELETE /api/teacher/content/<target_type>/<pk>/ — Update or remove teacher-owned course content.
+    """
+    permission_classes = [permissions.IsAuthenticated, IsTeacher]
+
+    def get_queryset(self, target_type):
+        user = self.request.user
+        if user.role == 'admin':
+            if target_type == 'module':
+                return Module.objects.all()
+            if target_type == 'video':
+                return Video.objects.all()
+            if target_type == 'resource':
+                return Resource.objects.all()
+            if target_type == 'assignment':
+                return Assignment.objects.all()
+            return None
+
+        if target_type == 'module':
+            return Module.objects.filter(course__instructor=user)
+        if target_type == 'video':
+            return Video.objects.filter(module__course__instructor=user)
+        if target_type == 'resource':
+            return Resource.objects.filter(Q(course__instructor=user) | Q(module__course__instructor=user))
+        if target_type == 'assignment':
+            return Assignment.objects.filter(Q(course__instructor=user) | Q(module__course__instructor=user))
+        return None
+
+    def get_serializer(self, target_type, instance, request):
+        if target_type == 'module':
+            return ModuleSerializer(instance, context={'request': request})
+        if target_type == 'video':
+            return VideoSerializer(instance, context={'request': request})
+        if target_type == 'resource':
+            return ResourceSerializer(instance, context={'request': request})
+        if target_type == 'assignment':
+            return AssignmentSerializer(instance, context={'request': request})
+        return None
+
+    def get(self, request, target_type, pk):
+        qs = self.get_queryset(target_type)
+        if qs is None:
+            return Response({'error': 'Invalid content type.'}, status=400)
+        try:
+            item = qs.get(pk=pk)
+        except (Module.DoesNotExist, Video.DoesNotExist, Resource.DoesNotExist, Assignment.DoesNotExist):
+            return Response({'error': 'Content not found or you do not have permission to access it.'}, status=404)
+
+        serializer = self.get_serializer(target_type, item, request)
+        return Response(serializer.data)
+
+    def patch(self, request, target_type, pk):
+        qs = self.get_queryset(target_type)
+        if qs is None:
+            return Response({'error': 'Invalid content type.'}, status=400)
+        try:
+            item = qs.get(pk=pk)
+        except (Module.DoesNotExist, Video.DoesNotExist, Resource.DoesNotExist, Assignment.DoesNotExist):
+            return Response({'error': 'Content not found or you do not have permission to modify it.'}, status=404)
+
+        if target_type == 'module':
+            serializer = ModuleSerializer(item, data=request.data, partial=True, context={'request': request})
+        elif target_type == 'video':
+            serializer = VideoSerializer(item, data=request.data, partial=True, context={'request': request})
+        elif target_type == 'resource':
+            serializer = ResourceSerializer(item, data=request.data, partial=True, context={'request': request})
+        elif target_type == 'assignment':
+            serializer = AssignmentSerializer(item, data=request.data, partial=True, context={'request': request})
+        else:
+            return Response({'error': 'Invalid content type.'}, status=400)
+
+        if serializer.is_valid():
+            updated = serializer.save()
+            return Response(self.get_serializer(target_type, updated, request).data, status=200)
+        return Response(serializer.errors, status=400)
+
+    def delete(self, request, target_type, pk):
+        qs = self.get_queryset(target_type)
+        if qs is None:
+            return Response({'error': 'Invalid content type.'}, status=400)
+        try:
+            item = qs.get(pk=pk)
+        except (Module.DoesNotExist, Video.DoesNotExist, Resource.DoesNotExist, Assignment.DoesNotExist):
+            return Response({'error': 'Content not found or you do not have permission to delete it.'}, status=404)
+
+        item.delete()
+        return Response({'message': f'{target_type.capitalize()} deleted successfully.'}, status=200)
+
+
 # ─── Quiz APIs ────────────────────────────────────────────────────────────────
 
 class QuizListCreateView(APIView):

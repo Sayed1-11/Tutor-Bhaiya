@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Endpoint Tester - TutorBhaiya</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: #f9f9f9;
+        }
+        .test-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .test-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .test-button:hover {
+            background: #5568d3;
+        }
+        .test-button.secondary {
+            background: #764ba2;
+        }
+        .test-button.secondary:hover {
+            background: #63408a;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border-left: 4px solid #667eea;
+        }
+        .result.success {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+            color: #2e7d32;
+        }
+        .result.error {
+            background: #ffebee;
+            border-left-color: #f44336;
+            color: #c62828;
+        }
+        .result.warning {
+            background: #fff3e0;
+            border-left-color: #ff9800;
+            color: #e65100;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            color: #333;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .status-badge.ok {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .status-badge.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .status-badge.pending {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 TutorBhaiya API Endpoint Tester</h1>
+        
+        <!-- Authentication Tests -->
+        <div class="test-section">
+            <h2>Authentication Tests <span id="auth-status" class="status-badge pending">Pending</span></h2>
+            <div class="input-group">
+                <label>Token (from localStorage)</label>
+                <input type="text" id="token-input" placeholder="Enter token here or click 'Load Token'" readonly style="background: #f0f0f0;">
+            </div>
+            <button class="test-button" onclick="loadTokenFromStorage()">Load Token</button>
+            <button class="test-button secondary" onclick="testAuthMe()">Test /auth/me/</button>
+            <div id="auth-result"></div>
+        </div>
+
+        <!-- User Info Tests -->
+        <div class="test-section">
+            <h2>User Info Tests <span id="user-status" class="status-badge pending">Pending</span></h2>
+            <button class="test-button" onclick="testUserProfile()">Get User Profile</button>
+            <div id="user-result"></div>
+        </div>
+
+        <!-- Student Dashboard Tests -->
+        <div class="test-section">
+            <h2>Student Dashboard <span id="student-status" class="status-badge pending">Pending</span></h2>
+            <button class="test-button" onclick="testStudentDashboard()">Load Student Dashboard</button>
+            <div id="student-result"></div>
+        </div>
+
+        <!-- Teacher Dashboard Tests -->
+        <div class="test-section">
+            <h2>Teacher Dashboard <span id="teacher-status" class="status-badge pending">Pending</span></h2>
+            <button class="test-button" onclick="testTeacherDashboard()">Load Teacher Dashboard</button>
+            <div id="teacher-result"></div>
+        </div>
+
+        <!-- Admin Dashboard Tests -->
+        <div class="test-section">
+            <h2>Admin Dashboard <span id="admin-status" class="status-badge pending">Pending</span></h2>
+            <button class="test-button" onclick="testAdminDashboard()">Load Admin Dashboard</button>
+            <div id="admin-result"></div>
+        </div>
+
+        <!-- System Info -->
+        <div class="test-section">
+            <h2>System Information</h2>
+            <button class="test-button" onclick="displaySystemInfo()">Display System Info</button>
+            <div id="system-result"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000/api';
+
+        function displayResult(elementId, message, type = 'info') {
+            const elem = document.getElementById(elementId);
+            elem.innerHTML = `<div class="result ${type}">${message.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</div>`;
+        }
+
+        function loadTokenFromStorage() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                const token = localStorage.getItem('token');
+                const tokenInput = document.getElementById('token-input');
+                
+                if (!token) {
+                    displayResult('auth-result', '❌ No token found in localStorage.\n\nPlease log in first on the login.html page.', 'error');
+                    document.getElementById('auth-status').className = 'status-badge error';
+                    tokenInput.value = '';
+                    return;
+                }
+                
+                tokenInput.value = token;
+                displayResult('auth-result', `✅ Token loaded successfully!\n\nToken: ${token.substring(0, 20)}...\n\nCurrent User: ${JSON.stringify(user, null, 2)}`, 'success');
+                document.getElementById('auth-status').className = 'status-badge ok';
+            } catch (err) {
+                displayResult('auth-result', `❌ Error loading token:\n${err.message}`, 'error');
+                document.getElementById('auth-status').className = 'status-badge error';
+            }
+        }
+
+        async function testAuthMe() {
+            try {
+                document.getElementById('auth-status').className = 'status-badge pending';
+                const token = localStorage.getItem('token');
+                
+                if (!token) {
+                    throw new Error('No token found. Please log in first.');
+                }
+
+                const response = await fetch(`${API_BASE}/auth/me/`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Token ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                displayResult('auth-result', `✅ /auth/me/ Success!\n\n${JSON.stringify(data, null, 2)}`, 'success');
+                document.getElementById('auth-status').className = 'status-badge ok';
+            } catch (err) {
+                displayResult('auth-result', `❌ /auth/me/ Failed:\n${err.message}`, 'error');
+                document.getElementById('auth-status').className = 'status-badge error';
+            }
+        }
+
+        async function testUserProfile() {
+            try {
+                document.getElementById('user-status').className = 'status-badge pending';
+                const token = localStorage.getItem('token');
+                
+                if (!token) throw new Error('No token found.');
+
+                const response = await fetch(`${API_BASE}/user/profile/`, {
+                    headers: { 'Authorization': `Token ${token}` }
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                
+                displayResult('user-result', `✅ /user/profile/ Success!\n\n${JSON.stringify(data, null, 2)}`, 'success');
+                document.getElementById('user-status').className = 'status-badge ok';
+            } catch (err) {
+                displayResult('user-result', `❌ /user/profile/ Failed:\n${err.message}`, 'error');
+                document.getElementById('user-status').className = 'status-badge error';
+            }
+        }
+
+        async function testStudentDashboard() {
+            try {
+                document.getElementById('student-status').className = 'status-badge pending';
+                const token = localStorage.getItem('token');
+                
+                if (!token) throw new Error('No token found.');
+
+                const response = await fetch(`${API_BASE}/dashboard/`, {
+                    headers: { 'Authorization': `Token ${token}` }
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                const data = await response.json();
+                
+                displayResult('student-result', `✅ /dashboard/ Success!\n\n${JSON.stringify(data, null, 2)}`, 'success');
+                document.getElementById('student-status').className = 'status-badge ok';
+            } catch (err) {
+                displayResult('student-result', `❌ /dashboard/ Failed:\n${err.message}`, 'error');
+                document.getElementById('student-status').className = 'status-badge error';
+            }
+        }
+
+        async function testTeacherDashboard() {
+            try {
+                document.getElementById('teacher-status').className = 'status-badge pending';
+                const token = localStorage.getItem('token');
+                
+                if (!token) throw new Error('No token found.');
+
+                const response = await fetch(`${API_BASE}/teacher/dashboard/`, {
+                    headers: { 'Authorization': `Token ${token}` }
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                const data = await response.json();
+                
+                displayResult('teacher-result', `✅ /teacher/dashboard/ Success!\n\n${JSON.stringify(data, null, 2)}`, 'success');
+                document.getElementById('teacher-status').className = 'status-badge ok';
+            } catch (err) {
+                displayResult('teacher-result', `❌ /teacher/dashboard/ Failed:\n${err.message}`, 'error');
+                document.getElementById('teacher-status').className = 'status-badge error';
+            }
+        }
+
+        async function testAdminDashboard() {
+            try {
+                document.getElementById('admin-status').className = 'status-badge pending';
+                const token = localStorage.getItem('token');
+                
+                if (!token) throw new Error('No token found.');
+
+                const response = await fetch(`${API_BASE}/admin/dashboard/`, {
+                    headers: { 'Authorization': `Token ${token}` }
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                const data = await response.json();
+                
+                displayResult('admin-result', `✅ /admin/dashboard/ Success!\n\n${JSON.stringify(data, null, 2)}`, 'success');
+                document.getElementById('admin-status').className = 'status-badge ok';
+            } catch (err) {
+                displayResult('admin-result', `❌ /admin/dashboard/ Failed:\n${err.message}`, 'error');
+                document.getElementById('admin-status').className = 'status-badge error';
+            }
+        }
+
+        function displaySystemInfo() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                const token = localStorage.getItem('token') ? 'Present' : 'Missing';
+                
+                const info = `
+API Configuration:
+  API_BASE: ${API_BASE}
+  Backend Status: Testing...
+
+Browser Storage:
+  Token: ${token}
+  User Data: ${JSON.stringify(user, null, 2)}
+  
+Current Time: ${new Date().toISOString()}
+                `;
+                
+                displayResult('system-result', info, 'info');
+            } catch (err) {
+                displayResult('system-result', `Error: ${err.message}`, 'error');
+            }
+        }
+
+        // Load token on page load
+        window.addEventListener('load', loadTokenFromStorage);
+    </script>
+</body>
+</html>

@@ -236,6 +236,7 @@ class Assignment(models.Model):
     description = models.TextField()
     due_date = models.DateTimeField(null=True, blank=True)
     total_marks = models.PositiveIntegerField(default=100)
+    attachment_file = models.FileField(upload_to='assignment_attachments/', null=True, blank=True)
 
     def __str__(self):
         return self.title

@@ -35,6 +35,7 @@ urlpatterns = [
     path('teacher/assignments/submissions/', views.TeacherAssignmentGradingView.as_view(), name='teacher-submissions'),
     path('teacher/assignments/grade/', views.TeacherAssignmentGradingView.as_view(), name='teacher-grade'),
     path('teacher/content/<str:target_type>/', views.TeacherContentManageView.as_view(), name='teacher-content-manage'),
+    path('teacher/content/<str:target_type>/<int:pk>/', views.TeacherContentItemManageView.as_view(), name='teacher-content-manage-item'),
     path('teacher/routines/', views.TeacherRoutineView.as_view(), name='teacher-routines'),
     path('teacher/routines/<int:pk>/', views.TeacherRoutineView.as_view(), name='teacher-routine-delete'),
 

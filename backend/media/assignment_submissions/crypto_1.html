@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Cryptography Lab // Sci-Fi HUD</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Orbitron:wght@400;600;700;800;900&family=Rajdhani:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #040711;
+            --card-bg: rgba(10, 18, 36, 0.75);
+            --glass-border: rgba(0, 240, 255, 0.25);
+            --glass-border-glow: rgba(0, 240, 255, 0.6);
+            --neon-cyan: #00f0ff;
+            --neon-purple: #7000ff;
+            --neon-pink: #ff0055;
+            --neon-green: #00ff9d;
+            --text-main: #e0f2fe;
+            --text-muted: #7dd3fc;
+            --input-bg: rgba(5, 12, 26, 0.85);
+            --input-border: rgba(0, 240, 255, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-dark);
+            background-image:
+                radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.12) 0%, transparent 60%),
+                radial-gradient(circle at 100% 100%, rgba(112, 0, 255, 0.12) 0%, transparent 50%),
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Ambient Glowing Background Orbs & Cyber Grid */
+        .glass-bg-orbs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%,
+                    rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.35;
+            animation: floatOrb 16s ease-in-out infinite alternate;
+        }
+
+        .orb-1 {
+            width: 480px;
+            height: 480px;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.5) 0%, rgba(112, 0, 255, 0.2) 100%);
+            top: -120px;
+            left: -100px;
+        }
+
+        .orb-2 {
+            width: 520px;
+            height: 520px;
+            background: radial-gradient(circle, rgba(112, 0, 255, 0.5) 0%, rgba(255, 0, 85, 0.25) 100%);
+            bottom: -150px;
+            right: -100px;
+            animation-delay: -5s;
+        }
+
+        .orb-3 {
+            width: 380px;
+            height: 380px;
+            background: radial-gradient(circle, rgba(0, 255, 157, 0.35) 0%, rgba(0, 240, 255, 0.2) 100%);
+            top: 45%;
+            left: 65%;
+            animation-delay: -10s;
+        }
+
+        @keyframes floatOrb {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(50px, 30px) scale(1.1);
+            }
+
+            100% {
+                transform: translate(-30px, 60px) scale(0.95);
+            }
+        }
+
+        .container {
+            max-width: 760px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+            margin: 0 auto;
+        }
+
+        /* App Header */
+        .app-header {
+            text-align: center;
+            margin-bottom: 35px;
+            position: relative;
+        }
+
+        .logo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 18px;
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 4px;
+            color: var(--neon-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.25), inset 0 0 10px rgba(0, 240, 255, 0.1);
+            position: relative;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--neon-green);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-green);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.4;
+                transform: scale(0.8);
+            }
+        }
+
+        .app-header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff 0%, var(--neon-cyan) 50%, var(--neon-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+            text-transform: uppercase;
+        }
+
+        .app-header p {
+            color: var(--text-muted);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        /* Futuristic Sci-Fi HUD Card */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 38px;
+            margin-bottom: 25px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7),
+                0 0 30px rgba(0, 240, 255, 0.12),
+                inset 0 1px 1px rgba(0, 240, 255, 0.3);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: fadeIn 0.5s ease-out;
+            position: relative;
+        }
+
+        /* Cyber corner accents */
+        .card::before,
+        .card::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-color: var(--neon-cyan);
+            border-style: solid;
+            pointer-events: none;
+        }
+
+        .card::before {
+            top: -1px;
+            left: -1px;
+            border-width: 2px 0 0 2px;
+            border-top-left-radius: 12px;
+        }
+
+        .card::after {
+            bottom: -1px;
+            right: -1px;
+            border-width: 0 2px 2px 0;
+            border-bottom-right-radius: 12px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-transform: uppercase;
+        }
+
+        h2::before {
+            content: '>';
+            color: var(--neon-cyan);
+            font-family: 'Fira Code', monospace;
+            font-weight: 700;
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 22px;
+            font-weight: 500;
+        }
+
+        /* Step 2 RSA List Styling */
+        ul {
+            list-style: none;
+            margin-bottom: 22px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        ul li {
+            background: rgba(0, 240, 255, 0.04);
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            padding: 14px 18px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            font-family: 'Fira Code', monospace;
+            box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.05);
+        }
+
+        ul li:last-child {
+            grid-column: span 2;
+        }
+
+        ul li strong {
+            color: var(--neon-cyan);
+            margin-right: 6px;
+        }
+
+        label {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            display: block;
+            margin-top: 22px;
+            margin-bottom: 8px;
+            color: var(--neon-cyan);
+            font-size: 1rem;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+        }
+
+        /* Cyber Form Inputs */
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.35), inset 0 0 10px rgba(0, 240, 255, 0.15);
+            background: rgba(8, 20, 42, 0.95);
+        }
+
+        textarea {
+            height: 140px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        /* File Upload Cyber Grid */
+        .file-upload {
+            margin-top: 8px;
+            margin-bottom: 14px;
+            padding: 18px;
+            background: rgba(0, 240, 255, 0.03);
+            border: 1px dashed rgba(0, 240, 255, 0.4);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 240, 255, 0.08);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        }
+
+        input[type="file"] {
+            color: var(--text-muted);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        input[type="file"]::-webkit-file-upload-button {
+            background: linear-gradient(135deg, var(--neon-cyan) 0%, rgba(0, 150, 255, 0.9) 100%);
+            border: none;
+            color: #040711;
+            padding: 9px 18px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.78rem;
+            letter-spacing: 1px;
+            margin-right: 14px;
+            transition: all 0.25s ease;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+            text-transform: uppercase;
+        }
+
+        input[type="file"]::-webkit-file-upload-button:hover {
+            background: #ffffff;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.8);
+            transform: scale(1.02);
+        }
+
+        /* Futuristic HUD Action Button */
+        button {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.9) 0%, rgba(112, 0, 255, 0.9) 100%);
+            color: #ffffff;
+            padding: 16px 26px;
+            border: 1px solid var(--neon-cyan);
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: 800;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 26px;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.35);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: 0.5s;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 35px rgba(0, 240, 255, 0.65), 0 0 15px rgba(112, 0, 255, 0.5);
+            background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-purple) 100%);
+            color: #ffffff;
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        /* Encrypted Target Message HUD Box */
+        .target-msg {
+            background: rgba(0, 255, 157, 0.05);
+            border: 1px solid var(--neon-green);
+            border-left: 4px solid var(--neon-green);
+            padding: 18px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.05rem;
+            color: var(--neon-green);
+            margin-bottom: 14px;
+            box-shadow: 0 0 20px rgba(0, 255, 157, 0.15), inset 0 0 10px rgba(0, 255, 157, 0.05);
+            text-shadow: 0 0 8px rgba(0, 255, 157, 0.4);
+        }
+
+        /* Sci-Fi Feedback Notifications */
+        .hidden {
+            display: none !important;
+        }
+
+        .feedback {
+            margin-top: 22px;
+            padding: 16px 20px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.95rem;
+            animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(15px);
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error {
+            background: rgba(255, 0, 85, 0.12);
+            border: 1px solid var(--neon-pink);
+            color: #ff3377;
+            box-shadow: 0 0 25px rgba(255, 0, 85, 0.3);
+            text-shadow: 0 0 8px rgba(255, 0, 85, 0.5);
+        }
+
+        .success {
+            background: rgba(0, 255, 157, 0.12);
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            box-shadow: 0 0 25px rgba(0, 255, 157, 0.3);
+            text-shadow: 0 0 8px rgba(0, 255, 157, 0.5);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            ul {
+                grid-template-columns: 1fr;
+            }
+
+            ul li:last-child {
+                grid-column: span 1;
+            }
+
+            .card {
+                padding: 26px;
+            }
+
+            .app-header h1 {
+                font-size: 1.7rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Overlay scanlines -->
+    <div class="scanlines"></div>
+
+    <!-- Ambient Glowing Cyber Orbs -->
+    <div class="glass-bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="container">
+        <header class="app-header">
+            <div class="logo-badge"><span class="pulse-dot"></span> CRYPTO LAB // v8.0</div>
+            <h1>Advanced Cryptography Workspace</h1>
+            <p>[ CLASSIFIED RSA & PLAYFAIR ENCRYPTION TERMINAL ]</p>
+        </header>
+
+        <!-- STEP 1: REGISTRATION -->
+        <div class="card" id="step1">
+            <h2>Step 1: Student Identification</h2>
+            <p>Enter your credentials to generate your unique cryptographic lab parameters.</p>
+            <label for="nickname">Nickname (Playfair Key):</label>
+            <input type="text" id="nickname" placeholder="e.g., ALICE" required>
+
+            <label for="studentId">Student ID:</label>
+            <input type="number" id="studentId" placeholder="e.g., 20261045" required>
+
+            <button onclick="startLab()">Initialize Lab Environment</button>
+            <div id="step1-feedback" class="feedback hidden"></div>
+        </div>
+
+        <!-- STEP 2: RSA ENCRYPTION -->
+        <div class="card hidden" id="step2">
+            <h2>Step 2: RSA Encryption Implementation</h2>
+            <p>Write a program to encrypt the last two digits of your Student ID using RSA.</p>
+            <ul>
+                <li><strong>Prime p:</strong> 11</li>
+                <li><strong>Prime q:</strong> 17</li>
+                <li><strong>Your Message (m):</strong> <span id="idDisplay"
+                        style="font-weight:bold; color:var(--neon-cyan); text-shadow:0 0 8px var(--neon-cyan);"></span>
+                </li>
+                <li><strong>Public Exponent (e):</strong> <em>Calculate a valid public exponent e > 1 such that gcd(e,
+                        φ(n)) = 1.</em></li>
+            </ul>
+
+            <label>Upload Source Code (.c, .cpp, .py) OR Paste Below:</label>
+            <div class="file-upload">
+                <input type="file" id="rsaFile" accept=".c,.cpp,.py,.txt" onchange="loadFile('rsaFile', 'rsaCode')">
+            </div>
+            <textarea id="rsaCode" placeholder="# Paste your Python/C++ RSA script here..."></textarea>
+
+            <label for="rsaE">Your Calculated Public Exponent (e):</label>
+            <input type="number" id="rsaE" placeholder="Enter the valid 'e' you calculated">
+
+            <label for="rsaOutput">Program Output (Encrypted Integer C):</label>
+            <input type="number" id="rsaOutput" placeholder="Enter numerical ciphertext">
+
+            <button onclick="validateRSA()">Verify RSA & Advance</button>
+            <div id="step2-feedback" class="feedback hidden"></div>
+        </div>
+
+        <!-- STEP 3: PLAYFAIR CIPHER -->
+        <div class="card hidden" id="step3">
+            <h2>Step 3: Playfair Cipher Implementation</h2>
+            <p>Write a C, C++, or Python program that uses your nickname as the key to encrypt the following text:</p>
+            <div class="target-msg" id="playfairTargetMsg"></div>
+            <p><small style="color:var(--text-muted);"><strong>Rules:</strong> Replace 'J' with 'I'. Insert 'X' between
+                    identical consecutive letters in
+                    a pair. Pad with 'X' if odd length.</small></p>
+
+            <label>Upload Source Code (.c, .cpp, .py) OR Paste Below:</label>
+            <div class="file-upload">
+                <input type="file" id="playfairFile" accept=".c,.cpp,.py,.txt"
+                    onchange="loadFile('playfairFile', 'playfairCode')">
+            </div>
+            <textarea id="playfairCode" placeholder="// Paste your C++/C/Python code here..."></textarea>
+
+            <label for="playfairOutput">Program Output (Ciphertext):</label>
+            <input type="text" id="playfairOutput" placeholder="Enter the resulting ciphertext without spaces">
+
+            <button onclick="validatePlayfair()">Submit Final Lab</button>
+            <div id="step3-feedback" class="feedback hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        // 10 different messages for Playfair
+        const plainMessages = [
+            "Gooooaal from the great Messsssiii",
+            "Cryptography is the science of secrets",
+            "The quick brown fox jumps over the lazy dog",
+            "To be or not to be that is the question",
+            "Hello world from the advanced crypto lab",
+            "Security and privacy are fundamental rights",
+            "Programming in python and c plus plus",
+            "Artificial intelligence is changing everything",
+            "Houston we have a problem here",
+            "A journey of a thousand miles begins with a single step"
+        ];
+
+        let student = { nickname: "", id: "", lastTwo: 0, assignedMessage: "" };
+
+        function showFeedback(elementId, message, isSuccess) {
+            const el = document.getElementById(elementId);
+            el.innerText = message;
+            el.className = "feedback " + (isSuccess ? "success" : "error");
+            el.classList.remove("hidden");
+        }
+
+        function loadFile(fileInputId, textareaId) {
+            const file = document.getElementById(fileInputId).files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) { document.getElementById(textareaId).value = e.target.result; };
+                reader.readAsText(file);
+            }
+        }
+
+        // Basic syntax validator to ensure students actually submitted code
+        function validateCodeSyntax(code) {
+            if (code.trim().length < 20) return false;
+            const keywords = [/#include/, /int\s+main/, /def\s+/, /print\(/, /std::/, /import\s+/, /printf/, /cout/, /sys/];
+            return keywords.some(regex => regex.test(code));
+        }
+
+        // Math helper functions for RSA
+        function gcd(a, b) {
+            while (b !== 0) {
+                let temp = b;
+                b = a % b;
+                a = temp;
+            }
+            return a;
+        }
+
+        function modPow(base, exp, mod) {
+            let res = 1;
+            base = base % mod;
+            while (exp > 0) {
+                if (exp % 2 === 1) res = (res * base) % mod;
+                exp = Math.floor(exp / 2);
+                base = (base * base) % mod;
+            }
+            return res;
+        }
+
+        function startLab() {
+            const nick = document.getElementById('nickname').value.trim();
+            const id = document.getElementById('studentId').value.trim();
+
+            if (!nick || !id || id.length < 2) {
+                showFeedback('step1-feedback', "Please provide a valid Nickname and a Student ID with at least 2 digits.", false);
+                return;
+            }
+
+            student.nickname = nick.toUpperCase().replace(/[^A-Z]/g, '').replace(/J/g, 'I');
+            student.id = id;
+            student.lastTwo = parseInt(id.slice(-2), 10);
+
+            // Randomly assign one of the 10 messages
+            student.assignedMessage = plainMessages[Math.floor(Math.random() * plainMessages.length)];
+
+            document.getElementById('idDisplay').innerText = student.lastTwo;
+            document.getElementById('playfairTargetMsg').innerText = student.assignedMessage;
+
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden'); // Transition to RSA first
+        }
+
+        // --- RSA VERIFICATION ---
+        function validateRSA() {
+            const code = document.getElementById('rsaCode').value;
+            const userE = parseInt(document.getElementById('rsaE').value, 10);
+            const userOutput = parseInt(document.getElementById('rsaOutput').value, 10);
+
+            if (isNaN(userE) || isNaN(userOutput)) {
+                showFeedback('step2-feedback', "Please enter both your calculated 'e' and the ciphertext output.", false);
+                return;
+            }
+
+            // RSA Math: c = m^e mod n
+            const p = 11;
+            const q = 17;
+            const n = p * q; // 187
+            const phi = (p - 1) * (q - 1); // 160
+
+            // Validate that 'e' is correct (coprime to phi and > 1)
+            if (userE <= 1 || gcd(userE, phi) !== 1) {
+                showFeedback('step2-feedback', `Invalid e. The value ${userE} is not coprime to φ(n)=160. Calculate a valid e.`, false);
+                return;
+            }
+
+            const expectedOutput = modPow(student.lastTwo, userE, n);
+
+            if (!validateCodeSyntax(code)) {
+                showFeedback('step2-feedback', "Upload failed: Please provide a valid C, C++, or Python source code.", false);
+                return;
+            }
+
+            if (userOutput !== expectedOutput) {
+                showFeedback('step2-feedback', `Incorrect RSA output. Check your math for C = m^${userE} mod 187.`, false);
+                return;
+            }
+
+            showFeedback('step2-feedback', "Correct! RSA parameters and Ciphertext verified.", true);
+            setTimeout(() => {
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('step3').classList.remove('hidden'); // Transition to Playfair
+            }, 1500);
+        }
+
+        // --- FULL PLAYFAIR ALGORITHM IN JS FOR DYNAMIC VERIFICATION ---
+        function solvePlayfair(key, text) {
+            let alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+            let matrixStr = "";
+            let used = new Set();
+
+            // Build 5x5 Matrix String
+            for (let char of (key + alphabet)) {
+                if (!used.has(char)) {
+                    used.add(char);
+                    matrixStr += char;
+                }
+            }
+
+            // Clean and prepare message digraphs
+            let cleanText = text.toUpperCase().replace(/[^A-Z]/g, '').replace(/J/g, 'I');
+            let pairs = [];
+            for (let i = 0; i < cleanText.length; i++) {
+                let a = cleanText[i];
+                let b = cleanText[i + 1];
+                if (!b) { pairs.push([a, 'X']); break; }
+                if (a === b) { pairs.push([a, 'X']); }
+                else { pairs.push([a, b]); i++; }
+            }
+
+            // Encrypt Pairs
+            let ciphertext = "";
+            for (let pair of pairs) {
+                let idx1 = matrixStr.indexOf(pair[0]);
+                let idx2 = matrixStr.indexOf(pair[1]);
+                let r1 = Math.floor(idx1 / 5), c1 = idx1 % 5;
+                let r2 = Math.floor(idx2 / 5), c2 = idx2 % 5;
+
+                if (r1 === r2) {
+                    ciphertext += matrixStr[r1 * 5 + (c1 + 1) % 5] + matrixStr[r2 * 5 + (c2 + 1) % 5];
+                } else if (c1 === c2) {
+                    ciphertext += matrixStr[((r1 + 1) % 5) * 5 + c1] + matrixStr[((r2 + 1) % 5) * 5 + c2];
+                } else {
+                    ciphertext += matrixStr[r1 * 5 + c2] + matrixStr[r2 * 5 + c1];
+                }
+            }
+            return ciphertext;
+        }
+
+        // --- PLAYFAIR VERIFICATION ---
+        function validatePlayfair() {
+            const code = document.getElementById('playfairCode').value;
+            const userOutput = document.getElementById('playfairOutput').value.toUpperCase().replace(/[^A-Z]/g, '');
+            const expectedOutput = solvePlayfair(student.nickname, student.assignedMessage);
+
+            if (!validateCodeSyntax(code)) {
+                showFeedback('step3-feedback', "Upload failed: Please provide a valid C, C++, or Python source code.", false);
+                return;
+            }
+
+            if (userOutput !== expectedOutput) {
+                showFeedback('step3-feedback', `Incorrect Output. Double-check your Playfair logic for double letters and matrix wrapping!`, false);
+                return;
+            }
+
+            showFeedback('step3-feedback', "🎉 LAB COMPLETE! Full marks awarded for code submission and accuracy.", true);
+        }
+    </script>
+</body>
+
+</html>

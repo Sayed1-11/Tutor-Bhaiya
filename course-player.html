@@ -151,6 +151,11 @@
                     <span><i class="ph ph-star text-amber-500 mr-1"></i><span id="modal-marks"></span> marks</span>
                     <span><i class="ph ph-calendar text-blue-500 mr-1"></i>Due: <span id="modal-due"></span></span>
                 </div>
+                <div id="assignment-attachment-wrap" class="hidden mb-4">
+                    <a id="assignment-attachment-link" href="#" target="_blank" class="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+                        <i class="ph ph-paperclip text-base"></i> View attached assignment file
+                    </a>
+                </div>
 
                 <!-- Already submitted state -->
                 <div id="already-submitted" class="hidden">
@@ -211,7 +216,7 @@
     </div>
 
     <script>
-        const API_BASE = 'https://tutor-bhaiya.onrender.com/api';
+        const API_BASE = 'http://127.0.0.1:8000/api';
         let currentCourseId = null;
         let currentVideoId = null;
         let completedVideoIds = [];
@@ -430,6 +435,7 @@
                     el.dataset.desc = a.description || '';
                     el.dataset.marks = a.total_marks;
                     el.dataset.due = a.due_date || '';
+                    el.dataset.attachment = a.attachment_file_url || '';
                     document.getElementById('assignment-data-container').appendChild(el);
                 });
 
@@ -466,12 +472,37 @@
             selectVideo(id, v.title, v.video_url || '');
         }
 
+        function buildVideoEmbed(url) {
+            if (!url) return '';
+
+            const trimmed = String(url).trim();
+            if (!trimmed) return '';
+
+            const youtubeMatch = trimmed.match(/(?:youtube\.com\/watch\?v=|youtube\.com\/embed\/|youtube\.com\/shorts\/|youtu\.be\/)([A-Za-z0-9_-]{11})/i);
+            if (youtubeMatch) {
+                const videoId = youtubeMatch[1];
+                return `
+                    <div class="w-full aspect-video rounded-2xl overflow-hidden border border-gray-200 bg-black shadow-lg">
+                        <iframe
+                            class="w-full h-full"
+                            src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1"
+                            title="YouTube video player"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                        </iframe>
+                    </div>`;
+            }
+
+            return `<video src="${trimmed}" controls autoplay class="w-full h-full object-cover rounded-2xl"></video>`;
+        }
+
         function selectVideo(id, title, url) {
             currentVideoId = id;
 
             const container = document.getElementById('video-container');
             if (url) {
-                container.innerHTML = `<video src="${url}" controls autoplay></video>`;
+                container.innerHTML = buildVideoEmbed(url);
             } else {
                 container.innerHTML = `<div class="text-center p-8">
                 <i class="ph ph-video-slash text-5xl text-gray-600 mb-3"></i>
@@ -587,6 +618,16 @@
                 document.getElementById('modal-desc').textContent = desc;
                 document.getElementById('modal-marks').textContent = marks;
                 document.getElementById('modal-due').textContent = due ? new Date(due).toLocaleDateString() : 'N/A';
+
+                const attachmentLink = document.getElementById('assignment-attachment-link');
+                const attachmentWrap = document.getElementById('assignment-attachment-wrap');
+                const attachmentUrl = assignInfoEl ? assignInfoEl.dataset.attachment : '';
+                if (attachmentUrl) {
+                    attachmentLink.href = attachmentUrl;
+                    attachmentWrap.classList.remove('hidden');
+                } else {
+                    attachmentWrap.classList.add('hidden');
+                }
 
                 if (data.submitted) {
                     document.getElementById('already-submitted').classList.remove('hidden');

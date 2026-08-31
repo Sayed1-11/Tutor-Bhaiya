@@ -3,7 +3,19 @@
  * Handles: Navbar scroll, mobile menu, FAQ, auth state, navbar UI
  */
 
-const API_BASE = 'https://tutor-bhaiya.onrender.com/api';
+const API_BASE = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'))
+    ? 'http://127.0.0.1:8000/api'
+    : 'https://tutor-bhaiya.onrender.com/api';
+
+function escapeHTML(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
 
 // ─── Auth Helpers ─────────────────────────────────────────────────────────────
 
@@ -27,6 +39,17 @@ function isLoggedIn() {
 function clearAuth() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+}
+
+function getCookie(name) {
+    const cookies = document.cookie ? document.cookie.split('; ') : [];
+    for (const cookie of cookies) {
+        const [cookieName, ...rest] = cookie.split('=');
+        if (cookieName === name) {
+            return decodeURIComponent(rest.join('='));
+        }
+    }
+    return '';
 }
 
 // ─── Fetch with Auth ──────────────────────────────────────────────────────────
