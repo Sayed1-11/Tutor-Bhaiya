@@ -152,7 +152,7 @@ class ModuleSerializer(serializers.ModelSerializer):
 
     def get_assignments(self, obj):
         qs = obj.assignments.all()
-        return AssignmentSerializer(qs, many=True).data
+        return AssignmentSerializer(qs, many=True, context=self.context).data
 
 
 # ─── Course ──────────────────────────────────────────────────────────────────

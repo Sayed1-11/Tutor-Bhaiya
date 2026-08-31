@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework import status
 from rest_framework.test import APITestCase
-from .models import Category, Course, Enrollment, Assignment, StudentAssignment, Quiz, QuizQuestion, StudentQuiz, Payment
+from .models import Category, Course, Enrollment, Module, Assignment, StudentAssignment, Quiz, QuizQuestion, StudentQuiz, Payment
 
 User = get_user_model()
 
@@ -223,6 +223,32 @@ class TutorBhaiyaAPITests(APITestCase):
         self.assertEqual(course_obj.title, 'New Test Course from Admin')
         self.assertEqual(float(course_obj.price), 4500.0)
         self.assertEqual(course_obj.slug, 'new-test-course-from-admin')
+
+    def test_course_player_returns_absolute_assignment_attachment_url(self):
+        """Test assignment attachment URLs are absolute in the course-player payload."""
+        student = User.objects.create_user(username='student_courseplayer', email='student_courseplayer@example.com', password='password123', role='student')
+        module = Module.objects.create(course=self.course, title='Module 1')
+        assignment = Assignment.objects.create(
+            course=self.course,
+            module=module,
+            title='Assignment 1',
+            description='Read and solve the document.',
+            total_marks=50,
+        )
+        assignment.attachment_file.save('play-fair.txt', SimpleUploadedFile('play-fair.txt', b'hello world'))
+
+        self.client.force_authenticate(user=student)
+        self.client.post(reverse('enrollments'), {'course_id': self.course.id}, format='json')
+
+        url = reverse('course-player', kwargs={'pk': self.course.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        assignment_payload = next(
+            item for item in response.data['course']['modules']
+            if item['id'] == module.id
+        )['assignments'][0]
+        self.assertIn('http://testserver/media/assignment_attachments/', assignment_payload['attachment_file_url'])
 
     def test_assignment_submission_and_teacher_evaluation_with_notifications(self):
         """Test student assignment submission and teacher evaluation triggering notifications."""
