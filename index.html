@@ -278,73 +278,7 @@
                 <p class="text-gray-400">Explore our most demanded courses taught by industry experts.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                <!-- Course Card 1 -->
-                <div class="bg-[#111827] rounded-2xl overflow-hidden border border-gray-800 hover:border-gray-700 transition-colors group">
-                    <div class="h-48 bg-gray-800 relative overflow-hidden">
-                        <img src="assets/course1.jpg" alt="Course" class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity group-hover:scale-105 duration-500">
-                        <div class="absolute top-4 left-4 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full">SSC BATCH</div>
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">Higher Math Masterclass</h3>
-                        <div class="flex items-center gap-3 text-gray-400 text-sm mb-6">
-                            <div class="flex items-center gap-1"><i class="ph ph-user"></i> Faria Rahman</div>
-                            <div class="w-1 h-1 rounded-full bg-gray-600"></div>
-                            <div class="flex items-center gap-1"><i class="ph ph-clock"></i> 40 Hrs</div>
-                        </div>
-                        <div class="flex items-center justify-between border-t border-gray-800 pt-4">
-                            <span class="text-lg font-bold text-white">৳2000</span>
-                            <button class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-primary transition-colors">
-                                <i class="ph ph-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Course Card 2 -->
-                <div class="bg-[#111827] rounded-2xl overflow-hidden border border-gray-800 hover:border-gray-700 transition-colors group">
-                    <div class="h-48 bg-gray-800 relative overflow-hidden">
-                        <img src="assets/course2.jpg" alt="Course" class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity group-hover:scale-105 duration-500">
-                        <div class="absolute top-4 left-4 bg-accent1 text-white text-xs font-bold px-3 py-1 rounded-full">HSC BATCH</div>
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">Physics 1st Paper</h3>
-                        <div class="flex items-center gap-3 text-gray-400 text-sm mb-6">
-                            <div class="flex items-center gap-1"><i class="ph ph-user"></i> Kamrul Hasan</div>
-                            <div class="w-1 h-1 rounded-full bg-gray-600"></div>
-                            <div class="flex items-center gap-1"><i class="ph ph-clock"></i> 35 Hrs</div>
-                        </div>
-                        <div class="flex items-center justify-between border-t border-gray-800 pt-4">
-                            <span class="text-lg font-bold text-white">৳2500</span>
-                            <button class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-primary transition-colors">
-                                <i class="ph ph-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Course Card 3 -->
-                <div class="bg-[#111827] rounded-2xl overflow-hidden border border-gray-800 hover:border-gray-700 transition-colors group">
-                    <div class="h-48 bg-gray-800 relative overflow-hidden">
-                        <img src="assets/course3.jpg" alt="Course" class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity group-hover:scale-105 duration-500">
-                        <div class="absolute top-4 left-4 bg-accent2 text-white text-xs font-bold px-3 py-1 rounded-full">SKILLS</div>
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">Fullstack Web Development</h3>
-                        <div class="flex items-center gap-3 text-gray-400 text-sm mb-6">
-                            <div class="flex items-center gap-1"><i class="ph ph-user"></i> Anika Rahman</div>
-                            <div class="w-1 h-1 rounded-full bg-gray-600"></div>
-                            <div class="flex items-center gap-1"><i class="ph ph-clock"></i> 60 Hrs</div>
-                        </div>
-                        <div class="flex items-center justify-between border-t border-gray-800 pt-4">
-                            <span class="text-lg font-bold text-white">৳5000</span>
-                            <button class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-primary transition-colors">
-                                <i class="ph ph-arrow-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div id="featured-courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"></div>
 
             <div class="text-center">
                 <button class="bg-secondary hover:bg-emerald-600 text-white px-8 py-3.5 rounded-full font-bold transition-all shadow-lg shadow-secondary/30 hover:shadow-secondary/50 flex items-center gap-2 mx-auto">
@@ -965,6 +899,67 @@
     <!-- Swiper JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="script.js"></script>
+    <script>
+        async function loadFeaturedCourses() {
+            const container = document.getElementById('featured-courses-grid');
+            if (!container) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/courses/?featured=true`);
+                if (!res.ok) throw new Error('Courses unavailable');
+                const data = await res.json();
+                const courses = Array.isArray(data) ? data : (data.results || []);
+
+                if (!courses.length) {
+                    container.innerHTML = '<div class="col-span-full text-center text-gray-400 py-10">No featured courses available right now.</div>';
+                    return;
+                }
+
+                const fallbackImages = ['assets/course1.jpg', 'assets/course2.jpg', 'assets/course3.jpg'];
+
+                container.innerHTML = courses.slice(0, 3).map((course, index) => {
+                    const price = Number(course.price || 0);
+                    const badgeText = course.badge_label || 'COURSE';
+                    const badgeColor = course.badge_color || 'bg-primary';
+                    const img = course.thumbnail_url || fallbackImages[index % fallbackImages.length];
+                    const teacher = course.instructor_name || 'TutorBhaiya';
+                    const duration = course.duration_hours ? `${course.duration_hours} Hrs` : 'Self-paced';
+                    const title = course.title || 'Course';
+                    return `
+                        <div class="bg-[#111827] rounded-2xl overflow-hidden border border-gray-800 hover:border-gray-700 transition-colors group">
+                            <div class="h-48 bg-gray-800 relative overflow-hidden">
+                                <img src="${img}" alt="${title}" class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity group-hover:scale-105 duration-500">
+                                <div class="absolute top-4 left-4 ${badgeColor} text-white text-xs font-bold px-3 py-1 rounded-full">${badgeText}</div>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors line-clamp-2">${title}</h3>
+                                <div class="flex items-center gap-3 text-gray-400 text-sm mb-6">
+                                    <div class="flex items-center gap-1"><i class="ph ph-user"></i> ${teacher}</div>
+                                    <div class="w-1 h-1 rounded-full bg-gray-600"></div>
+                                    <div class="flex items-center gap-1"><i class="ph ph-clock"></i> ${duration}</div>
+                                </div>
+                                <div class="flex items-center justify-between border-t border-gray-800 pt-4">
+                                    <span class="text-lg font-bold text-white">৳${price.toLocaleString()}</span>
+                                    <a href="courses.html" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-primary transition-colors">
+                                        <i class="ph ph-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Featured courses load failed:', error);
+                container.innerHTML = `
+                    <div class="col-span-full bg-white/5 border border-white/10 rounded-2xl text-center text-gray-300 py-10">
+                        Unable to load courses right now. Please refresh the page.
+                    </div>
+                `;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadFeaturedCourses);
+    </script>
 </body>
 </html>
 

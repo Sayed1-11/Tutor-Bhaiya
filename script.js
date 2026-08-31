@@ -52,6 +52,14 @@ function getCookie(name) {
     return '';
 }
 
+function renderUserAvatar(user, sizeClass = 'w-6 h-6', textClass = 'text-xs') {
+    const initial = user && user.avatar_initial ? user.avatar_initial : (user && user.full_name ? user.full_name.charAt(0).toUpperCase() : 'U');
+    if (user && user.profile_picture) {
+        return `<img src="${user.profile_picture}" class="${sizeClass} rounded-full object-cover flex-shrink-0 border border-white/20" alt="Profile picture">`;
+    }
+    return `<div class="${sizeClass} rounded-full bg-white/20 flex items-center justify-center text-white ${textClass} font-bold flex-shrink-0">${initial}</div>`;
+}
+
 // ─── Fetch with Auth ──────────────────────────────────────────────────────────
 
 async function authFetch(url, options = {}) {
@@ -98,13 +106,8 @@ function updateNavbarAuth() {
     const dashboardLink = document.querySelector('a[href="dashboard.html"].nav-link');
 
     if (loggedIn && user) {
-        const initial = user.avatar_initial || (user.full_name ? user.full_name.charAt(0).toUpperCase() : 'U');
         const displayName = user.full_name ? user.full_name.split(' ')[0] : 'Profile';
-        
-        let avatarHtml = `<div class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">${initial}</div>`;
-        if (user.profile_picture) {
-            avatarHtml = `<img src="${user.profile_picture}" class="w-6 h-6 rounded-full object-cover flex-shrink-0">`;
-        }
+        const avatarHtml = renderUserAvatar(user, 'w-6 h-6', 'text-xs');
 
         if (authBtn) {
             authBtn.id = 'user-avatar-btn';
