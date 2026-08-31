@@ -8,10 +8,11 @@ from .models import (
     Category, Course, Enrollment, ContactMessage,
     Module, Video, Resource, Assignment, StudentAssignment, Payment,
     CourseRoutine, Certificate, Book, JobPosting, JobApplication,
-    Quiz, QuizQuestion, StudentQuiz
+    Quiz, QuizQuestion, StudentQuiz, Notification
 )
 
 User = get_user_model()
+
 
 
 # ─── Auth / User ─────────────────────────────────────────────────────────────
@@ -109,9 +110,19 @@ class VideoSerializer(serializers.ModelSerializer):
 
 
 class ResourceSerializer(serializers.ModelSerializer):
+    file_url = serializers.SerializerMethodField()
+
     class Meta:
         model = Resource
         fields = '__all__'
+
+    def get_file_url(self, obj):
+        if obj.file:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.file.url)
+            return obj.file.url
+        return obj.url
 
 
 class AssignmentSerializer(serializers.ModelSerializer):
@@ -163,13 +174,14 @@ class CourseListSerializer(serializers.ModelSerializer):
 
 
 class CourseDetailSerializer(CourseListSerializer):
-    """Full course detail including description, outline, roadmap, counts, and modules."""
+    """Full course detail including description, outline, roadmap, counts, modules, and resources."""
     modules = ModuleSerializer(many=True, read_only=True)
+    resources = ResourceSerializer(many=True, read_only=True)
 
     class Meta(CourseListSerializer.Meta):
         fields = CourseListSerializer.Meta.fields + (
             'description', 'created_at', 'outline', 'roadmap',
-            'assignments_count', 'exams_count', 'quizzes_count', 'modules'
+            'assignments_count', 'exams_count', 'quizzes_count', 'modules', 'resources'
         )
 
 
@@ -218,6 +230,39 @@ class ContactMessageSerializer(serializers.ModelSerializer):
         model = ContactMessage
         fields = ('id', 'name', 'email', 'phone', 'subject', 'message', 'submitted_at')
         read_only_fields = ('submitted_at',)
+
+
+class StudentAssignmentSerializer(serializers.ModelSerializer):
+    assignment_title = serializers.CharField(source='assignment.title', read_only=True)
+    assignment_description = serializers.CharField(source='assignment.description', read_only=True)
+    student_name = serializers.CharField(source='student.get_full_name', read_only=True)
+    student_email = serializers.CharField(source='student.email', read_only=True)
+    course_title = serializers.CharField(source='assignment.course.title', read_only=True)
+    total_marks = serializers.IntegerField(source='assignment.total_marks', read_only=True)
+    submission_file_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = StudentAssignment
+        fields = '__all__'
+        read_only_fields = ('submitted_at',)
+
+    def get_submission_file_url(self, obj):
+        if obj.submission_file:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.submission_file.url)
+            return obj.submission_file.url
+        return None
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    sender_name = serializers.CharField(source='sender.get_full_name', read_only=True, default='')
+
+    class Meta:
+        model = Notification
+        fields = '__all__'
+        read_only_fields = ('created_at',)
+
 
 
 

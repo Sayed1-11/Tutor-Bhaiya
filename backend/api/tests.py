@@ -223,4 +223,62 @@ class TutorBhaiyaAPITests(APITestCase):
         self.assertEqual(float(course_obj.price), 4500.0)
         self.assertEqual(course_obj.slug, 'new-test-course-from-admin')
 
+    def test_assignment_submission_and_teacher_evaluation_with_notifications(self):
+        """Test student assignment submission and teacher evaluation triggering notifications."""
+        student = User.objects.create_user(username='student_sub', email='student_sub@example.com', password='password123', role='student')
+        assignment = Assignment.objects.create(
+            course=self.course,
+            title='Homework 1',
+            description='Complete exercise 1 to 5',
+            total_marks=100
+        )
+
+        # 1. Student submits assignment
+        self.client.force_authenticate(user=student)
+        submit_url = reverse('submit-assignment', kwargs={'pk': assignment.pk})
+        res = self.client.post(submit_url, {'submission_text': 'Here is my solution...'}, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        # Verify teacher notification created
+        from api.models import Notification, StudentAssignment
+        notif = Notification.objects.filter(user=self.teacher, notification_type='assignment_submitted').first()
+        self.assertIsNotNone(notif)
+        self.assertIn('Homework 1', notif.title)
+
+        # 2. Teacher views submissions and grades it
+        self.client.force_authenticate(user=self.teacher)
+        grading_url = reverse('teacher-submissions')
+        get_res = self.client.get(grading_url)
+        self.assertEqual(get_res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(get_res.data), 1)
+
+        sub_id = get_res.data[0]['id']
+        grade_url = reverse('teacher-grade')
+        grade_res = self.client.post(grade_url, {
+            'submission_id': sub_id,
+            'marks_obtained': 95,
+            'feedback': 'Excellent work!',
+            'status': 'approved'
+        }, format='json')
+        self.assertEqual(grade_res.status_code, status.HTTP_200_OK)
+
+        # Verify student submission updated
+        sub_obj = StudentAssignment.objects.get(pk=sub_id)
+        self.assertEqual(sub_obj.marks_obtained, 95)
+        self.assertEqual(sub_obj.status, 'approved')
+
+        # Verify student notification created
+        student_notif = Notification.objects.filter(user=student, notification_type='assignment_graded').first()
+        self.assertIsNotNone(student_notif)
+        self.assertIn('Excellent work!', student_notif.message)
+
+    def test_teacher_course_player_access(self):
+        """Test that teachers can access CoursePlayerView without prior enrollment."""
+        self.client.force_authenticate(user=self.teacher)
+        player_url = reverse('course-player', kwargs={'pk': self.course.pk})
+        res = self.client.get(player_url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['course']['title'], 'Test Course')
+
+
 

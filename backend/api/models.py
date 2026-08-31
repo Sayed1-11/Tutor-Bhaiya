@@ -465,3 +465,31 @@ class JobApplication(models.Model):
         return f"{self.applicant_name} -> {self.job_posting.title}"
 
 
+# ─── Notifications ─────────────────────────────────────────────────────────────
+
+class Notification(models.Model):
+    """System notification for students and teachers."""
+    NOTIFICATION_TYPE_CHOICES = [
+        ('assignment_submitted', 'Assignment Submitted'),
+        ('assignment_graded', 'Assignment Graded'),
+        ('content_added', 'New Content Added'),
+        ('general', 'General Notification'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    sender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='sent_notifications')
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    notification_type = models.CharField(max_length=30, choices=NOTIFICATION_TYPE_CHOICES, default='general')
+    resource_url = models.CharField(max_length=500, blank=True)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Notification for {self.user.email}: {self.title}"
+
+
+

@@ -80,6 +80,24 @@
                 </div>
             </div>
             <div class="flex items-center gap-4">
+                <!-- Notifications Bell Dropdown -->
+                <div class="relative">
+                    <button id="notif-bell-btn" onclick="toggleNotifDropdown()" class="relative p-2 text-gray-500 hover:text-gray-900 rounded-xl hover:bg-gray-100 transition-colors">
+                        <i class="ph ph-bell text-2xl"></i>
+                        <span id="notif-badge-count" class="hidden absolute top-1 right-1 bg-red-500 text-white text-[10px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">0</span>
+                    </button>
+                    <!-- Notifications Dropdown -->
+                    <div id="notif-dropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden">
+                        <div class="p-4 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+                            <h4 class="font-bold text-sm text-gray-900 flex items-center gap-2"><i class="ph ph-bell text-primary"></i> Notifications</h4>
+                            <button onclick="markAllNotificationsRead()" class="text-xs text-primary font-semibold hover:underline">Mark all read</button>
+                        </div>
+                        <div id="notif-dropdown-list" class="max-h-80 overflow-y-auto divide-y divide-gray-100">
+                            <div class="p-4 text-center text-xs text-gray-400">Loading notifications...</div>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="avatar-placeholder"
                     class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold cursor-pointer shadow-md">
                     U
@@ -236,6 +254,12 @@
                                 </select>
                             </div>
                             <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Select Module (Optional)</label>
+                                <select id="resource-module-select" class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="">-- General Course Resource --</option>
+                                </select>
+                            </div>
+                            <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Resource Title</label>
                                 <input type="text" id="resource-title-input" placeholder="e.g. Chapter 1 PDF Handout" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                             </div>
@@ -259,6 +283,12 @@
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Select Course</label>
                                 <select id="assign-course-select" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                                     <option value="">-- Select Your Course --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Select Module (Optional)</label>
+                                <select id="assign-module-select" class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <option value="">-- Course Level Assignment --</option>
                                 </select>
                             </div>
                             <div>
@@ -398,6 +428,22 @@
                 <h3 class="text-2xl font-bold text-gray-900 mb-6">Account Settings</h3>
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-gray-500 max-w-xl">
                     <p class="text-sm">Manage your profile picture, email notifications, and password settings.</p>
+                </div>
+            </div>
+
+            <!-- ─── 13. NOTIFICATIONS SECTION ────────────────────────────────────── -->
+            <div id="section-notifications" class="content-section hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900">Notifications &amp; Activity Alerts</h3>
+                        <p class="text-xs text-gray-500 mt-1">Stay updated with course materials, submission alerts, teacher evaluations, and downloadable resources.</p>
+                    </div>
+                    <button onclick="markAllNotificationsRead()" class="bg-primary hover:bg-violet-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors">
+                        Mark All as Read
+                    </button>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" id="full-notifications-container">
+                    <div class="p-8 text-center text-gray-400 text-sm">Loading notifications...</div>
                 </div>
             </div>
 
@@ -633,6 +679,12 @@
                     <label class="block text-xs font-semibold text-gray-500 mb-1">Student Answer Text:</label>
                     <div id="grade-submission-text" class="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-700 whitespace-pre-wrap max-h-36 overflow-y-auto"></div>
                 </div>
+                <div id="grade-file-container" class="hidden">
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Attached Submission File / Resource:</label>
+                    <a id="grade-file-link" href="#" target="_blank" class="inline-flex items-center gap-2 px-3.5 py-2 bg-violet-50 text-primary font-bold text-xs rounded-xl border border-violet-200 hover:bg-violet-100 transition-colors">
+                        <i class="ph ph-file-arrow-down text-base"></i> View / Download Attached File
+                    </a>
+                </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 mb-1">Marks Obtained (out of <span id="grade-total-marks">100</span>)</label>
                     <input type="number" id="grade-marks-input" required class="w-full border border-gray-200 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
@@ -674,6 +726,7 @@
             if (role === 'admin') {
                 links = [
                     { id: 'dashboard', icon: 'ph-shield-check', label: 'Admin Overview' },
+                    { id: 'notifications', icon: 'ph-bell', label: 'Notifications' },
                     { id: 'admin-courses', icon: 'ph-books', label: 'Courses & Teachers' },
                     { id: 'admin-teachers', icon: 'ph-user-list', label: 'Teacher Activity Monitor' },
                     { id: 'admin-submissions', icon: 'ph-file-text', label: 'Platform Submissions' },
@@ -683,6 +736,7 @@
             } else if (role === 'teacher') {
                 links = [
                     { id: 'dashboard', icon: 'ph-chart-line-up', label: 'Teacher Overview' },
+                    { id: 'notifications', icon: 'ph-bell', label: 'Notifications' },
                     { id: 'teacher-uploads', icon: 'ph-upload-simple', label: 'Work & Content Uploads' },
                     { id: 'teacher-grading', icon: 'ph-checks', label: 'Student Submissions' },
                     { id: 'quiz-builder', icon: 'ph-question', label: 'Quiz Builder' },
@@ -694,6 +748,7 @@
                 // Student
                 links = [
                     { id: 'dashboard', icon: 'ph-squares-four', label: 'Dashboard' },
+                    { id: 'notifications', icon: 'ph-bell', label: 'Notifications' },
                     { id: 'my-courses', icon: 'ph-play-circle', label: 'My Courses' },
                     { id: 'exams', icon: 'ph-exam', label: 'Exams & Quizzes' },
                     { id: 'student-live', icon: 'ph-video-camera', label: 'Live Classes' },
@@ -726,6 +781,7 @@
                     if (targetSec) targetSec.classList.remove('hidden');
 
                     // Trigger section loader
+                    if (target === 'notifications') loadNotifications();
                     if (target === 'my-courses') loadMyCourses();
                     if (target === 'exams') loadQuizzes();
                     if (target === 'certificates') loadCertificates();
@@ -766,6 +822,7 @@
                 avatarEl.textContent = currentUser.avatar_initial || currentUser.full_name[0];
 
                 buildSidebarNav(role);
+                loadNotifications();
 
                 // Render Overview stats based on role
                 if (role === 'admin') {
@@ -1209,6 +1266,8 @@
         }
 
         // ── 8. TEACHER SUBMISSIONS & GRADING LOADER ────────────────────────────
+        window._teacherSubmissionsMap = {};
+
         async function loadTeacherSubmissions() {
             const container = document.getElementById('teacher-submissions-container');
             container.innerHTML = `<div class="p-8 text-center text-gray-400">Loading student submissions...</div>`;
@@ -1220,6 +1279,9 @@
                     container.innerHTML = `<div class="p-8 text-center text-gray-500">No student assignment submissions yet.</div>`;
                     return;
                 }
+
+                window._teacherSubmissionsMap = {};
+                submissions.forEach(s => { window._teacherSubmissionsMap[s.id] = s; });
 
                 container.innerHTML = `
                     <table class="w-full text-left border-collapse">
@@ -1245,7 +1307,7 @@
                                     <td class="p-4 text-center">${stBadge}</td>
                                     <td class="p-4 text-center font-bold">${s.marks_obtained !== null ? `${s.marks_obtained}/${s.total_marks}` : '—'}</td>
                                     <td class="p-4 text-right">
-                                        <button onclick="openGradeModal(${s.id}, '${s.student_name.replace(/'/g, "\\'")}', '${(s.submission_text || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', ${s.total_marks})" class="bg-primary hover:bg-violet-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">
+                                        <button onclick="openGradeModal(${s.id})" class="bg-primary hover:bg-violet-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">
                                             Evaluate & Grade
                                         </button>
                                     </td>
@@ -1258,12 +1320,26 @@
             }
         }
 
-        function openGradeModal(id, studentName, text, totalMarks) {
-            document.getElementById('grade-submission-id').value = id;
-            document.getElementById('grade-modal-student').textContent = studentName;
-            document.getElementById('grade-submission-text').textContent = text || 'No answer text provided (file attached).';
-            document.getElementById('grade-total-marks').textContent = totalMarks;
-            document.getElementById('grade-marks-input').value = totalMarks;
+        function openGradeModal(subId) {
+            const s = window._teacherSubmissionsMap[subId];
+            if (!s) return;
+
+            document.getElementById('grade-submission-id').value = s.id;
+            document.getElementById('grade-modal-student').textContent = `${s.student_name} (${s.course_title})`;
+            document.getElementById('grade-submission-text').textContent = s.submission_text || 'No text answer provided.';
+            document.getElementById('grade-total-marks').textContent = s.total_marks;
+            document.getElementById('grade-marks-input').value = s.marks_obtained !== null ? s.marks_obtained : s.total_marks;
+            document.getElementById('grade-feedback-input').value = s.feedback || '';
+            document.getElementById('grade-status-select').value = s.status || 'approved';
+
+            const fileContainer = document.getElementById('grade-file-container');
+            const fileLink = document.getElementById('grade-file-link');
+            if (s.submission_file_url) {
+                fileLink.href = s.submission_file_url;
+                fileContainer.classList.remove('hidden');
+            } else {
+                fileContainer.classList.add('hidden');
+            }
 
             const modal = document.getElementById('grade-modal');
             modal.classList.remove('hidden');
@@ -1390,11 +1466,15 @@
                     if (el) el.innerHTML = options;
                 });
 
-                // When video course changes, reload modules
+                // Attach module loaders on course change
                 const vcSel = document.getElementById('video-course-select');
-                if (vcSel) {
-                    vcSel.onchange = () => loadModulesForCourse(vcSel.value, 'video-module-select');
-                }
+                if (vcSel) vcSel.onchange = () => loadModulesForCourse(vcSel.value, 'video-module-select');
+
+                const rcSel = document.getElementById('resource-course-select');
+                if (rcSel) rcSel.onchange = () => loadModulesForCourse(rcSel.value, 'resource-module-select');
+
+                const acSel = document.getElementById('assign-course-select');
+                if (acSel) acSel.onchange = () => loadModulesForCourse(acSel.value, 'assign-module-select');
             } catch (err) {
                 console.error(err);
             }
@@ -1468,13 +1548,14 @@
         document.getElementById('form-add-resource').addEventListener('submit', async (e) => {
             e.preventDefault();
             const courseId = document.getElementById('resource-course-select').value;
+            const modId = document.getElementById('resource-module-select')?.value;
             const title = document.getElementById('resource-title-input').value;
             const url = document.getElementById('resource-url-input').value;
 
             try {
                 const res = await authFetch(`${API_BASE}/teacher/content/resource/`, {
                     method: 'POST',
-                    body: JSON.stringify({ course: courseId, title, url })
+                    body: JSON.stringify({ course: courseId, module: modId || null, title, url })
                 });
                 const data = await res.json();
                 alert(data.message || 'Resource added successfully!');
@@ -1486,6 +1567,7 @@
         document.getElementById('form-add-assignment').addEventListener('submit', async (e) => {
             e.preventDefault();
             const courseId = document.getElementById('assign-course-select').value;
+            const modId = document.getElementById('assign-module-select')?.value;
             const title = document.getElementById('assign-title-input').value;
             const marks = document.getElementById('assign-marks-input').value;
             const desc = document.getElementById('assign-desc-input').value;
@@ -1493,9 +1575,101 @@
             try {
                 const res = await authFetch(`${API_BASE}/teacher/content/assignment/`, {
                     method: 'POST',
-                    body: JSON.stringify({ course: courseId, title, total_marks: marks, description: desc })
+                    body: JSON.stringify({ course: courseId, module: modId || null, title, total_marks: marks, description: desc })
                 });
                 const data = await res.json();
+                alert(data.message || 'Assignment created successfully!');
+                document.getElementById('form-add-assignment').reset();
+            } catch (err) { console.error(err); }
+        });
+
+        // ── 15. NOTIFICATIONS SYSTEM LOADER ──────────────────────────────────
+        async function loadNotifications() {
+            try {
+                const res = await authFetch(`${API_BASE}/notifications/`);
+                if (!res.ok) return;
+                const data = await res.json();
+                const unreadCount = data.unread_count || 0;
+                const list = data.notifications || [];
+
+                const badge = document.getElementById('notif-badge-count');
+                if (badge) {
+                    if (unreadCount > 0) {
+                        badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+
+                const dropList = document.getElementById('notif-dropdown-list');
+                if (dropList) {
+                    if (!list.length) {
+                        dropList.innerHTML = `<div class="p-6 text-center text-xs text-gray-400">No notifications yet.</div>`;
+                    } else {
+                        dropList.innerHTML = list.slice(0, 10).map(n => `
+                            <div class="p-3.5 hover:bg-gray-50 transition-colors ${n.is_read ? 'opacity-75' : 'bg-violet-50/40'}">
+                                <div class="flex items-start justify-between gap-2">
+                                    <h5 class="text-xs font-bold ${n.is_read ? 'text-gray-700' : 'text-primary'}">${escapeHTML(n.title)}</h5>
+                                    <span class="text-[10px] text-gray-400 shrink-0">${new Date(n.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                                </div>
+                                <p class="text-xs text-gray-600 mt-1 leading-relaxed">${escapeHTML(n.message)}</p>
+                                ${n.resource_url ? `
+                                <div class="mt-2">
+                                    <a href="${n.resource_url}" target="_blank" class="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:underline">
+                                        <i class="ph ph-link-simple"></i> Open Attached Resource
+                                    </a>
+                                </div>` : ''}
+                            </div>
+                        `).join('');
+                    }
+                }
+
+                const fullContainer = document.getElementById('full-notifications-container');
+                if (fullContainer) {
+                    if (!list.length) {
+                        fullContainer.innerHTML = `<div class="p-8 text-center text-gray-500 text-sm">No notifications recorded yet.</div>`;
+                    } else {
+                        fullContainer.innerHTML = `
+                            <div class="divide-y divide-gray-100">
+                                ${list.map(n => `
+                                    <div class="p-5 flex items-start justify-between gap-4 ${n.is_read ? 'bg-white' : 'bg-violet-50/40'}">
+                                        <div class="space-y-1">
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-bold text-sm text-gray-900">${escapeHTML(n.title)}</span>
+                                                ${!n.is_read ? `<span class="bg-primary text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full">NEW</span>` : ''}
+                                            </div>
+                                            <p class="text-xs text-gray-600 leading-relaxed">${escapeHTML(n.message)}</p>
+                                            ${n.resource_url ? `
+                                            <div class="pt-1">
+                                                <a href="${n.resource_url}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-violet-100 text-primary font-bold text-xs rounded-lg hover:bg-violet-200 transition-colors">
+                                                    <i class="ph ph-arrow-square-out text-sm"></i> Access Attached Resource / File
+                                                </a>
+                                            </div>` : ''}
+                                        </div>
+                                        <span class="text-xs text-gray-400 shrink-0 font-medium">${new Date(n.created_at).toLocaleDateString()} ${new Date(n.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function markAllNotificationsRead() {
+            try {
+                await authFetch(`${API_BASE}/notifications/read/`, { method: 'POST' });
+                loadNotifications();
+            } catch (err) { console.error(err); }
+        }
+
+        function toggleNotifDropdown() {
+            const drop = document.getElementById('notif-dropdown');
+            if (drop) drop.classList.toggle('hidden');
+        }
                 alert(data.message || 'Assignment created successfully!');
                 document.getElementById('form-add-assignment').reset();
             } catch (err) { console.error(err); }

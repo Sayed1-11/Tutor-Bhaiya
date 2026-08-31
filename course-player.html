@@ -111,6 +111,20 @@
                     </div>
                 </div>
 
+                <!-- Downloadable Course Resources & Files Section -->
+                <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+                    <div class="flex items-center justify-between mb-4 border-b border-gray-800 pb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="ph ph-folder-open text-amber-400 text-xl"></i>
+                            <h3 class="text-base font-bold text-white">Downloadable Course Resources & Notes</h3>
+                        </div>
+                        <span class="text-xs bg-gray-800 text-amber-400 px-3 py-1 rounded-full font-medium">Files & Notes</span>
+                    </div>
+                    <div id="course-resources-container" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="text-xs text-gray-500 py-4 col-span-full text-center">Loading course resources...</div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </main>
@@ -253,6 +267,7 @@
                 updateProgress(data.progress || 0);
                 renderModules(course.modules || []);
                 renderRoutines(course.routines || []);
+                renderResources(course.resources || [], course.modules || []);
 
             } catch (err) {
                 console.error('Load error:', err);
@@ -310,6 +325,45 @@
             }).join('');
         }
 
+        function renderResources(courseResources, modules) {
+            const container = document.getElementById('course-resources-container');
+            if (!container) return;
+            let allResources = [...courseResources];
+
+            if (modules) {
+                modules.forEach(m => {
+                    if (m.resources) {
+                        m.resources.forEach(r => {
+                            allResources.push({ ...r, module_title: m.title });
+                        });
+                    }
+                });
+            }
+
+            if (!allResources || allResources.length === 0) {
+                container.innerHTML = `<div class="text-xs text-gray-500 py-4 col-span-full text-center">No downloadable resources uploaded for this course yet.</div>`;
+                return;
+            }
+
+            container.innerHTML = allResources.map(r => `
+                <div class="bg-gray-800/80 rounded-xl p-4 border border-gray-700/60 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-9 h-9 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 shrink-0">
+                            <i class="ph ph-file-pdf text-xl"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="font-bold text-xs text-white truncate mb-0.5">${r.title}</h4>
+                            <p class="text-[11px] text-gray-400">${r.module_title ? r.module_title : 'General Course Resource'}</p>
+                        </div>
+                    </div>
+                    <a href="${r.file_url || r.url || '#'}" target="_blank"
+                        class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shrink-0 transition-colors inline-flex items-center gap-1">
+                        <i class="ph ph-download-simple"></i> Download / View
+                    </a>
+                </div>
+            `).join('');
+        }
+
         // ── Render sidebar ─────────────────────────────────────────────────────────
         function renderModules(modules) {
             const list = document.getElementById('modules-list');
@@ -320,6 +374,7 @@
 
             list.innerHTML = modules.map((mod, idx) => {
                 const videos = mod.videos || [];
+                const resources = mod.resources || [];
                 const assignments = mod.assignments || [];
                 const completedCount = videos.filter(v => completedVideoIds.includes(v.id)).length;
                 videos.forEach(v => { videoMap[v.id] = v; });
@@ -335,6 +390,20 @@
                         <span class="text-xs text-gray-400 shrink-0">${video.duration_minutes}m</span>
                     </button>`;
                     }).join('');
+
+                const resHTML = resources.length === 0 ? '' : `
+                <div class="px-5 pt-2 pb-3 border-t border-gray-100 mt-1">
+                    <p class="text-[10px] font-extrabold text-amber-600 uppercase tracking-wider mb-2 flex items-center gap-1">
+                        <i class="ph ph-file-pdf"></i> Module Resources
+                    </p>
+                    ${resources.map(r => `
+                    <a href="${r.file_url || r.url || '#'}" target="_blank"
+                        class="w-full flex items-center gap-2 py-1.5 px-3 rounded-xl hover:bg-amber-50 border border-amber-200 bg-amber-50/50 mb-1 text-left transition-all">
+                        <i class="ph ph-file-text text-amber-500 text-sm shrink-0"></i>
+                        <span class="text-xs font-semibold text-gray-700 leading-snug truncate flex-1">${r.title}</span>
+                        <i class="ph ph-arrow-square-out text-amber-500 text-xs shrink-0"></i>
+                    </a>`).join('')}
+                </div>`;
 
                 const assignHTML = assignments.length === 0 ? '' : `
                 <div class="px-5 pt-2 pb-3 border-t border-gray-100 mt-1">
@@ -373,6 +442,7 @@
                 </button>
                 <div class="module-content ${idx === 0 ? '' : 'hidden'}">
                     ${videoHTML}
+                    ${resHTML}
                     ${assignHTML}
                 </div>
             </div>`;

@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.utils.decorators import method_decorator
-from django.db.models import Exists, OuterRef
+from django.db.models import Exists, OuterRef, Q
 
 from rest_framework import status, generics, permissions
 from rest_framework.views import APIView
@@ -17,7 +17,7 @@ from .models import (
     Category, Course, Enrollment, ContactMessage,
     Module, Video, Resource, Assignment, StudentAssignment, Payment,
     CourseRoutine, Certificate, Book, JobPosting, JobApplication,
-    Quiz, QuizQuestion, StudentQuiz
+    Quiz, QuizQuestion, StudentQuiz, Notification
 )
 from .permissions import IsAdmin, IsTeacher, IsStudent
 from .serializers import (
@@ -46,6 +46,7 @@ from .serializers import (
     QuizQuestionSerializer,
     QuizQuestionStudentSerializer,
     StudentQuizSerializer,
+    NotificationSerializer,
 )
 
 User = get_user_model()
@@ -268,16 +269,20 @@ class CoursePlayerView(APIView):
     def get(self, request, pk):
         try:
             course = Course.objects.get(pk=pk, is_active=True)
-            enrollment = Enrollment.objects.get(user=request.user, course=course)
-        except (Course.DoesNotExist, Enrollment.DoesNotExist):
-            return Response({'error': 'Not enrolled or course not found.'}, status=403)
+        except Course.DoesNotExist:
+            return Response({'error': 'Course not found.'}, status=404)
+
+        enrollment = Enrollment.objects.filter(user=request.user, course=course).first()
+        if not enrollment and request.user.role not in ['teacher', 'admin'] and course.instructor != request.user:
+            return Response({'error': 'Not enrolled in this course.'}, status=403)
 
         serializer = CoursePlayerSerializer(course, context={'request': request})
-        completed_ids = list(enrollment.completed_videos.values_list('id', flat=True))
+        completed_ids = list(enrollment.completed_videos.values_list('id', flat=True)) if enrollment else []
+        progress = enrollment.progress if enrollment else 100
 
         return Response({
             'course': serializer.data,
-            'progress': enrollment.progress,
+            'progress': progress,
             'completed_video_ids': completed_ids
         })
 
@@ -479,6 +484,25 @@ class SubmitAssignmentView(APIView):
         
         submission.save()
 
+        # Notify teacher(s) of new submission
+        recipients = []
+        if assignment.course.instructor:
+            recipients.append(assignment.course.instructor)
+        else:
+            recipients = list(User.objects.filter(role='teacher'))
+
+        file_url = request.build_absolute_uri(submission.submission_file.url) if submission.submission_file else ''
+        for t in recipients:
+            if t:
+                Notification.objects.create(
+                    user=t,
+                    sender=request.user,
+                    title=f"New Assignment Submission: {assignment.title}",
+                    message=f"Student {request.user.get_full_name()} submitted assignment '{assignment.title}' for '{assignment.course.title}'.",
+                    notification_type='assignment_submitted',
+                    resource_url=file_url
+                )
+
         return Response({
             'message': 'Assignment submitted successfully!',
             'submitted': True,
@@ -560,7 +584,10 @@ class TeacherCourseListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated, IsTeacher]
 
     def get_queryset(self):
-        return Course.objects.filter(instructor=self.request.user)
+        user = self.request.user
+        if user.role == 'admin':
+            return Course.objects.all()
+        return Course.objects.filter(Q(instructor=user) | Q(instructor__isnull=True))
 
 
 class TeacherStudentListView(APIView):
@@ -728,7 +755,7 @@ class TeacherDashboardView(APIView):
 
     def get(self, request):
         teacher = request.user
-        courses = Course.objects.filter(instructor=teacher) if teacher.role == 'teacher' else Course.objects.all()
+        courses = Course.objects.filter(Q(instructor=teacher) | Q(instructor__isnull=True)) if teacher.role == 'teacher' else Course.objects.all()
         total_courses = courses.count()
         total_students = Enrollment.objects.filter(course__in=courses).values('user').distinct().count()
         
@@ -758,7 +785,7 @@ class TeacherAssignmentGradingView(APIView):
     permission_classes = [permissions.IsAuthenticated, IsTeacher]
 
     def get(self, request):
-        courses = Course.objects.filter(instructor=request.user) if request.user.role == 'teacher' else Course.objects.all()
+        courses = Course.objects.filter(Q(instructor=request.user) | Q(instructor__isnull=True)) if request.user.role == 'teacher' else Course.objects.all()
         submissions = StudentAssignment.objects.filter(
             assignment__course__in=courses
         ).select_related('assignment', 'assignment__course', 'student').order_by('-submitted_at')
@@ -767,7 +794,7 @@ class TeacherAssignmentGradingView(APIView):
         if status_filter:
             submissions = submissions.filter(status=status_filter)
             
-        serializer = StudentAssignmentSerializer(submissions, many=True)
+        serializer = StudentAssignmentSerializer(submissions, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request):
@@ -793,9 +820,20 @@ class TeacherAssignmentGradingView(APIView):
         # Re-evaluate certificate eligibility for this student!
         check_and_issue_certificate(sub.student, sub.assignment.course)
 
+        # Notify student!
+        res_file_url = request.build_absolute_uri(sub.submission_file.url) if sub.submission_file else ''
+        Notification.objects.create(
+            user=sub.student,
+            sender=request.user,
+            title=f"Assignment Evaluated: {sub.assignment.title}",
+            message=f"Your submission for '{sub.assignment.title}' in '{sub.assignment.course.title}' has been evaluated. Status: {status_val.upper()}. Marks: {sub.marks_obtained}/{sub.assignment.total_marks}. Feedback: {feedback or 'No feedback provided.'}",
+            notification_type='assignment_graded',
+            resource_url=res_file_url
+        )
+
         return Response({
             'message': f"Submission successfully {status_val}!",
-            'submission': StudentAssignmentSerializer(sub).data
+            'submission': StudentAssignmentSerializer(sub, context={'request': request}).data
         })
 
 
@@ -808,18 +846,52 @@ class TeacherContentManageView(APIView):
     def post(self, request, target_type):
         data = request.data
         if target_type == 'module':
-            serializer = ModuleSerializer(data=data)
+            serializer = ModuleSerializer(data=data, context={'request': request})
         elif target_type == 'video':
-            serializer = VideoSerializer(data=data)
+            serializer = VideoSerializer(data=data, context={'request': request})
         elif target_type == 'resource':
-            serializer = ResourceSerializer(data=data)
+            serializer = ResourceSerializer(data=data, context={'request': request})
         elif target_type == 'assignment':
-            serializer = AssignmentSerializer(data=data)
+            serializer = AssignmentSerializer(data=data, context={'request': request})
         else:
             return Response({'error': 'Invalid content type.'}, status=400)
 
         if serializer.is_valid():
             instance = serializer.save()
+
+            # Find target course to set instructor if null and notify enrolled students
+            course = None
+            if hasattr(instance, 'course') and instance.course:
+                course = instance.course
+            elif hasattr(instance, 'module') and instance.module and instance.module.course:
+                course = instance.module.course
+
+            if course:
+                if not course.instructor:
+                    course.instructor = request.user
+                    course.save()
+
+                # Notify enrolled students
+                enrolled_students = User.objects.filter(enrollments__course=course).distinct()
+                res_url = ''
+                if target_type == 'video' and hasattr(instance, 'video_url'):
+                    res_url = instance.video_url
+                elif target_type == 'resource':
+                    res_url = instance.url or (request.build_absolute_uri(instance.file.url) if instance.file else '')
+
+                title_text = f"New {target_type.capitalize()} Added: {getattr(instance, 'title', 'Content')}"
+                msg_text = f"New {target_type} '{getattr(instance, 'title', '')}' was added to course '{course.title}'."
+
+                for student in enrolled_students:
+                    Notification.objects.create(
+                        user=student,
+                        sender=request.user,
+                        title=title_text,
+                        message=msg_text,
+                        notification_type='content_added',
+                        resource_url=res_url
+                    )
+
             return Response({'message': f"{target_type.capitalize()} created successfully!", 'data': serializer.data}, status=201)
         return Response(serializer.errors, status=400)
 
@@ -1366,3 +1438,33 @@ class StudentRoutineView(APIView):
                 'live_link': r.live_link,
             })
         return Response(data)
+
+
+# ─── Notifications ────────────────────────────────────────────────────────────
+
+class NotificationListView(APIView):
+    """GET /api/notifications/ — List notifications for logged-in user."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
+        unread_count = notifications.filter(is_read=False).count()
+        serializer = NotificationSerializer(notifications[:50], many=True, context={'request': request})
+        return Response({
+            'unread_count': unread_count,
+            'notifications': serializer.data
+        })
+
+
+class NotificationMarkReadView(APIView):
+    """POST /api/notifications/read/ — Mark notifications as read."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        notification_id = request.data.get('notification_id')
+        if notification_id:
+            Notification.objects.filter(user=request.user, pk=notification_id).update(is_read=True)
+        else:
+            Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+        return Response({'message': 'Notifications marked as read.'})
+
