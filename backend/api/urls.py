@@ -70,6 +70,13 @@ urlpatterns = [
     # ── Books ─────────────────────────────────────────────────────────────────
     path('books/', views.BookListView.as_view(), name='books'),
 
+    # ── Careers ───────────────────────────────────────────────────────────────
+    path('careers/', views.JobPostingListView.as_view(), name='careers'),
+    path('careers/<int:pk>/apply/', views.JobApplicationCreateView.as_view(), name='career-apply'),
+
+    # ── Admin Jobs ────────────────────────────────────────────────────────────
+    path('admin/jobs/', views.AdminJobPostingView.as_view(), name='admin-jobs'),
+
     # ── Notifications ─────────────────────────────────────────────────────────
     path('notifications/', views.NotificationListView.as_view(), name='notifications'),
     path('notifications/read/', views.NotificationMarkReadView.as_view(), name='notifications-read'),

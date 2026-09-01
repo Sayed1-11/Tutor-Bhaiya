@@ -32,8 +32,28 @@ function getUser() {
     }
 }
 
+function getUserRole() {
+    const user = getUser();
+    return user && user.role ? String(user.role).toLowerCase() : 'guest';
+}
+
 function isLoggedIn() {
     return !!(getToken() && getUser());
+}
+
+function toggleCertificateNavVisibility() {
+    const role = getUserRole();
+    const certificateLinks = document.querySelectorAll('a[href="certificate.html"], a[href="./certificate.html"]');
+
+    certificateLinks.forEach(link => {
+        if (role === 'teacher' || role === 'admin') {
+            link.style.display = 'none';
+            link.setAttribute('aria-hidden', 'true');
+        } else {
+            link.style.display = '';
+            link.removeAttribute('aria-hidden');
+        }
+    });
 }
 
 function clearAuth() {
@@ -104,6 +124,8 @@ function updateNavbarAuth() {
     const authBtn = document.getElementById('user-avatar-btn') || 
                     document.querySelector('a[href="login.html"].bg-secondary, a[href="login.html"].bg-primary');
     const dashboardLink = document.querySelector('a[href="dashboard.html"].nav-link');
+
+    toggleCertificateNavVisibility();
 
     if (loggedIn && user) {
         const displayName = user.full_name ? user.full_name.split(' ')[0] : 'Profile';

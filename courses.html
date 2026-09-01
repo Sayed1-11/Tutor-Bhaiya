@@ -95,9 +95,7 @@
 
                 <!-- Actions -->
                 <div class="hidden md:flex items-center space-x-4" style="padding-top:1.5rem;">
-                    <button class="flex items-center gap-2 text-sm font-semibold hover:text-primary transition-colors duration-300 nav-link" id="lang-btn">
-                        <i class="ph ph-globe text-lg"></i> বাংলা
-                    </button>
+                   
                     <a href="dashboard.html" class="text-sm font-semibold hover:text-primary transition-colors duration-300 nav-link">Dashboard</a>
                     <a href="login.html" class="bg-secondary hover:bg-emerald-600 text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg shadow-secondary/30 hover:shadow-secondary/50">
                         Login
@@ -293,6 +291,27 @@
                             class="relative pl-6 border-l-2 border-slate-200 space-y-6 text-sm text-slate-600">
                             <!-- Populated dynamically -->
                         </div>
+                    </div>
+                </div>
+
+                <!-- Course Routine + Audience -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 border-t border-slate-100 pt-8">
+                    <div class="bg-violet-50 border border-violet-100 rounded-2xl p-5">
+                        <h4 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                            <i class="ph ph-calendar-check text-primary"></i> Course Routine
+                        </h4>
+                        <ul id="modal-routine-list" class="space-y-3 text-sm text-slate-600">
+                            <!-- Populated dynamically -->
+                        </ul>
+                    </div>
+
+                    <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-5">
+                        <h4 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                            <i class="ph ph-users-three text-emerald-600"></i> Who This Course Is For
+                        </h4>
+                        <p id="modal-audience" class="text-sm leading-relaxed text-slate-600">
+                            This course is designed for learners who want structured guidance and steady progress.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -609,37 +628,69 @@
                     document.getElementById('modal-exams-count').textContent = course.exams_count || 0;
                     document.getElementById('modal-quizzes-count').textContent = course.quizzes_count || 0;
 
+                    const fallbackOutline = [
+                        `${course.title || 'This course'} starts with the core fundamentals and concept-building.` ,
+                        'Students learn through clear explanations, guided examples, and step-by-step practice.',
+                        'Weekly assignments and revision tasks help strengthen understanding and retention.',
+                        'Final preparation includes mock tests, performance review, and confidence-building support.'
+                    ];
+
+                    const fallbackRoadmap = [
+                        'Foundation Phase: learn the basics and key concepts with clarity.',
+                        'Practice Phase: solve exercises, assignments, and guided problems.',
+                        'Assessment Phase: quizzes, exams, and revision to measure progress.',
+                        'Growth Phase: improve weak areas and build long-term confidence.'
+                    ];
+
+                    const fallbackRoutine = [
+                        'Live classes with structured lesson explanations and Q&A support.',
+                        'Regular revision and problem-solving sessions each week.',
+                        'Assignment submission, feedback, and exam preparation support.'
+                    ];
+
+                    const fallbackAudience = `${course.title || 'This course'} is designed for school students, college learners, and beginners who want a clear, supportive, and structured learning path with regular guidance and practice.`;
+
                     // Hydrate Outline List
                     const outlineList = document.getElementById('modal-outline-list');
                     outlineList.innerHTML = '';
-                    if (course.outline && course.outline.length > 0) {
-                        course.outline.forEach(item => {
-                            const li = document.createElement('li');
-                            li.className = 'flex items-start gap-2 py-1 border-b border-slate-50 last:border-b-0';
-                            li.innerHTML = `<i class="ph ph-check-circle text-secondary mt-0.5 text-base"></i> <span>${item}</span>`;
-                            outlineList.appendChild(li);
-                        });
-                    } else {
-                        outlineList.innerHTML = '<li class="text-slate-400 italic">No outline modules defined.</li>';
-                    }
+                    const outlineItems = course.outline && course.outline.length > 0 ? course.outline : fallbackOutline;
+                    outlineItems.forEach(item => {
+                        const li = document.createElement('li');
+                        li.className = 'flex items-start gap-2 py-1 border-b border-slate-50 last:border-b-0';
+                        li.innerHTML = `<i class="ph ph-check-circle text-secondary mt-0.5 text-base"></i> <span>${item}</span>`;
+                        outlineList.appendChild(li);
+                    });
 
                     // Hydrate Roadmap Timeline
                     const roadmapTimeline = document.getElementById('modal-roadmap-timeline');
                     roadmapTimeline.innerHTML = '';
-                    if (course.roadmap && course.roadmap.length > 0) {
-                        course.roadmap.forEach((stage, idx) => {
-                            const milestone = document.createElement('div');
-                            milestone.className = 'relative pl-2';
-                            milestone.innerHTML = `
-                                <div class="absolute -left-[31px] top-1 w-4.5 h-4.5 rounded-full border-4 border-white bg-primary flex items-center justify-center text-[10px] text-white font-bold shadow-sm"></div>
-                                <h5 class="font-bold text-slate-800">Stage ${idx + 1}</h5>
-                                <p class="text-xs text-slate-500 mt-0.5">${stage}</p>
-                            `;
-                            roadmapTimeline.appendChild(milestone);
-                        });
-                    } else {
-                        roadmapTimeline.innerHTML = '<div class="text-slate-400 italic">No roadmap defined for this course.</div>';
-                    }
+                    const roadmapItems = course.roadmap && course.roadmap.length > 0 ? course.roadmap : fallbackRoadmap;
+                    roadmapItems.forEach((stage, idx) => {
+                        const milestone = document.createElement('div');
+                        milestone.className = 'relative pl-2';
+                        milestone.innerHTML = `
+                            <div class="absolute -left-[31px] top-1 w-4.5 h-4.5 rounded-full border-4 border-white bg-primary flex items-center justify-center text-[10px] text-white font-bold shadow-sm"></div>
+                            <h5 class="font-bold text-slate-800">Stage ${idx + 1}</h5>
+                            <p class="text-xs text-slate-500 mt-0.5">${stage}</p>
+                        `;
+                        roadmapTimeline.appendChild(milestone);
+                    });
+
+                    // Hydrate Routine + Audience Details
+                    const routineList = document.getElementById('modal-routine-list');
+                    routineList.innerHTML = '';
+                    const routineItems = (course.routines && course.routines.length > 0)
+                        ? course.routines.slice(0, 3).map(r => `${r.day_of_week || 'Weekly'} • ${r.start_time ? r.start_time.substring(0, 5) : '6:00'} - ${r.end_time ? r.end_time.substring(0, 5) : '8:00'} ${r.title ? `• ${r.title}` : ''}`)
+                        : fallbackRoutine;
+                    routineItems.forEach(item => {
+                        const li = document.createElement('li');
+                        li.className = 'flex items-start gap-2';
+                        li.innerHTML = `<i class="ph ph-check-circle text-primary mt-0.5 text-base"></i><span>${item}</span>`;
+                        routineList.appendChild(li);
+                    });
+
+                    const audienceBlock = document.getElementById('modal-audience');
+                    audienceBlock.textContent = course.audience || course.target_audience || fallbackAudience;
 
                     // Bind Enroll Action to button inside modal
                     const enrollBtn = document.getElementById('modal-enroll-btn');

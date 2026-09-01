@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework import status
 from rest_framework.test import APITestCase
-from .models import Category, Course, Enrollment, Module, Assignment, StudentAssignment, Quiz, QuizQuestion, StudentQuiz, Payment
+from .models import Category, Course, Enrollment, Module, Assignment, StudentAssignment, Quiz, QuizQuestion, StudentQuiz, Payment, JobPosting
 
 User = get_user_model()
 
@@ -196,6 +196,40 @@ class TutorBhaiyaAPITests(APITestCase):
         self.assertEqual(len(res.data['top_courses']), 1)
         self.assertEqual(res.data['recent_payments'][0]['transaction_id'], 'TXN12345')
         self.assertEqual(float(res.data['top_courses'][0]['revenue']), float(self.course.price))
+
+    def test_job_posting_flow(self):
+        """Test that active jobs are exposed publicly and admin can create job postings."""
+        admin_user = User.objects.create_superuser(
+            username='admin_jobs_test',
+            email='admin_jobs@example.com',
+            password='adminpassword123'
+        )
+
+        jobs_url = reverse('careers')
+        resp = self.client.get(jobs_url)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(resp.data), 0)
+
+        self.client.force_authenticate(user=admin_user)
+        create_url = reverse('admin-jobs')
+        payload = {
+            'title': 'Frontend Developer',
+            'department': 'Engineering',
+            'location': 'Dhaka',
+            'job_type': 'Full-Time',
+            'experience_level': '1-2 years',
+            'description': 'Build modern learning experiences.',
+            'requirements': ['HTML', 'CSS', 'JavaScript'],
+            'benefits': ['Remote friendly', 'Learning budget']
+        }
+        create_response = self.client.post(create_url, payload, format='json')
+        self.assertEqual(create_response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(JobPosting.objects.count(), 1)
+
+        list_response = self.client.get(jobs_url)
+        self.assertEqual(list_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(list_response.data), 1)
+        self.assertEqual(list_response.data[0]['title'], 'Frontend Developer')
 
     def test_admin_create_course(self):
         """Test that AdminCourseManageView POST creates a new course."""

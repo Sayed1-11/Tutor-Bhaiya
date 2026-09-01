@@ -718,6 +718,49 @@ class BookListView(generics.ListAPIView):
 
 # ─── Careers ─────────────────────────────────────────────────────────────────
 
+@method_decorator(csrf_exempt, name='dispatch')
+class AdminJobPostingView(APIView):
+    """GET/POST /api/admin/jobs/ — List or create active job postings (admin only)."""
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        postings = JobPosting.objects.all().order_by('-posted_at')
+        serializer = JobPostingSerializer(postings, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def post(self, request):
+        data = request.data.copy()
+        required_fields = ['title', 'department', 'location', 'job_type', 'experience_level', 'description']
+        for field in required_fields:
+            if not data.get(field, '').strip():
+                return Response({'error': f'{field} is required.'}, status=400)
+
+        requirements = data.get('requirements') or []
+        benefits = data.get('benefits') or []
+        if isinstance(requirements, str):
+            requirements = [item.strip() for item in requirements.split(',') if item.strip()]
+        if isinstance(benefits, str):
+            benefits = [item.strip() for item in benefits.split(',') if item.strip()]
+
+        payload = {
+            'title': data.get('title', '').strip(),
+            'department': data.get('department', '').strip(),
+            'location': data.get('location', '').strip() or 'Dhaka, Bangladesh',
+            'job_type': data.get('job_type', 'Full-Time').strip() or 'Full-Time',
+            'experience_level': data.get('experience_level', '1-3 years').strip() or '1-3 years',
+            'description': data.get('description', '').strip(),
+            'requirements': requirements,
+            'benefits': benefits,
+            'is_active': data.get('is_active', True),
+        }
+
+        serializer = JobPostingSerializer(data=payload)
+        if serializer.is_valid():
+            job = serializer.save()
+            return Response({'message': 'Job posted successfully.', 'job': JobPostingSerializer(job, context={'request': request}).data}, status=201)
+        return Response(serializer.errors, status=400)
+
+
 class JobPostingListView(generics.ListAPIView):
     """GET /api/careers/ — List active job postings."""
     serializer_class = JobPostingSerializer
